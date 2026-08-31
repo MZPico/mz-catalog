@@ -27,8 +27,7 @@ standard|turbo|alt-dump, note}, description, controls, source.
 ## Rules
 - Never modify or delete files under `titles/` unless explicitly asked.
 - MZF files are preserved binaries — treat as immutable, never "fix" them.
-- Keep dependencies minimal. Node 20, npm, no framework beyond Astro.
-  (Astro 6+ requires Node 22 — stay on Astro 5 until Node is bumped.)
+- Keep dependencies minimal. Node 22, npm, no framework beyond Astro.
 - Static-only output — no server runtime; deploys to Cloudflare Pages.
 - manifest.json format changes are breaking (device firmware consumes
   it) — flag them, don't just do them. `MANIFEST_FORMAT` in

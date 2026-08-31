@@ -5,7 +5,7 @@
   "description": "Software catalog and preservation library for Sharp MZ-700/800/1500",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12"
   },
   "workspaces": [
     "site"

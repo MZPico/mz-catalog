@@ -89,7 +89,7 @@ enter them by hand.
 
 ## Development
 
-Requires Node 20 and npm (see `.nvmrc`).
+Requires Node 22 and npm (see `.nvmrc`).
 
 ```
 npm ci             # installs root tooling + site (npm workspaces)
@@ -104,8 +104,6 @@ npm run manifest   # print manifest.json to stdout (or --out <file>)
 `/screenshots/<slug>/*`, `/manifest.json`, `/pagefind/` search index and
 `_headers` for Cloudflare Pages. Search is client-side (Pagefind), so it
 is only available in the built site, not in `npm run dev`.
-
-Astro is pinned to the 5.x line because Astro 6+ requires Node 22.
 
 ## manifest.json (device API)
 
@@ -166,7 +164,7 @@ Cloudflare Pages project settings:
 |---|---|
 | build command | `npm run build` |
 | build output directory | `site/dist` |
-| Node version | `20` (env `NODE_VERSION=20`) |
+| Node version | `22` (env `NODE_VERSION=22`) |
 | custom domain | `software.mzpico.org` |
 
 Response headers (download disposition for `.mzf`, long cache for hashed
