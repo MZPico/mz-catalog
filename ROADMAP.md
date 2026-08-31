@@ -32,7 +32,7 @@ coordinate with upstream author first. Fallback: MAME mz800 driver via
 Emscripten.
 
 ## Infra notes
-- Site + files: Cloudflare Pages, domain software.mzpico.org — never
+- Site + files: Cloudflare Pages, domain mzpico.com — never
   hardcode *.pages.dev anywhere.
 - Legacy: Oracle micro VM currently serves the Pico API
   (`GET /list?path=…` → `{"path","folders":[],"files":[{"name","size"}]}`,

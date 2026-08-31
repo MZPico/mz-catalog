@@ -32,7 +32,7 @@ standard|turbo|alt-dump, note}, description, controls, source.
 - manifest.json format changes are breaking (device firmware consumes
   it) — flag them, don't just do them. `MANIFEST_FORMAT` in
   `scripts/build-manifest.mjs` must be bumped for any shape change.
-- Site + files: Cloudflare Pages, domain software.mzpico.org — never
+- Site + files: Cloudflare Pages, domain mzpico.com — never
   hardcode *.pages.dev anywhere.
 
 See ROADMAP.md for phases.

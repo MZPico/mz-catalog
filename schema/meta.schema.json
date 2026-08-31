@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://software.mzpico.org/schema/meta.schema.json",
+  "$id": "https://mzpico.com/schema/meta.schema.json",
   "title": "mz-catalog title metadata",
   "description": "Schema for titles/<slug>/meta.yaml. One document per software title.",
   "type": "object",

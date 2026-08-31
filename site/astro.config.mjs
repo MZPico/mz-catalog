@@ -3,7 +3,7 @@ import catalog from './integrations/catalog.mjs';
 
 // Canonical origin. Never point this at a *.pages.dev host.
 export default defineConfig({
-  site: 'https://software.mzpico.org',
+  site: 'https://mzpico.com',
   output: 'static',
   trailingSlash: 'always',
   integrations: [catalog()],

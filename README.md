@@ -3,7 +3,7 @@
 Software catalog and preservation library for Sharp MZ series computers
 (MZ-700 / MZ-800 / MZ-1500). One repository feeds two consumers:
 
-- the public website **https://software.mzpico.org** — a page per title
+- the public website **https://mzpico.com** — a page per title
   with metadata, screenshots, and the original `.mzf` tape image;
 - the **MZPico** storage card, which reads `manifest.json` to browse and
   load titles directly on the machine.
@@ -171,7 +171,7 @@ Cloudflare Pages project settings:
 | build command | `npm run build` |
 | build output directory | `site/dist` |
 | Node version | `22` (env `NODE_VERSION=22`) |
-| custom domain | `software.mzpico.org` |
+| custom domain | `mzpico.com` |
 
 Response headers (download disposition for `.mzf`, long cache for hashed
 assets and screenshots, CORS for `manifest.json` and files) come from
