@@ -32,8 +32,10 @@ coordinate with upstream author first. Fallback: MAME mz800 driver via
 Emscripten.
 
 ## Infra notes
-- Site + files: Cloudflare Pages, domain mzpico.com — never
-  hardcode *.pages.dev anywhere.
+- Site + files: Cloudflare Workers static assets (git-connected build),
+  live at https://mzpico.com since 2026-09-01 — never hardcode
+  *.workers.dev anywhere. HTTP→HTTPS redirect on for the site;
+  api.mzpico.com exempted (devices speak plain HTTP).
 - Legacy: Oracle micro VM currently serves the Pico API
   (`GET /list?path=…` → `{"path","folders":[],"files":[{"name","size"}]}`,
   `GET /download?path=…`); to be replaced by manifest.json + static GETs

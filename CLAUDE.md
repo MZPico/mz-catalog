@@ -28,11 +28,14 @@ standard|turbo|alt-dump, note}, description, controls, source.
 - Never modify or delete files under `titles/` unless explicitly asked.
 - MZF files are preserved binaries — treat as immutable, never "fix" them.
 - Keep dependencies minimal. Node 22, npm, no framework beyond Astro.
-- Static-only output — no server runtime; deploys to Cloudflare Pages.
+- Static-only output — no server runtime; deploys as a Cloudflare Worker
+  with static assets (wrangler.jsonc, git-connected build).
 - manifest.json format changes are breaking (device firmware consumes
   it) — flag them, don't just do them. `MANIFEST_FORMAT` in
   `scripts/build-manifest.mjs` must be bumped for any shape change.
-- Site + files: Cloudflare Pages, domain mzpico.com — never
-  hardcode *.pages.dev anywhere.
+- Site + files: Cloudflare Workers static assets, domain mzpico.com —
+  never hardcode *.workers.dev anywhere. api.mzpico.com stays plain
+  HTTP (DNS-only to Oracle today; a config rule exempts it from the
+  zone's Always Use HTTPS for the future shim).
 
 See ROADMAP.md for phases.
