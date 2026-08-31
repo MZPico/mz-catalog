@@ -164,8 +164,13 @@ Format 1:
 - Served with `Access-Control-Allow-Origin: *` and a 5-minute cache.
 
 The legacy Pico API (`GET /list?path=…`, `GET /download?path=…`) is to
-be replaced by this file plus static GETs; a Cloudflare Worker shim can
-mimic the old endpoints during the transition (see `ROADMAP.md`).
+be replaced by this file plus static GETs. During the transition,
+`workers/api-shim/` (a small Cloudflare Worker on `api.mzpico.com`)
+answers the old endpoints from `legacy-api.json` — a build-generated
+folder map that is deliberately *not* part of the manifest contract.
+Deploy: `npx wrangler deploy -c workers/api-shim/wrangler.jsonc`;
+cutover = flip the `api` DNS record from the Oracle VM to proxied,
+rollback = flip it back.
 
 ## Deployment
 

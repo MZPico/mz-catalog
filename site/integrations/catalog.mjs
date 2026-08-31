@@ -59,7 +59,17 @@ export default function catalog() {
           }
         }
         await writeFile(path.join(out, 'manifest.json'), serializeManifest(buildManifest(titles)));
-        logger.info(`${titles.length} titles: copied ${files} MZF file(s), ${shots} screenshot(s), wrote manifest.json`);
+        // Transitional support file for the api.mzpico.com Worker shim (legacy
+        // /list + /download emulation). Not part of the manifest contract.
+        const legacy = {};
+        for (const t of titles) {
+          const folder = /folder ([a-z0-9-]+)/.exec(t.meta.source ?? '')?.[1] ?? 'programs';
+          legacy[folder] ??= [];
+          for (const f of t.files) legacy[folder].push({ name: f.path, size: f.size, path: `/files/${t.slug}/${f.path}` });
+        }
+        for (const k of Object.keys(legacy)) legacy[k].sort((a, b) => a.name.localeCompare(b.name));
+        await writeFile(path.join(out, 'legacy-api.json'), JSON.stringify(legacy) + '\n');
+        logger.info(`${titles.length} titles: copied ${files} MZF file(s), ${shots} screenshot(s), wrote manifest.json + legacy-api.json`);
       },
     },
   };

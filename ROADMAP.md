@@ -40,5 +40,8 @@ Emscripten.
   api.mzpico.com exempted (devices speak plain HTTP).
 - Legacy: Oracle micro VM currently serves the Pico API
   (`GET /list?path=…` → `{"path","folders":[],"files":[{"name","size"}]}`,
-  `GET /download?path=…`); to be replaced by manifest.json + static GETs
-  (optionally a CF Worker shim mimicking the old API during transition).
+  `GET /download?path=…`). Replacement is ready: `workers/api-shim/`
+  emulates it byte-compatibly from the static catalog (`legacy-api.json`).
+  Cutover = deploy the worker + flip the `api` DNS record to proxied;
+  rollback = flip back. Retire the VM + bucket once a real card has
+  loaded through the shim.

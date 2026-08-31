@@ -1,0 +1,11 @@
+// Deploy: npx wrangler deploy -c workers/api-shim/wrangler.jsonc
+// Route api.mzpico.com/* requires the mzpico.com zone (already on Cloudflare)
+// and the `api` DNS record flipped from the Oracle VM to a proxied record.
+{
+  "name": "mzpico-api-shim",
+  "main": "index.js",
+  "compatibility_date": "2026-08-31",
+  "routes": [
+    { "pattern": "api.mzpico.com/*", "zone_name": "mzpico.com" }
+  ]
+}
