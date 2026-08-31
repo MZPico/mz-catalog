@@ -4,3 +4,4 @@ site/.astro/
 manifest.json
 *.log
 .DS_Store
+.wrangler/
