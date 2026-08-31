@@ -1,0 +1,25 @@
+# Example title — see README "Adding a title" for the field reference.
+title: MZPico 800 Manager
+year: 2025
+publisher: MZPico project
+genre: [utility, system]
+machine: mz-800
+mode: native
+language: en
+files:
+  - path: mzpico800.mzf
+    kind: standard
+description: >
+  Console program of the original mz800pico proof-of-concept card, the
+  predecessor of MZPico. It talks to the card over the expansion bus,
+  lists the program repository stored on the Pico and loads the selected
+  file into the MZ-800.
+
+  Historical: current MZPico firmware embeds its own menu and file
+  explorer, so this program is kept as a reference for the first
+  hardware generation.
+controls: |
+  Cursor up/down      move selection
+  Cursor left/right   page (20 entries)
+  CR                  load and run the selected file
+source: https://github.com/MZPico — built from the mz800pico repository (own work)

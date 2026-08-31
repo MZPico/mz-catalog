@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://software.mzpico.org/schema/meta.schema.json",
+  "title": "mz-catalog title metadata",
+  "description": "Schema for titles/<slug>/meta.yaml. One document per software title.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["title", "machine", "genre", "language", "files"],
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Display name of the title."
+    },
+    "year": {
+      "type": "integer",
+      "minimum": 1978,
+      "maximum": 2100,
+      "description": "Year of release. Omit if unknown."
+    },
+    "publisher": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Publisher, author or group. Omit if unknown."
+    },
+    "genre": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "game", "arcade", "adventure", "puzzle", "strategy", "sports",
+          "simulation", "rpg", "text",
+          "demo", "utility", "language", "education", "music", "graphics",
+          "system", "other"
+        ]
+      }
+    },
+    "machine": {
+      "enum": ["mz-700", "mz-800", "mz-1500"],
+      "description": "Machine the title was written for."
+    },
+    "mode": {
+      "enum": ["native", "mz-700"],
+      "description": "MZ-800 only: runs in native MZ-800 mode or in MZ-700 compatibility mode."
+    },
+    "language": {
+      "type": "string",
+      "pattern": "^[a-z]{2,3}$",
+      "description": "ISO 639 code of the language the software speaks to the user in (en, cs, de, ja, ...)."
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/file" }
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 4000
+    },
+    "controls": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Keys / joystick usage."
+    },
+    "source": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Where the dump came from (URL or free text)."
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "machine": { "const": "mz-800" } } },
+      "then": { "required": ["mode"] },
+      "else": { "not": { "required": ["mode"] } }
+    }
+  ],
+  "$defs": {
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "kind"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*\\.mzf$",
+          "description": "File name inside the title folder (no subdirectories, lowercase .mzf extension)."
+        },
+        "kind": {
+          "enum": ["standard", "turbo", "alt-dump"],
+          "description": "standard = normal tape format, turbo = turbo-loader variant, alt-dump = alternative dump of the same title."
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 300,
+          "description": "Optional note, e.g. what differs in an alt-dump."
+        }
+      }
+    }
+  }
+}

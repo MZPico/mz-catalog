@@ -1,0 +1,102 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+const titles = (await getCollection('titles')).sort((a, b) =>
+  a.data.title.localeCompare(b.data.title, 'en', { sensitivity: 'base' }),
+);
+const machines = ['mz-700', 'mz-800', 'mz-1500'] as const;
+const machineLabel: Record<string, string> = { 'mz-700': 'MZ-700', 'mz-800': 'MZ-800', 'mz-1500': 'MZ-1500' };
+const genres = [...new Set(titles.flatMap((t) => t.data.genre))].sort();
+const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((t) => t.data.machine === m).length]));
+---
+<Base>
+  <h1>Sharp MZ software catalog</h1>
+  <p class="lead">
+    {titles.length} preserved {titles.length === 1 ? 'title' : 'titles'} for the Sharp MZ-700, MZ-800 and MZ-1500 —
+    metadata, screenshots and original <code>.mzf</code> tape images, ready for emulators and the
+    <a href="https://github.com/MZPico" rel="noopener">MZPico</a> card.
+  </p>
+
+  <div id="search" data-pagefind-ignore></div>
+
+  <div class="chips" role="group" aria-label="Filter by machine" data-filter="machine">
+    <button class="chip" type="button" aria-pressed="true" data-value="">All machines</button>
+    {machines.map((m) => (
+      <button class="chip" type="button" aria-pressed="false" data-value={m}>{machineLabel[m]} <small>({counts[m]})</small></button>
+    ))}
+  </div>
+  {genres.length > 1 && (
+    <div class="chips" role="group" aria-label="Filter by genre" data-filter="genre">
+      <button class="chip" type="button" aria-pressed="true" data-value="">All genres</button>
+      {genres.map((g) => <button class="chip" type="button" aria-pressed="false" data-value={g}>{g}</button>)}
+    </div>
+  )}
+
+  <ul class="grid" id="titles">
+    {titles.map(({ data: t }) => {
+      const shot = t.screenshots[0];
+      const href = `/titles/${t.slug}/`;
+      return (
+        <li class="card" data-machine={t.machine} data-genre={t.genre.join(' ')}>
+          <a class="thumb" href={href} aria-hidden="true" tabindex="-1">
+            {shot
+              ? <img src={`/screenshots/${t.slug}/${shot}`} alt="" loading="lazy" width="640" height="480" />
+              : <div class="thumb-empty">no screenshot</div>}
+          </a>
+          <div class="body">
+            <h3><a href={href}>{t.title}</a></h3>
+            <div class="meta">{[t.year, t.publisher].filter(Boolean).join(' · ') || ' '}</div>
+            <div class="tags">
+              <span class:list={['badge', t.machine]}>{machineLabel[t.machine]}{t.mode === 'mz-700' ? ' · 700 mode' : ''}</span>
+              {t.genre.map((g) => <span class="tag">{g}</span>)}
+            </div>
+          </div>
+        </li>
+      );
+    })}
+  </ul>
+  <p id="no-match" hidden>No titles match the selected filters.</p>
+
+  <script>
+    // Machine / genre chip filters — plain DOM, no framework.
+    const active: Record<string, string> = { machine: '', genre: '' };
+    const cards = [...document.querySelectorAll<HTMLElement>('#titles .card')];
+    const noMatch = document.getElementById('no-match')!;
+    const apply = () => {
+      let shown = 0;
+      for (const c of cards) {
+        const ok = (!active.machine || c.dataset.machine === active.machine)
+          && (!active.genre || (c.dataset.genre ?? '').split(' ').includes(active.genre));
+        c.hidden = !ok;
+        if (ok) shown++;
+      }
+      noMatch.hidden = shown > 0;
+    };
+    for (const group of document.querySelectorAll<HTMLElement>('.chips[data-filter]')) {
+      const key = group.dataset.filter!;
+      group.addEventListener('click', (e) => {
+        const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.chip');
+        if (!btn) return;
+        active[key] = btn.dataset.value ?? '';
+        for (const b of group.querySelectorAll('.chip')) b.setAttribute('aria-pressed', String(b === btn));
+        apply();
+      });
+    }
+  </script>
+
+  <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+  <script is:inline src="/pagefind/pagefind-ui.js" onerror="this.remove()"></script>
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', () => {
+      // Pagefind index exists only after `npm run build`; in dev the search box is simply absent.
+      if (typeof PagefindUI === 'undefined') return;
+      new PagefindUI({
+        element: '#search',
+        showSubResults: false,
+        showImages: true,
+        translations: { placeholder: 'Search titles, publishers, descriptions…' },
+      });
+    });
+  </script>
+</Base>

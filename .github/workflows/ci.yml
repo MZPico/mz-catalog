@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Validate titles/ against schema
+        run: npm run validate
+      - name: Build site (pages + files + manifest.json + search index)
+        run: npm run build
+      - name: Check build output
+        run: |
+          test -f site/dist/index.html
+          test -f site/dist/manifest.json
+          test -f site/dist/_headers
+          test -d site/dist/pagefind
+          node -e "const m=require('./site/dist/manifest.json'); if(m.format!==1||!m.titles.length) process.exit(1)"

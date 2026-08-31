@@ -1,0 +1,44 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title, description = 'Software catalog and preservation library for Sharp MZ-700, MZ-800 and MZ-1500 computers.' } = Astro.props;
+const fullTitle = title ? `${title} · MZ Software Catalog` : 'MZ Software Catalog — Sharp MZ-700 / MZ-800 / MZ-1500';
+const repo = 'https://github.com/MZPico/mz-catalog';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={Astro.url.href} />
+    <slot name="head" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href="/">MZ <span>Software Catalog</span></a>
+        <nav>
+          <a href="/">Titles</a>
+          <a href="/about/">About</a>
+          <a href={repo} rel="noopener">GitHub</a>
+        </nav>
+      </div>
+    </header>
+    <main class="wrap">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <p>A preservation project for Sharp MZ series software. Files are offered for archival and emulation use.</p>
+        <p>Rights holder? See <a href="/about/#takedown">takedown requests</a>. Machine-readable index: <a href="/manifest.json"><code>manifest.json</code></a>.</p>
+      </div>
+    </footer>
+  </body>
+</html>

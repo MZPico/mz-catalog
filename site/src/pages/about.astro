@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+const repo = 'https://github.com/MZPico/mz-catalog';
+---
+<Base title="About">
+  <article class="prose" data-pagefind-ignore>
+    <h1>About this catalog</h1>
+    <p>
+      This site catalogs software for the Sharp MZ-700, MZ-800 and MZ-1500 home computers:
+      one page per title with metadata, screenshots and the original <code>.mzf</code> tape image.
+      The goal is preservation — keeping decades-old cassette software available for emulators and
+      real hardware.
+    </p>
+    <p>
+      The same data feeds the <a href="https://github.com/MZPico" rel="noopener">MZPico</a> storage card,
+      which reads <a href="/manifest.json"><code>manifest.json</code></a> to browse and load titles
+      directly on an MZ-800.
+    </p>
+
+    <h2>Contributing</h2>
+    <p>
+      The catalog lives in the <a href={repo} rel="noopener">mz-catalog repository</a>. Each title is a folder
+      containing <code>meta.yaml</code>, the MZF file(s) and screenshots. Additions and corrections are
+      welcome as pull requests — the README describes the format, and continuous integration validates
+      every entry against the schema.
+    </p>
+
+    <h2 id="takedown">Takedown requests</h2>
+    <p>
+      Files are offered for archival and educational use. If you hold rights to a title listed here and
+      want it removed or credited differently, please
+      <a href={`${repo}/issues/new`} rel="noopener">open an issue</a> or contact the maintainers
+      through the repository. Verified requests are handled promptly.
+    </p>
+  </article>
+</Base>

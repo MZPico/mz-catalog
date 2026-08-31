@@ -1,0 +1,24 @@
+{
+  "name": "mz-catalog",
+  "private": true,
+  "type": "module",
+  "description": "Software catalog and preservation library for Sharp MZ-700/800/1500",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "site"
+  ],
+  "scripts": {
+    "validate": "node scripts/validate.mjs",
+    "manifest": "node scripts/build-manifest.mjs",
+    "dev": "npm run dev -w site",
+    "build": "npm run validate && npm run build -w site",
+    "preview": "npm run preview -w site"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "yaml": "^2.8.0"
+  }
+}

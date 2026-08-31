@@ -1,0 +1,29 @@
+# Cloudflare Pages headers — https://developers.cloudflare.com/pages/configuration/headers/
+
+# Preserved binaries: always download, never render; CORS for the emulator / tape-audio
+# tooling and for firmware fetching directly.
+/files/*
+  Content-Type: application/octet-stream
+  Content-Disposition: attachment
+  Cache-Control: public, max-age=86400
+  Access-Control-Allow-Origin: *
+
+# Screenshots are stable archival images.
+/screenshots/*
+  Cache-Control: public, max-age=604800
+
+# Hashed build assets.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/pagefind/*
+  Cache-Control: public, max-age=3600
+
+# Device-facing index: short cache so firmware picks up new titles quickly.
+/manifest.json
+  Cache-Control: public, max-age=300
+  Access-Control-Allow-Origin: *
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

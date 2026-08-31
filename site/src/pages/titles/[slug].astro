@@ -1,0 +1,102 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const titles = await getCollection('titles');
+  return titles.map((entry) => ({ params: { slug: entry.data.slug }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const t = entry.data;
+const machineLabel: Record<string, string> = { 'mz-700': 'MZ-700', 'mz-800': 'MZ-800', 'mz-1500': 'MZ-1500' };
+const kindLabel: Record<string, string> = { standard: 'Standard', turbo: 'Turbo loader', 'alt-dump': 'Alternative dump' };
+const languageName = (code: string) => {
+  try { return new Intl.DisplayNames(['en'], { type: 'language' }).of(code) ?? code; } catch { return code; }
+};
+const hex4 = (n: number) => '$' + n.toString(16).toUpperCase().padStart(4, '0');
+const kb = (n: number) => (n / 1024).toFixed(1) + ' KB';
+const paragraphs = (t.description ?? '').trim().split(/\n\s*\n/).filter(Boolean);
+const isUrl = (s: string) => /^https?:\/\//.test(s);
+const repoMeta = `https://github.com/MZPico/mz-catalog/blob/main/titles/${t.slug}/meta.yaml`;
+const summary = `${t.title} — ${machineLabel[t.machine]} ${t.genre.join(', ')}${t.year ? ` (${t.year})` : ''}. Download the .mzf tape image.`;
+---
+<Base title={t.title} description={summary}>
+  <article data-pagefind-body>
+    <div class="title-head">
+      <h1>{t.title}</h1>
+      <span class="meta">{[t.year, t.publisher].filter(Boolean).join(' · ')}</span>
+    </div>
+    <div class="title-badges">
+      <span class:list={['badge', t.machine]} data-pagefind-filter="machine">{machineLabel[t.machine]}</span>
+      {t.mode && <span class="tag" title="MZ-800 operating mode">{t.mode === 'native' ? 'MZ-800 native mode' : 'MZ-700 compatibility mode'}</span>}
+      {t.genre.map((g) => <span class="tag" data-pagefind-filter="genre">{g}</span>)}
+      <span class="tag" title="Language">{languageName(t.language)}</span>
+    </div>
+
+    {t.screenshots.length > 0 && (
+      <ul class="shots">
+        {t.screenshots.map((s, i) => (
+          <li>
+            <img src={`/screenshots/${t.slug}/${s}`} alt={`${t.title} screenshot ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'}
+              {...(i === 0 ? { 'data-pagefind-meta': 'image[src]' } : {})} />
+          </li>
+        ))}
+      </ul>
+    )}
+
+    {paragraphs.length > 0 && (
+      <section class="prose">
+        <h2>About</h2>
+        {paragraphs.map((p) => <p>{p}</p>)}
+      </section>
+    )}
+
+    {t.controls && (
+      <section>
+        <h2>Controls</h2>
+        <pre class="controls">{t.controls.trim()}</pre>
+      </section>
+    )}
+
+    <section data-pagefind-ignore>
+      <h2>Files</h2>
+      <div class="table-wrap">
+        <table class="files">
+          <thead>
+            <tr><th></th><th>File</th><th>Kind</th><th>Tape name</th><th>Type</th><th>Load</th><th>Exec</th><th>Size</th><th>CRC-32</th></tr>
+          </thead>
+          <tbody>
+            {t.files.map((f) => (
+              <>
+                <tr>
+                  <td><a class="btn" href={`/files/${t.slug}/${f.path}`} download>Download</a></td>
+                  <td class="mono">{f.path}</td>
+                  <td>{kindLabel[f.kind]}</td>
+                  <td class="mono">{f.header?.name}</td>
+                  <td>{f.header?.attributeName}</td>
+                  <td class="mono">{f.header ? hex4(f.header.loadAddress) : ''}</td>
+                  <td class="mono">{f.header ? hex4(f.header.execAddress) : ''}</td>
+                  <td title={`${f.size} bytes`}>{kb(f.size)}</td>
+                  <td class="mono">{f.crc32}</td>
+                </tr>
+                {f.note && <tr><td></td><td class="note" colspan="8">{f.note}</td></tr>}
+              </>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="meta"><small>MZF = 128-byte Sharp tape header + program data. Load in an emulator, write to tape, or copy to an MZPico card.</small></p>
+    </section>
+
+    <section data-pagefind-ignore>
+      <h2>Provenance</h2>
+      <dl class="facts">
+        <dt>Source</dt>
+        <dd>{t.source ? (isUrl(t.source) ? <a href={t.source} rel="noopener">{t.source}</a> : t.source) : 'Not recorded'}</dd>
+        <dt>Catalog entry</dt>
+        <dd><a href={repoMeta} rel="noopener">titles/{t.slug}/meta.yaml</a> — corrections welcome via pull request.</dd>
+      </dl>
+    </section>
+  </article>
+</Base>
