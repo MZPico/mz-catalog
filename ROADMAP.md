@@ -18,12 +18,14 @@ Remaining: metadata curation (titles, years, publishers, languages,
 descriptions); screenshots for the ~130 titles whose programs need
 interactive/tape loading; replacing weak auto-shots with curated ones.
 
-## Phase 3 — tape audio
-Client-side MZF→WAV: JS module synthesizing the Sharp PWM tape encoding
-(short pulse = 0, long pulse = 1; header block + checksum + data block;
-timing reference: mz800emu CMT source). Web Audio playback ("play into
-the MZ tape jack from a phone") + WAV download. UI knobs: polarity
-invert, pilot-tone length. Later: Czech turbo-loader variants.
+## Phase 3 — tape audio (done except turbo)
+Done: client-side MZF→WAV (`site/src/lib/mzf2wav.js`) synthesizing the
+Sharp PWM tape encoding — pulse widths, block layout and bit-count
+checksums taken from mz800emu's mztape source; verified by decoding the
+generated waveform back to byte-identical data. Web Audio playback and
+WAV download on every title page, with polarity-invert and pilot/layout
+knobs (fast short-pilot vs authentic with header/file retry copies).
+Remaining: Czech turbo-loader variants (2400+ Bd second stage).
 
 ## Phase 4 — emulator
 Browser MZ-800 emulation, "Play online" per title. Preferred: Emscripten

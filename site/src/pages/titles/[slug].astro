@@ -89,6 +89,30 @@ const summary = `${t.title} — ${machineLabel[t.machine]} ${t.genre.join(', ')}
       <p class="meta"><small>MZF = 128-byte Sharp tape header + program data. Load in an emulator, write to tape, or copy to an MZPico card.</small></p>
     </section>
 
+    <section data-pagefind-ignore class="tape-audio" data-machine={t.machine}>
+      <h2>Tape audio</h2>
+      <p class="meta" style="max-width:70ch">Turn any phone or laptop into a Sharp datacorder: connect the
+      headphone output to the MZ's tape-in (read) jack, set volume to maximum, press PLAY here, and type
+      <code>L</code> + CR (monitor)  or the boot menu's <code>C</code> on the machine.
+      Or download the WAV for later.</p>
+      {t.files.map((f) => (
+        <div class="tape-row" data-file={`/files/${t.slug}/${f.path}`} data-name={f.header?.name ?? f.path}>
+          <span class="mono file">{f.path}</span>
+          <label>Layout
+            <select class="tape-layout">
+              <option value="short" selected>fast (short pilot)</option>
+              <option value="authentic">authentic (with retry copies)</option>
+            </select>
+          </label>
+          <label class="pol"><input type="checkbox" class="tape-invert" /> invert polarity</label>
+          <button class="btn tape-play" type="button">⏵ Generate tape</button>
+          <button class="btn tape-download" type="button">Download WAV</button>
+          <span class="tape-status meta"></span>
+          <audio class="tape-player" controls preload="none" hidden></audio>
+        </div>
+      ))}
+    </section>
+
     <section data-pagefind-ignore>
       <h2>Provenance</h2>
       <dl class="facts">
@@ -100,3 +124,67 @@ const summary = `${t.title} — ${machineLabel[t.machine]} ${t.genre.join(', ')}
     </section>
   </article>
 </Base>
+
+<script>
+  import { mzfToWav } from '../../lib/mzf2wav.js';
+
+  const section = document.querySelector('.tape-audio') as HTMLElement | null;
+  if (section) {
+    const machine = section.dataset.machine === 'mz-700' ? 'mz-700' : 'mz-800';
+
+    for (const row of section.querySelectorAll<HTMLElement>('.tape-row')) {
+      const status = row.querySelector('.tape-status') as HTMLElement;
+      const player = row.querySelector('.tape-player') as HTMLAudioElement;
+      let cached: { url: string; name: string } | null = null;
+      let mzfBytes: Uint8Array | null = null;
+
+      const invalidate = () => {
+        if (cached) { URL.revokeObjectURL(cached.url); cached = null; }
+        player.pause(); player.removeAttribute('src'); player.hidden = true;
+        status.textContent = '';
+      };
+      row.querySelector('.tape-layout')!.addEventListener('change', invalidate);
+      row.querySelector('.tape-invert')!.addEventListener('change', invalidate);
+
+      const generate = async () => {
+        if (cached) return cached;
+        status.textContent = 'generating…';
+        if (!mzfBytes) {
+          const resp = await fetch(row.dataset.file!);
+          if (!resp.ok) throw new Error(`download failed (${resp.status})`);
+          mzfBytes = new Uint8Array(await resp.arrayBuffer());
+        }
+        const layout = (row.querySelector('.tape-layout') as HTMLSelectElement).value as 'short' | 'authentic';
+        const invert = (row.querySelector('.tape-invert') as HTMLInputElement).checked;
+        const { wav, seconds, name } = mzfToWav(mzfBytes, { machine, layout, invert });
+        const blob = new Blob([wav.buffer as ArrayBuffer], { type: 'audio/wav' });
+        cached = { url: URL.createObjectURL(blob), name: name || 'tape' };
+        const m = Math.floor(seconds / 60), sec = Math.round(seconds % 60);
+        status.textContent = `${m}:${String(sec).padStart(2, '0')} tape — play at 100% volume into the MZ tape-in`;
+        return cached;
+      };
+
+      row.querySelector('.tape-play')!.addEventListener('click', async () => {
+        try {
+          const { url } = await generate();
+          if (player.getAttribute('src') !== url) { player.src = url; player.hidden = false; }
+          player.play();
+        } catch (err) {
+          status.textContent = String(err);
+        }
+      });
+
+      row.querySelector('.tape-download')!.addEventListener('click', async () => {
+        try {
+          const { url, name } = await generate();
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${name.toLowerCase().replace(/[^a-z0-9-]+/g, '-')}.wav`;
+          a.click();
+        } catch (err) {
+          status.textContent = String(err);
+        }
+      });
+    }
+  }
+</script>

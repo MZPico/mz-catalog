@@ -106,6 +106,11 @@ for every title that has none, by driving a headless
 (MCP) pipe — see the script header for usage. Auto-captures are named
 `01-auto.png`; replace them with curated shots when available.
 
+`site/src/lib/mzf2wav.js` synthesizes Sharp tape audio from an MZF
+entirely in the browser (timing per mz800emu's mztape sources); every
+title page has a "Tape audio" player and WAV download for loading
+software into a real MZ through its tape-in jack.
+
 `site/dist` after a build is the complete deployable: HTML, `/files/<slug>/*.mzf`,
 `/screenshots/<slug>/*`, `/manifest.json`, `/pagefind/` search index and
 `_headers` for Cloudflare Pages. Search is client-side (Pagefind), so it
