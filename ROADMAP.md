@@ -42,6 +42,7 @@ Emscripten.
   (`GET /list?path=…` → `{"path","folders":[],"files":[{"name","size"}]}`,
   `GET /download?path=…`). Replacement is ready: `workers/api-shim/`
   emulates it byte-compatibly from the static catalog (`legacy-api.json`).
-  Cutover = deploy the worker + flip the `api` DNS record to proxied;
-  rollback = flip back. Retire the VM + bucket once a real card has
-  loaded through the shim.
+  CUT OVER 2026-09-01 — api.mzpico.com is served by the Worker shim;
+  rollback = flip the `api` record back to DNS-only. Oracle VM + bucket
+  stay up as the safety net until a real card has loaded through the
+  shim, then retire them.
