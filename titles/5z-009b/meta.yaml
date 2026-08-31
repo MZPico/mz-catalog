@@ -1,0 +1,10 @@
+# Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
+# TODO: verify/curate — title, year, publisher, genre, language, description.
+title: "5z-009b"
+machine: mz-800
+mode: native
+genre: [language]
+files:
+  - path: 5z-009b.mzf
+    kind: standard
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder languages); originally Oracle Object Storage.

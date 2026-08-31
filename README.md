@@ -70,7 +70,7 @@ The structure is flat: machine type is metadata, not a directory level.
    | `genre` | yes | list; allowed values are in the schema (`game`, `arcade`, `adventure`, `puzzle`, `strategy`, `sports`, `simulation`, `rpg`, `text`, `demo`, `utility`, `language`, `education`, `music`, `graphics`, `system`, `other`) |
    | `machine` | yes | `mz-700`, `mz-800` or `mz-1500` |
    | `mode` | MZ-800 only | `native` or `mz-700` (compatibility mode); forbidden for other machines |
-   | `language` | yes | ISO 639 code of the software's UI language (`en`, `cs`, `de`, `ja`, …) |
+   | `language` | no | ISO 639 code of the software's UI language (`en`, `cs`, `de`, `ja`, …); omit if unknown |
    | `files[]` | yes | `path` (file name in the folder), `kind`, optional `note` |
    | `description` | no | free text, paragraphs separated by blank lines |
    | `controls` | no | key / joystick reference, shown verbatim |
@@ -99,6 +99,12 @@ npm run build      # validate → astro build → pagefind index; output in site
 npm run preview    # serve site/dist
 npm run manifest   # print manifest.json to stdout (or --out <file>)
 ```
+
+`scripts/capture-screenshots.mjs` batch-captures a first-pass screenshot
+for every title that has none, by driving a headless
+[mz800emu v2](https://github.com/michalhucik/mz800emu) over its JSONL
+(MCP) pipe — see the script header for usage. Auto-captures are named
+`01-auto.png`; replace them with curated shots when available.
 
 `site/dist` after a build is the complete deployable: HTML, `/files/<slug>/*.mzf`,
 `/screenshots/<slug>/*`, `/manifest.json`, `/pagefind/` search index and

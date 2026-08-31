@@ -28,10 +28,10 @@ const summary = `${t.title} — ${machineLabel[t.machine]} ${t.genre.join(', ')}
       <span class="meta">{[t.year, t.publisher].filter(Boolean).join(' · ')}</span>
     </div>
     <div class="title-badges">
-      <span class:list={['badge', t.machine]} data-pagefind-filter="machine">{machineLabel[t.machine]}</span>
+      <a class:list={['badge', t.machine]} href={`/machines/${t.machine}/`} data-pagefind-filter="machine">{machineLabel[t.machine]}</a>
       {t.mode && <span class="tag" title="MZ-800 operating mode">{t.mode === 'native' ? 'MZ-800 native mode' : 'MZ-700 compatibility mode'}</span>}
       {t.genre.map((g) => <span class="tag" data-pagefind-filter="genre">{g}</span>)}
-      <span class="tag" title="Language">{languageName(t.language)}</span>
+      {t.language && <span class="tag" title="Language">{languageName(t.language)}</span>}
     </div>
 
     {t.screenshots.length > 0 && (

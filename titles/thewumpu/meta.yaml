@@ -1,0 +1,9 @@
+# Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
+# TODO: verify/curate — title, year, publisher, genre, language, description.
+title: "Thewumpu"
+machine: mz-700
+genre: [game]
+files:
+  - path: thewumpu.mzf
+    kind: standard
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.

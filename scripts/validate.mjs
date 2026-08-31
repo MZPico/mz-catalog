@@ -16,6 +16,7 @@ const validateMeta = ajv.compile(schema);
 
 let errors = 0;
 let warnings = 0;
+const noScreenshots = [];
 const fail = (slug, msg) => { errors++; console.error(`  ERROR  ${slug}: ${msg}`); };
 const warn = (slug, msg) => { warnings++; console.warn(`  warn   ${slug}: ${msg}`); };
 
@@ -58,8 +59,11 @@ async function checkTitle(slug) {
     const h = parseMzfHeader(buf);
     if (!(h.attribute in MZF_ATTRIBUTES)) warn(slug, `${f.path}: unusual MZF attribute 0x${h.attribute.toString(16)}`);
     const expected = MZF_HEADER_SIZE + h.dataSize;
-    if (buf.length !== expected) {
-      warn(slug, `${f.path}: header declares ${h.dataSize} data bytes (file would be ${expected}), actual file is ${buf.length} bytes — multi-block file or trailing data?`);
+    const extra = buf.length - expected;
+    // The legacy pipeline padded files to 128/512-byte boundaries — benign.
+    const isPadding = extra > 0 && extra < 512 && (buf.length % 128 === 0 || buf.length % 512 === 0);
+    if (buf.length !== expected && !isPadding) {
+      warn(slug, `${f.path}: header declares ${h.dataSize} data bytes (file would be ${expected}), actual file is ${buf.length} bytes — trailing data?`);
     }
   }
 
@@ -90,7 +94,7 @@ async function checkTitle(slug) {
       else if (!/^[a-z0-9][a-z0-9._-]*$/.test(s.name)) fail(slug, `screenshots/${s.name}: use lowercase letters, digits, ".", "_" or "-" in file names`);
     }
   } else {
-    warn(slug, 'no screenshots/ folder');
+    noScreenshots.push(slug);
   }
 }
 
@@ -98,6 +102,10 @@ const slugs = await listTitleSlugs();
 if (slugs.length === 0) { console.error('titles/ contains no titles'); process.exit(1); }
 console.log(`Validating ${slugs.length} title(s) in ${path.relative(process.cwd(), TITLES_DIR) || '.'} …`);
 for (const slug of slugs) await checkTitle(slug);
+if (noScreenshots.length) {
+  warnings++;
+  console.warn(`  warn   ${noScreenshots.length} title(s) have no screenshots yet`);
+}
 
 console.log(`${errors} error(s), ${warnings} warning(s)`);
 process.exit(errors ? 1 : 0);

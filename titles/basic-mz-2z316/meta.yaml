@@ -1,0 +1,10 @@
+# Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
+# TODO: verify/curate — title, year, publisher, genre, language, description.
+title: "Basic_Mz-2z316"
+machine: mz-800
+mode: native
+genre: [language]
+files:
+  - path: basic_mz-2z316.mzf
+    kind: standard
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder languages); originally Oracle Object Storage.

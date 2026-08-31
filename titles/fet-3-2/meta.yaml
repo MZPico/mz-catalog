@@ -1,0 +1,10 @@
+# Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
+# TODO: verify/curate — title, year, publisher, genre, language, description.
+title: "Fet-3-2"
+machine: mz-800
+mode: native
+genre: [utility]
+files:
+  - path: fet-3-2.mzf
+    kind: standard
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder programs); originally Oracle Object Storage.

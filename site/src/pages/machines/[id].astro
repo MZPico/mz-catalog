@@ -1,0 +1,49 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { machines } from '../../data/machines';
+
+export async function getStaticPaths() {
+  return machines.map((m) => ({ params: { id: m.id }, props: { machine: m } }));
+}
+
+const { machine } = Astro.props;
+const titles = (await getCollection('titles'))
+  .filter((t) => t.data.machine === machine.id)
+  .sort((a, b) => a.data.title.localeCompare(b.data.title, 'en', { sensitivity: 'base' }));
+---
+<Base title={machine.name} description={`${machine.name} — machine overview and software catalog.`}>
+  <h1>{machine.name}</h1>
+  <p class="meta">{machine.years}</p>
+  <p class="lead">{machine.intro}</p>
+
+  <h2>Specifications</h2>
+  <dl class="facts">
+    {machine.specs.map(([k, v]) => (<><dt>{k}</dt><dd>{v}</dd></>))}
+  </dl>
+  <p class="meta"><small>{machine.softwareNote}</small></p>
+
+  <h2>{titles.length} {titles.length === 1 ? 'title' : 'titles'} in the catalog</h2>
+  {titles.length > 0 ? (
+    <ul class="grid">
+      {titles.map(({ data: t }) => {
+        const shot = t.screenshots[0];
+        return (
+          <li class="card">
+            <a class="thumb" href={`/titles/${t.slug}/`} aria-hidden="true" tabindex="-1">
+              {shot
+                ? <img src={`/screenshots/${t.slug}/${shot}`} alt="" loading="lazy" width="640" height="480" />
+                : <div class="thumb-empty">no screenshot</div>}
+            </a>
+            <div class="body">
+              <h3><a href={`/titles/${t.slug}/`}>{t.title}</a></h3>
+              <div class="meta">{[t.year, t.publisher].filter(Boolean).join(' · ') || ' '}</div>
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  ) : (
+    <p>None yet — contributions welcome.</p>
+  )}
+</Base>

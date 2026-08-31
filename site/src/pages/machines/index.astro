@@ -1,0 +1,17 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { machines } from '../../data/machines';
+const titles = await getCollection('titles');
+const count = (id: string) => titles.filter((t) => t.data.machine === id).length;
+---
+<Base title="Machines" description="The Sharp MZ computers covered by this catalog.">
+  <h1>Machines</h1>
+  <p class="lead">The Sharp MZ series home computers this catalog covers.</p>
+  {machines.map((m) => (
+    <section>
+      <h2><a href={`/machines/${m.id}/`}>{m.name}</a> <span class="meta">· {m.years} · {count(m.id)} titles</span></h2>
+      <p class="prose">{m.intro}</p>
+    </section>
+  ))}
+</Base>

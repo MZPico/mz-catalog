@@ -56,7 +56,7 @@ const titles = defineCollection({
     genre: z.array(z.string()),
     machine: z.enum(['mz-700', 'mz-800', 'mz-1500']),
     mode: z.enum(['native', 'mz-700']).optional(),
-    language: z.string(),
+    language: z.string().optional(),
     files: z.array(file).min(1),
     description: z.string().optional(),
     controls: z.string().optional(),

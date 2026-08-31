@@ -6,9 +6,17 @@ and Pagefind search, manifest generator, one example title, Cloudflare
 Pages `_headers` (.mzf as attachment, long cache for images), README
 with contribution guide + takedown contact.
 
-## Phase 2 — content
-Migrate MZF collection from Oracle Object Storage into `titles/`,
-screenshots captured via mz800emu, MZ machine info pages.
+## Phase 2 — content (in progress)
+Done: migrated the full legacy cloud catalog (api.mzpico.com, backed by
+Oracle Object Storage) into `titles/` — 378 files, byte-exact, with
+bootstrap meta.yaml stubs marked `# TODO: verify/curate`; MZ machine
+info pages (`/machines/`). Done: first-pass screenshots via mz800emu v2
+headless MCP backend (`scripts/capture-screenshots.mjs`) — auto-captured
+title + gameplay shots for 249 of 379 titles, every image visually
+reviewed; generic screens (boot menu, blank, loader noise) removed.
+Remaining: metadata curation (titles, years, publishers, languages,
+descriptions); screenshots for the ~130 titles whose programs need
+interactive/tape loading; replacing weak auto-shots with curated ones.
 
 ## Phase 3 — tape audio
 Client-side MZF→WAV: JS module synthesizing the Sharp PWM tape encoding
