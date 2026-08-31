@@ -164,14 +164,14 @@ mimic the old endpoints during the transition (see `ROADMAP.md`).
 
 ## Deployment
 
-Cloudflare Pages project settings:
+Cloudflare Workers (static assets) via the git-connected build:
 
 | setting | value |
 |---|---|
 | build command | `npm run build` |
-| build output directory | `site/dist` |
-| Node version | `22` (env `NODE_VERSION=22`) |
-| custom domain | `mzpico.com` |
+| deploy command | `npx wrangler deploy` (uses `wrangler.jsonc` → `site/dist`) |
+| Node version | `22` (from `.nvmrc`; set env `NODE_VERSION=22` if needed) |
+| custom domain | `mzpico.com` (Worker → Settings → Domains & Routes) |
 
 Response headers (download disposition for `.mzf`, long cache for hashed
 assets and screenshots, CORS for `manifest.json` and files) come from

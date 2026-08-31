@@ -1,0 +1,11 @@
+// Cloudflare Workers (static assets) deployment config.
+// The site is assets-only — no Worker script; site/dist is produced by
+// `npm run build` and served as-is, honoring its _headers file.
+{
+  "name": "mz-catalog",
+  "compatibility_date": "2026-08-31",
+  "assets": {
+    "directory": "./site/dist",
+    "not_found_handling": "404-page"
+  }
+}
