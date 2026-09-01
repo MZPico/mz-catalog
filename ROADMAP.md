@@ -52,8 +52,11 @@ shrinks the GL buffer to the CSS size on every resize event) and the
 screen is drawn by an attribute-less GL triangle instead of ImGui's quad
 (a Samsung Xclipse/ANGLE-Vulkan driver rendered half the quad with
 zeroed vertex attributes); `?debug=1` shows on-page diagnostics.
+Touch: on-screen pad + buttons on phones, per-title layouts via the
+optional `touch:` block in meta.yaml (`?touchspec=` previews one).
 Remaining: upstream the patches (SDL hint fix, PA7 fix, bootstrap
-parity), keyboard/virtual-keyboard UX and touch controls,
+parity), populate `touch:` for titles that need more than
+cursor/Space/Enter, keyboard/virtual-keyboard UX and touch controls,
 MZ-700 build variant for pure MZ-700 titles, residual audio crackle on
 slow machines.
 ## Infra notes

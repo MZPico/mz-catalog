@@ -96,6 +96,65 @@
       "type": "string",
       "maxLength": 500,
       "description": "Where the dump came from (URL or free text)."
+    },
+    "touch": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Touch-control layout for the browser emulator on phones. Defaults when absent: pad = cursor keys, buttons FIRE (Space) and RET (Enter).",
+      "properties": {
+        "pad": {
+          "description": "Direction pad: 'cursor', 'wasd', 'none', or explicit keys.",
+          "oneOf": [
+            {
+              "enum": [
+                "cursor",
+                "wasd",
+                "none"
+              ]
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "up",
+                "down",
+                "left",
+                "right"
+              ],
+              "properties": {
+                "up": {
+                  "$ref": "#/$defs/touchKey"
+                },
+                "down": {
+                  "$ref": "#/$defs/touchKey"
+                },
+                "left": {
+                  "$ref": "#/$defs/touchKey"
+                },
+                "right": {
+                  "$ref": "#/$defs/touchKey"
+                }
+              }
+            }
+          ]
+        },
+        "buttons": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "$ref": "#/$defs/touchButton"
+          },
+          "description": "Main action buttons (right side), first = primary/largest."
+        },
+        "extra": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "$ref": "#/$defs/touchButton"
+          },
+          "description": "Additional small buttons on the left side (start keys, weapon select, ...)."
+        }
+      }
     }
   },
   "allOf": [
@@ -147,6 +206,29 @@
           "type": "string",
           "maxLength": 300,
           "description": "Optional note, e.g. what differs in an alt-dump."
+        }
+      }
+    },
+    "touchKey": {
+      "type": "string",
+      "pattern": "^([A-Z]|[0-9]|Space|Enter|Up|Down|Left|Right|Shift|Ctrl|Tab|Backspace|Delete|Insert|Home|Escape|Graph|Alpha|Minus|Equal|Comma|Period|Slash|Semicolon|Quote|BracketLeft|BracketRight|F([1-9]|10))$",
+      "description": "MZ key name: A-Z, 0-9, Space, Enter, Up/Down/Left/Right, Shift, Ctrl, Tab, Backspace, Delete, Insert, Home, Escape, Graph, Alpha, F1-F10, Minus, Equal, Comma, Period, Slash, Semicolon, Quote, BracketLeft, BracketRight."
+    },
+    "touchButton": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "key"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 6
+        },
+        "key": {
+          "$ref": "#/$defs/touchKey"
         }
       }
     }

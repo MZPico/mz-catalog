@@ -149,3 +149,8 @@ dl.facts dd { margin: 0; overflow-wrap: anywhere; }
 .touch-btn.down { background:rgba(255,255,255,0.4); }
 .touch-btn.fire.down { background:rgba(255,80,80,0.6); }
 .btn.active { outline:2px solid var(--accent, #3b82f6); }
+.touch-pad[hidden] { display:none; }
+.touch-extra { position:absolute; left:4%; top:6%; display:flex; flex-wrap:wrap; gap:min(2vw, 12px); max-width:45%; pointer-events:auto; }
+.touch-btn.extra { width:min(12vw, 60px); height:min(12vw, 60px); font-size:clamp(10px, 2.2vw, 14px); background:rgba(80,160,255,0.22); border-color:rgba(120,180,255,0.6); }
+.touch-btn.extra.down { background:rgba(80,160,255,0.55); }
+.touch-btn:disabled { opacity:0.35; }
