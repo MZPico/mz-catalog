@@ -1,11 +1,19 @@
-# Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
-# TODO: verify/curate — title, year, publisher, genre, language, description.
-title: "Manicmi1"
+title: "Manic Miner 800"
 web: true
+publisher: "Unisoft"
 machine: mz-800
 mode: native
 genre: [game]
 files:
   - path: manicmi1.mzf
     kind: standard
+controls: |
+  Left / Right — move
+  CR — start game
+  Space — jump
+touch:
+  buttons:
+    - { label: "JUMP", key: "Space" }
+  extra:
+    - { label: "CR", key: "Enter" }
 source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage.

@@ -1,10 +1,15 @@
-# Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
-# TODO: verify/curate — title, year, publisher, genre, language, description.
-title: "Submarin"
+title: "Submarine Shooter!"
 web: true
+publisher: "Hudson Soft"
 machine: mz-700
 genre: [game]
 files:
   - path: submarin.mzf
     kind: standard
+controls: |
+  Cursor keys — move
+  Space — fire
+touch:
+  buttons:
+    - { label: "FIRE", key: "Space" }
 source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.

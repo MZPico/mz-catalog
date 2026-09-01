@@ -1,11 +1,19 @@
-# Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
-# TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Moty"
 web: true
+publisher: "BBG Software"
 machine: mz-800
 mode: native
 genre: [game]
 files:
   - path: moty.mzf
     kind: standard
+controls: |
+  Cursor keys — move
+  S — start
+  Space — go
+touch:
+  buttons:
+    - { label: "GO", key: "Space" }
+  extra:
+    - { label: "START", key: "S" }
 source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-800); originally Oracle Object Storage.

@@ -1,11 +1,22 @@
-# Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
-# TODO: verify/curate — title, year, publisher, genre, language, description.
-title: "Cyberno"
+title: "Cybernoid"
 web: true
+year: 1988
+publisher: "Profi"
 machine: mz-800
 mode: native
 genre: [game]
 files:
   - path: cyberno.mzf
     kind: standard
+controls: |
+  1 — start game
+  Cursor keys — move
+  Space — fire
+  ESC — pause
+touch:
+  buttons:
+    - { label: "FIRE", key: "Space" }
+  extra:
+    - { label: "START", key: "1" }
+    - { label: "PAUSE", key: "Escape" }
 source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage.

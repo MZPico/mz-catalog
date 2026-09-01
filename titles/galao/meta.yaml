@@ -1,5 +1,3 @@
-# Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
-# TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Galao"
 web: true
 machine: mz-700
@@ -7,4 +5,13 @@ genre: [game]
 files:
   - path: galao.mzf
     kind: standard
+controls: |
+  Left / Right — move
+  Space — fire
+  S — start
+touch:
+  buttons:
+    - { label: "FIRE", key: "Space" }
+  extra:
+    - { label: "START", key: "S" }
 source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.

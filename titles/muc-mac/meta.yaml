@@ -1,6 +1,4 @@
-# Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
-# TODO: verify/curate — title, year, publisher, genre, language, description.
-title: "Muc-Mac"
+title: "Muc Mac 800"
 web: true
 machine: mz-800
 mode: native
@@ -8,4 +6,13 @@ genre: [game]
 files:
   - path: muc-mac.mzf
     kind: standard
+controls: |
+  Cursor keys — move
+  S — start
+  Y — yes
+touch:
+  buttons:
+    - { label: "START", key: "S" }
+  extra:
+    - { label: "Y", key: "Y" }
 source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-800); originally Oracle Object Storage.

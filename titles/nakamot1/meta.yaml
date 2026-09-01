@@ -1,11 +1,19 @@
-# Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
-# TODO: verify/curate — title, year, publisher, genre, language, description.
-title: "Nakamot1"
+title: "Nakamoto"
 web: true
+publisher: "BBG Software"
 machine: mz-800
 mode: native
 genre: [game]
 files:
   - path: nakamot1.mzf
     kind: standard
+controls: |
+  Cursor keys — move
+  S — start
+  Space — jump
+touch:
+  buttons:
+    - { label: "JUMP", key: "Space" }
+  extra:
+    - { label: "START", key: "S" }
 source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-800); originally Oracle Object Storage.

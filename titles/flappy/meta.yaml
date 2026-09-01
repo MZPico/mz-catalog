@@ -1,11 +1,20 @@
-# Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
-# TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Flappy"
 web: true
+year: 1984
+publisher: "dB-Soft"
 machine: mz-800
 mode: native
 genre: [game]
 files:
   - path: flappy.mzf
     kind: standard
+controls: |
+  Cursor keys — move
+  Space — fire
+  ESC — escape
+touch:
+  buttons:
+    - { label: "FIRE", key: "Space" }
+  extra:
+    - { label: "ESC", key: "Escape" }
 source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-800); originally Oracle Object Storage.
