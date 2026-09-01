@@ -1,7 +1,7 @@
 From 7bcbc48bd15973f6676bbcdd31e7da696f2a07fa Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 11:55:07 +0200
-Subject: [PATCH 06/19] Emscripten: optional frame-rate meter
+Subject: [PATCH 06/20] Emscripten: optional frame-rate meter
  (MZ_WASM_SPEED_METER) for browser profiling
 
 ---

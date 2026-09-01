@@ -1,7 +1,7 @@
 From c9b3ebf04f4385bbde0f6dcddfc65c675a79f5e3 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 12:23:53 +0200
-Subject: [PATCH 07/19] Emscripten: audio callback pulls as many frames as the
+Subject: [PATCH 07/20] Emscripten: audio callback pulls as many frames as the
  device buffer needs
 
 ---
