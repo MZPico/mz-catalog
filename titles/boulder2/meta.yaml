@@ -1,11 +1,19 @@
-# Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
-# TODO: verify/curate — title, year, publisher, genre, language, description.
-title: "Boulder2"
+title: "Boulder Dash"
 web: true
+year: 1984
+publisher: "First Star Software Inc."
 machine: mz-800
 mode: native
 genre: [game]
 files:
   - path: boulder2.mzf
     kind: standard
+description: |
+  MZ-800 adaptation by Jaroslav Spurny.
+controls: |
+  Cursor keys — move
+  Space — start game
+touch:
+  buttons:
+    - { label: "START", key: "Space" }
 source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage.

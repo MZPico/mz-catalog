@@ -1,11 +1,22 @@
-# Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
-# TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Brouk"
 web: true
+year: 1989
+publisher: "Triamond VFR"
 machine: mz-800
 mode: native
 genre: [game]
 files:
   - path: brouk.mzf
     kind: standard
+controls: |
+  Cursor keys — move
+  Space — fire
+  CTRL — pause
+  ESC — abort
+touch:
+  buttons:
+    - { label: "FIRE", key: "Space" }
+  extra:
+    - { label: "PAUSE", key: "Ctrl" }
+    - { label: "ESC", key: "Escape" }
 source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-800); originally Oracle Object Storage.

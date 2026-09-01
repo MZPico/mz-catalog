@@ -1,10 +1,16 @@
-# Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
-# TODO: verify/curate — title, year, publisher, genre, language, description.
-title: "Bomber"
+title: "Bomber Man"
 web: true
+year: 1983
+publisher: "Hudson Soft Inc."
 machine: mz-700
 genre: [game]
 files:
   - path: bomber.mzf
     kind: standard
+controls: |
+  Cursor keys — move
+  Space — drop a bomb
+touch:
+  buttons:
+    - { label: "BOMB", key: "Space" }
 source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.
