@@ -9,7 +9,7 @@ export async function getStaticPaths() {
 
 const { machine } = Astro.props;
 const titles = (await getCollection('titles'))
-  .filter((t) => t.data.machine === machine.id)
+  .filter((t) => t.data.web && t.data.machine === machine.id)
   .sort((a, b) => a.data.title.localeCompare(b.data.title, 'en', { sensitivity: 'base' }));
 ---
 <Base title={machine.name} description={`${machine.name} — machine overview and software catalog.`}>

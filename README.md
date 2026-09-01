@@ -74,6 +74,7 @@ The structure is flat: machine type is metadata, not a directory level.
    | `files[]` | yes | `path` (file name in the folder), `kind`, optional `note` |
    | `description` | no | free text, paragraphs separated by blank lines |
    | `controls` | no | key / joystick reference, shown verbatim |
+   | `web` | no | `true` publishes the title on the web site; absent/false keeps it API-only (manifest.json + device API still serve every title) |
    | `touch` | no | touch-control layout for the browser emulator on phones: `pad` (`cursor` default, `wasd`, `none`, or `{up,down,left,right}`), `buttons` (right side, first = primary), `extra` (small buttons, left side); keys are MZ key names (`A`-`Z`, `0`-`9`, `Space`, `Enter`, `Up`…, `F1`…, see schema). Preview a layout without editing: `/play/<slug>/?touchspec={"pad":"wasd","buttons":[{"label":"JUMP","key":"Space"}],"extra":[{"label":"1","key":"1"}]}` |
    | `source` | no | provenance — URL or free text |
 

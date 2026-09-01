@@ -2,7 +2,8 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 
-const titles = (await getCollection('titles')).sort((a, b) =>
+// Only curated titles (web: true in meta.yaml) appear on the site; the rest stay API-only.
+const titles = (await getCollection('titles')).filter((t) => t.data.web).sort((a, b) =>
   a.data.title.localeCompare(b.data.title, 'en', { sensitivity: 'base' }),
 );
 const machines = ['mz-700', 'mz-800', 'mz-1500'] as const;

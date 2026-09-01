@@ -155,6 +155,10 @@
           "description": "Additional small buttons on the left side (start keys, weapon select, ...)."
         }
       }
+    },
+    "web": {
+      "type": "boolean",
+      "description": "Published on the web site (title page, lists, search, play). Absent or false = hidden from the site; the file is still served via manifest.json and the device API."
     }
   },
   "allOf": [

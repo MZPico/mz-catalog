@@ -5,7 +5,7 @@ import Base from '../../layouts/Base.astro';
 export async function getStaticPaths() {
   const titles = await getCollection('titles');
   return titles
-    .filter((e) => e.data.machine !== 'mz-1500')
+    .filter((e) => e.data.web && e.data.machine !== 'mz-1500')
     .map((entry) => ({ params: { slug: entry.data.slug }, props: { entry } }));
 }
 const { entry } = Astro.props;

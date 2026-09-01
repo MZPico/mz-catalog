@@ -1,6 +1,7 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "The-Drop"
+web: true
 machine: mz-800
 mode: native
 genre: [game]

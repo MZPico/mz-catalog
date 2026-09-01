@@ -60,6 +60,7 @@ const titles = defineCollection({
     files: z.array(file).min(1),
     description: z.string().optional(),
     controls: z.string().optional(),
+    web: z.boolean().optional(),
     touch: z
       .object({
         pad: z.union([z.enum(['cursor', 'wasd', 'none']), z.object({ up: z.string(), down: z.string(), left: z.string(), right: z.string() })]).optional(),

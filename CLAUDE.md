@@ -23,7 +23,8 @@ card (RP2040-based storage card for the MZ-800).
 title, year, publisher, genre[], machine (mz-700|mz-800|mz-1500),
 mode (for MZ-800: native|mz-700), language, files[] {path, kind:
 standard|turbo|alt-dump, note}, description, controls, source,
-touch (optional: pad/buttons/extra for the phone overlay, see schema).
+touch (optional: pad/buttons/extra for the phone overlay, see schema),
+web (optional: true = shown on the site; absent = API-only).
 
 ## Rules
 - Never modify or delete files under `titles/` unless explicitly asked.

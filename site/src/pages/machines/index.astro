@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { machines } from '../../data/machines';
-const titles = await getCollection('titles');
+const titles = (await getCollection('titles')).filter((t) => t.data.web);
 const count = (id: string) => titles.filter((t) => t.data.machine === id).length;
 ---
 <Base title="Machines" description="The Sharp MZ computers covered by this catalog.">

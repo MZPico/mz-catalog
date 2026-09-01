@@ -59,6 +59,12 @@ parity), populate `touch:` for titles that need more than
 cursor/Space/Enter, keyboard/virtual-keyboard UX and touch controls,
 MZ-700 build variant for pure MZ-700 titles, residual audio crackle on
 slow machines.
+## Curation (2026-09-01)
+The site shows only titles with `web: true` in meta.yaml (currently 14
+games / 20 slugs being polished); everything else stays API-only —
+manifest.json, legacy-api.json and /files/* always carry the full set.
+Re-enable a title by adding `web: true`.
+
 ## Infra notes
 - Site + files: Cloudflare Workers static assets (git-connected build),
   live at https://mzpico.com since 2026-09-01 — never hardcode
