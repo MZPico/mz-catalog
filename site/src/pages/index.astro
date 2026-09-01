@@ -20,7 +20,7 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((t) => t
         metadata, screenshots and original <code>.mzf</code> tape images, ready for emulators and the <a href="https://github.com/MZPico" rel="noopener">MZPico</a> card.
       </p>
     </div>
-    <img class="hero-badge" src="/mz800-badge.svg" alt="Sharp MZ-800" width="300" height="104" />
+    <img class="hero-badge" src="/mz800-badge.svg" alt="Sharp MZ-800" width="300" height="114" />
   </div>
 
   <div id="search" data-pagefind-ignore></div>
@@ -49,6 +49,7 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((t) => t
               ? <img src={`/screenshots/${t.slug}/${shot}`} alt="" loading="lazy" width="640" height="480" />
               : <div class="thumb-empty">no screenshot</div>}
           </a>
+          {t.machine !== 'mz-1500' && <a class="card-play" href={`/play/${t.slug}/`} title={`Play ${t.title} in the browser`} aria-label={`Play ${t.title} in the browser`}>▶</a>}
           <div class="body">
             <h3><a href={href}>{t.title}</a></h3>
             <div class="meta">{[t.year, t.publisher].filter(Boolean).join(' · ') || ' '}</div>

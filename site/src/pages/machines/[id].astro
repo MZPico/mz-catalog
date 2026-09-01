@@ -35,6 +35,7 @@ const titles = (await getCollection('titles'))
                 ? <img src={`/screenshots/${t.slug}/${shot}`} alt="" loading="lazy" width="640" height="480" />
                 : <div class="thumb-empty">no screenshot</div>}
             </a>
+            {t.machine !== 'mz-1500' && <a class="card-play" href={`/play/${t.slug}/`} title={`Play ${t.title} in the browser`} aria-label={`Play ${t.title} in the browser`}>▶</a>}
             <div class="body">
               <h3><a href={`/titles/${t.slug}/`}>{t.title}</a></h3>
               <div class="meta">{[t.year, t.publisher].filter(Boolean).join(' · ') || ' '}</div>
