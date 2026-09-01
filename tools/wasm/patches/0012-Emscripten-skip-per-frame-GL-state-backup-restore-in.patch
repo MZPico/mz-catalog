@@ -1,7 +1,7 @@
 From 08471b1dfbdf106c5c46313254cf092c51d84229 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 13:16:52 +0200
-Subject: [PATCH 12/20] Emscripten: skip per-frame GL state backup/restore in
+Subject: [PATCH 12/21] Emscripten: skip per-frame GL state backup/restore in
  the ImGui GL3 backend
 
 ---

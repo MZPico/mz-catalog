@@ -1,0 +1,107 @@
+From 21ea879d65f833dc2a9b4951e17244d08a9c2d3f Mon Sep 17 00:00:00 2001
+From: Martin Matyas <martin.matyas@tietoevry.com>
+Date: Tue, 1 Sep 2026 16:35:46 +0200
+Subject: [PATCH 21/21] Emscripten: runtime rendering-experiment switches for
+ device bisection
+
+MZ_WASM_EXP_RECREATE (fresh GL texture per frame), MZ_WASM_EXP_FULLREDRAW
+(upload every frame), MZ_WASM_EXP_NOLUT (SDL_ConvertSurface path) and
+MZ_WASM_EXP_SUBDATA (ImGui glBufferSubData streaming), all read from the
+environment the embedding page sets. Used to chase a diagonal-half
+corruption of the emulator quad on a Samsung Xclipse 940 (ANGLE/Vulkan).
+---
+ src/iface-video/sdl3/iface_video_sdl3.c        | 11 ++++++++++-
+ src/iface-video/sdlapp/sdlapp_imgui_video.cpp  | 13 ++++++++++++-
+ src/libs/imgui/backends/imgui_impl_opengl3.cpp | 11 +++++++++++
+ 3 files changed, 33 insertions(+), 2 deletions(-)
+
+diff --git a/src/iface-video/sdl3/iface_video_sdl3.c b/src/iface-video/sdl3/iface_video_sdl3.c
+index 59edc80..c9a9f97 100644
+--- a/src/iface-video/sdl3/iface_video_sdl3.c
++++ b/src/iface-video/sdl3/iface_video_sdl3.c
+@@ -1,3 +1,4 @@
++#include <stdlib.h>
+ #include <SDL3/SDL.h>
+ #include <SDL3/SDL_opengl.h>
+ #include <glib.h>
+@@ -198,7 +199,15 @@ gboolean video_sdl3_update_texture_from_surface(GLuint texture, SDL_Surface *sur
+     if (!surface || !texture || surface->w != tex_w || surface->h != tex_h)
+         return FALSE;
+     SDL_Surface *converted = NULL;
+-    if (surface->format == SDL_PIXELFORMAT_INDEX8)
++#ifdef __EMSCRIPTEN__
++    static const int exp_nolut = -1; /* resolved below */
++    static int use_lut = -1;
++    if (use_lut < 0) use_lut = (getenv("MZ_WASM_EXP_NOLUT") == NULL); /* NOLUT: SDL_ConvertSurface instead of the palette LUT */
++    (void)exp_nolut;
++#else
++    const int use_lut = 1;
++#endif
++    if (surface->format == SDL_PIXELFORMAT_INDEX8 && use_lut)
+     {
+         static SDL_Surface *scratch = NULL;
+         if (!scratch || scratch->w != surface->w || scratch->h != surface->h)
+diff --git a/src/iface-video/sdlapp/sdlapp_imgui_video.cpp b/src/iface-video/sdlapp/sdlapp_imgui_video.cpp
+index fc8ff0a..7636ba1 100644
+--- a/src/iface-video/sdlapp/sdlapp_imgui_video.cpp
++++ b/src/iface-video/sdlapp/sdlapp_imgui_video.cpp
+@@ -1,3 +1,4 @@
++#include <stdlib.h>
+ #include "main.h"
+ #ifdef WINDOWS
+ #include <windows.h>
+@@ -122,11 +123,21 @@ static void video_sdlapp_imgui_render_cb(SdlAppWindow *win, gpointer user_data)
+ #endif
+ 
+     static GLuint imageTexture = 0;
++#ifdef __EMSCRIPTEN__
++    /* Device bisection switches (set from the embedding page via ENV, see ?exp=):
++     * RECREATE  - fresh texture every frame instead of glTexSubImage2D
++     * FULLREDRAW - upload every frame regardless of the emulator's change flag */
++    static const bool exp_recreate = getenv("MZ_WASM_EXP_RECREATE") != NULL;
++    static const bool exp_fullredraw = getenv("MZ_WASM_EXP_FULLREDRAW") != NULL;
++    if (exp_fullredraw) have_new_screen = TRUE;
++#else
++    const bool exp_recreate = false;
++#endif
+     if ((have_new_screen) || (DISPLAY_TEST_FORCED_FULL_SCREEN_REDRAWING))
+     {
+         // g_print("Redrawing screen fb: %u, ren_id: %u\n", g_iface_video->fbsnapshot_screen_id, g_iface_video->renderer_screen_id);
+         static int imageTexW = 0, imageTexH = 0;
+-        if (!imageTexture || !video_sdl3_update_texture_from_surface(imageTexture, surface, imageTexW, imageTexH))
++        if (!imageTexture || exp_recreate || !video_sdl3_update_texture_from_surface(imageTexture, surface, imageTexW, imageTexH))
+         {
+             if (imageTexture)
+                 glDeleteTextures(1, &imageTexture);
+diff --git a/src/libs/imgui/backends/imgui_impl_opengl3.cpp b/src/libs/imgui/backends/imgui_impl_opengl3.cpp
+index 7733465..08b0995 100644
+--- a/src/libs/imgui/backends/imgui_impl_opengl3.cpp
++++ b/src/libs/imgui/backends/imgui_impl_opengl3.cpp
+@@ -124,6 +124,7 @@
+ #endif
+ 
+ #include "imgui.h"
++#include <stdlib.h>
+ #ifndef IMGUI_DISABLE
+ #include "imgui_impl_opengl3.h"
+ #include <stdio.h>
+@@ -364,6 +365,16 @@ bool    ImGui_ImplOpenGL3_Init(const char* glsl_version)
+ #endif
+ 
+     bd->UseBufferSubData = false;
++
++    #ifdef __EMSCRIPTEN__
++
++        /* Device bisection switch (?exp=subdata): stream vertex data with
++
++         * glBufferSubData into a preallocated buffer instead of glBufferData per draw list. */
++
++        if (getenv("MZ_WASM_EXP_SUBDATA")) bd->UseBufferSubData = true;
++
++    #endif
+     /*
+     // Query vendor to enable glBufferSubData kludge
+ #ifdef _WIN32
+-- 
+2.43.0
+

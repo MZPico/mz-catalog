@@ -1,7 +1,7 @@
 From 4c25faade8e194c2229cdd08a30c5e3b171bf1b5 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 15:08:11 +0200
-Subject: [PATCH 17/20] bootstrap: match the ROM's CPU and work-area state at
+Subject: [PATCH 17/21] bootstrap: match the ROM's CPU and work-area state at
  program entry
 
 Captured the state the monitor ROM hands to a program loaded via C

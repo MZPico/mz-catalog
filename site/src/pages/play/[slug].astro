@@ -83,7 +83,7 @@ const files = t.files.map((f) => f.path);
         `cores: ${navigator.hardwareConcurrency}  mem: ${navigator.deviceMemory ?? '?'} GB  dpr: ${devicePixelRatio}  isolated: ${self.crossOriginIsolated}`,
         `canvas attr: ${canvas.width}x${canvas.height}  css: ${Math.round(r.width)}x${Math.round(r.height)}  gl drawing: ${g.drawing ?? '?'}`,
         `gl: ${g.renderer}  (${g.version ?? ''})  preserve: ${g.preserve}  aa: ${g.aa}  glError: ${g.err}`,
-        `audio: ${ctx ? `${ctx.state} @${ctx.sampleRate} Hz` : 'no context'}  buf: ${buf}  starved: ${audioStarved}`,
+        `audio: ${ctx ? `${ctx.state} @${ctx.sampleRate} Hz` : 'no context'}  buf: ${buf}  starved: ${audioStarved}  exp: ${params.get('exp') || '-'}`,
         `t: ${(performance.now() / 1000).toFixed(0)} s`,
       ].join('\n');
     };
@@ -103,6 +103,11 @@ const files = t.files.map((f) => f.path);
           // The emulator paces itself on the audio callback; the wasm build pulls as many
           // frames per callback as the buffer needs, so this only trades latency vs. robustness.
           ENV.SDL_AUDIO_DEVICE_SAMPLE_FRAMES = buf; // module-scope runtime global
+          // ?exp=a,b — rendering experiments for bisecting GPU-specific glitches on devices:
+          //   recreate  = build a fresh GL texture every frame instead of glTexSubImage2D
+          //   fullredraw = upload the screen every frame even when the emulator reports no change
+          //   subdata   = ImGui streams vertices with glBufferSubData into a preallocated buffer
+          for (const e of (params.get('exp') || '').split(',')) if (e) ENV[`MZ_WASM_EXP_${e.toUpperCase()}`] = '1';
           Module.FS.writeFile('/tape.mzf', mzf);
         }],
         locateFile: (p) => `/play/emu/${p}`,
