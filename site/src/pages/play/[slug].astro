@@ -289,15 +289,23 @@ const files = t.files.map((f) => f.path);
       document.body.appendChild(s);
     };
     startBtn.addEventListener('click', () => { enterFullscreenIfTouch(); start(); });
-    // Arriving from a click inside the catalog counts as interaction with this origin,
-    // so start immediately on every device. Fullscreen needs a same-page gesture, so on
-    // touch devices the FIRST touch of the game area (pad, canvas) also enters fullscreen.
+    // Fullscreen can only be entered from a gesture on THIS page (it cannot survive the
+    // navigation from the catalog), so on touch devices the game preloads and boots
+    // silently underneath one overlay, and its single tap = fullscreen + sound + focus,
+    // instantly. Desktop autostarts with no overlay, as before.
     const fromCatalog = params.has('autostart') || document.referrer.startsWith(location.origin);
-    if (isTouch) {
-      // pointerup, not pointerdown: for touch input only the release grants the
-      // transient user activation that requestFullscreen() needs.
-      document.querySelector('.play-frame').addEventListener('pointerup', () => enterFullscreenIfTouch(), { capture: true });
+    if (fromCatalog && isTouch) {
+      startBtn.textContent = '▶ Tap to play';
+      overlay.querySelector('.meta').textContent = 'Fullscreen, landscape, sound on.';
+      start().then(() => { overlay.hidden = false; }); // boot behind the overlay, keep it visible
+      startBtn.onclick = () => {
+        overlay.hidden = true;
+        enterFullscreenIfTouch();
+        window.Module?.SDL3?.audioContext?.resume?.();
+        canvas.focus();
+      };
+    } else if (fromCatalog) {
+      start();
     }
-    if (fromCatalog) start();
   </script>
 </Base>
