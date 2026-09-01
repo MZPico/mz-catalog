@@ -1,7 +1,7 @@
 /* MZ Software Catalog — retro-terminal meets modern. Single dark theme. */
 @font-face {
   font-family: "MZ-800";
-  src: url("/fonts/mz800.woff2?v=5") format("woff2");
+  src: url("/fonts/mz800.woff2?v=6") format("woff2");
   font-display: swap;
 }
 :root {

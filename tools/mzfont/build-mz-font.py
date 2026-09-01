@@ -23,19 +23,23 @@ def glyph(code):
     g = rom[code * 8: code * 8 + 8]
     cols = [x for y in range(8) for x in range(8) if (g[y] >> x) & 1]
     if not cols:
-        return pen.glyph(), 8 * PX  # space
-    dx = (8 * PX - (max(cols) - min(cols) + 1) * PX) // 2 - min(cols) * PX
+        return pen.glyph(), (8 * PX, 0)  # space
+    ink = (max(cols) - min(cols) + 1) * PX
+    lsb = (8 * PX - ink) // 2  # centred left-side bearing
+    dx = lsb - min(cols) * PX
     for y in range(8):
         for x in range(8):
             if (g[y] >> x) & 1:
                 x0, y0 = x * PX + dx, (7 - y) * PX
                 pen.moveTo((x0, y0)); pen.lineTo((x0 + PX, y0))
                 pen.lineTo((x0 + PX, y0 + PX)); pen.lineTo((x0, y0 + PX)); pen.closePath()
-    return pen.glyph(), 8 * PX
+    # NOTE: renderers place ink at the hmtx left-side bearing, not at the
+    # outline's xMin — the lsb must carry the centring, or it is lost.
+    return pen.glyph(), (8 * PX, lsb)
 
-cmap, glyphs, advances = {}, {'.notdef': TTGlyphPen(None).glyph()}, {'.notdef': 8 * PX}
+cmap, glyphs, metrics = {}, {'.notdef': TTGlyphPen(None).glyph()}, {'.notdef': (8 * PX, 0)}
 def add(ch, code):
-    n = f'uni{ord(ch):04X}'; glyphs[n], advances[n] = glyph(code); cmap[ord(ch)] = n
+    n = f'uni{ord(ch):04X}'; glyphs[n], metrics[n] = glyph(code); cmap[ord(ch)] = n
 
 add(' ', 0x00)
 for i in range(26): add(chr(65 + i), 0x01 + i); add(chr(97 + i), 0x01 + i)
@@ -50,7 +54,7 @@ for ch, code in {'-': 0x2A, '=': 0x2B, ';': 0x2C, '/': 0x2D, '.': 0x2E, ',': 0x2
 order = ['.notdef'] + [n for n in glyphs if n != '.notdef']
 fb = FontBuilder(UPM, isTTF=True)
 fb.setupGlyphOrder(order); fb.setupCharacterMap(cmap); fb.setupGlyf(glyphs)
-fb.setupHorizontalMetrics({n: (advances[n], 0) for n in order})
+fb.setupHorizontalMetrics({n: metrics[n] for n in order})
 fb.setupHorizontalHeader(ascent=700, descent=-100)
 fb.setupNameTable({'familyName': 'MZ-800', 'styleName': 'Regular', 'fullName': 'MZ-800',
                    'psName': 'MZ800-Regular',
