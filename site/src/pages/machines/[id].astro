@@ -27,7 +27,7 @@ const titles = (await getCollection('titles'))
   {titles.length > 0 ? (
     <ul class="grid">
       {titles.map(({ data: t }) => {
-        const shot = t.screenshots[0];
+        const shot = t.screenshots.find((f) => f.startsWith('02')) ?? t.screenshots[0]; // gameplay shot is more illustrative in lists
         return (
           <li class="card">
             <a class="thumb" href={`/titles/${t.slug}/`} aria-hidden="true" tabindex="-1">

@@ -36,7 +36,7 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((t) => t
 
   <ul class="grid" id="titles">
     {titles.map(({ data: t }) => {
-      const shot = t.screenshots[0];
+      const shot = t.screenshots.find((f) => f.startsWith('02')) ?? t.screenshots[0]; // gameplay shot is more illustrative in lists
       const href = `/titles/${t.slug}/`;
       return (
         <li class="card" data-machine={t.machine} data-genre={t.genre.join(' ')}>
