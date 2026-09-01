@@ -1,7 +1,7 @@
 From 44450c982c7cf386636787846191156628f57b9f Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 09:13:57 +0200
-Subject: [PATCH 01/24] Emscripten: guard curl/GL deps and version-check
+Subject: [PATCH 01/25] Emscripten: guard curl/GL deps and version-check
  network backend
 
 ---

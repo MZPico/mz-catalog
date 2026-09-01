@@ -1,7 +1,7 @@
 From 44733042b8269b5a91907ee53667a6f2c30910ed Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 15:08:11 +0200
-Subject: [PATCH 18/24] Add --cmthack-autofile <mzf> to answer the ROM tape
+Subject: [PATCH 18/25] Add --cmthack-autofile <mzf> to answer the ROM tape
  request without a chooser
 
 ---

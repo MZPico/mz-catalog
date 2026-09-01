@@ -6,7 +6,7 @@ interface Props {
   description?: string;
 }
 const { title, description = 'Software catalog and preservation library for Sharp MZ-700, MZ-800 and MZ-1500 computers.' } = Astro.props;
-const fullTitle = title ? `${title} · MZ Software Catalog` : 'MZ Software Catalog — Sharp MZ-700 / MZ-800 / MZ-1500';
+const fullTitle = title ? `${title} · Sharp MZ Software Catalog` : 'Sharp MZ Software Catalog — MZ-700 / MZ-800 / MZ-1500';
 const repo = 'https://github.com/MZPico/mz-catalog';
 ---
 <!doctype html>
@@ -24,7 +24,7 @@ const repo = 'https://github.com/MZPico/mz-catalog';
   <body>
     <header class="site-header">
       <div class="wrap">
-        <a class="brand" href="/">MZ&nbsp;<b>SOFTWARE&nbsp;CATALOG</b><span class="cursor"></span></a>
+        <a class="brand" href="/">SHARP&nbsp;MZ&nbsp;<b>SOFTWARE&nbsp;CATALOG</b><span class="cursor"></span></a>
         <nav>
           <a href="/">Titles</a>
           <a href="/machines/">Machines</a>

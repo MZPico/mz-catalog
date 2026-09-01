@@ -1,7 +1,7 @@
 From ee0b497e0880658a1a814141f30b58b8228a15f7 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 10:11:00 +0200
-Subject: [PATCH 04/24] Emscripten: request an OpenGL ES 3.0 context (WebGL)
+Subject: [PATCH 04/25] Emscripten: request an OpenGL ES 3.0 context (WebGL)
  instead of desktop Core
 
 ---

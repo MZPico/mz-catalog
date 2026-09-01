@@ -1,7 +1,7 @@
 From befcf241d7a4fa9e999672b757c07a3d97bbb0db Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 19:00:06 +0200
-Subject: [PATCH 24/24] Emscripten: in-place restart (mz_wasm_restart) - reset
+Subject: [PATCH 24/25] Emscripten: in-place restart (mz_wasm_restart) - reset
  and re-run --run-mzf
 
 Exported to the embedding page so a restart keeps the browser's

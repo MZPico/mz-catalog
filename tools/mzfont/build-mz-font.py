@@ -18,10 +18,14 @@ PX, UPM = 100, 800
 def glyph(code):
     pen = TTGlyphPen(None)
     g = rom[code * 8: code * 8 + 8]
+    cols = [x for y in range(8) for x in range(8) if (g[y] >> x) & 1]
+    # centre the ink horizontally in the 8px cell (raw glyphs sit left, which
+    # looks lopsided for narrow characters like I in proportional contexts)
+    dx = ((8 - (max(cols) - min(cols) + 1)) // 2 - min(cols)) if cols else 0
     for y in range(8):
         for x in range(8):
             if (g[y] >> x) & 1:
-                x0, y0 = x * PX, (7 - y) * PX
+                x0, y0 = (x + dx) * PX, (7 - y) * PX
                 pen.moveTo((x0, y0)); pen.lineTo((x0 + PX, y0))
                 pen.lineTo((x0 + PX, y0 + PX)); pen.lineTo((x0, y0 + PX)); pen.closePath()
     return pen.glyph()

@@ -188,6 +188,15 @@ dl.facts dd { margin: 0; overflow-wrap: anywhere; }
 #no-match { color: var(--muted); }
 kbd { font-family: var(--mono); background: var(--surface-2); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 0 0.35rem; font-size: 0.85em; }
 
+.play-pace { color: var(--amber); background: color-mix(in srgb, var(--amber) 12%, transparent); border: 1px solid color-mix(in srgb, var(--amber) 40%, transparent); border-radius: 8px; padding: 0.5rem 0.8rem; font-size: 0.9rem; max-width: 70ch; }
+.play-pace[hidden] { display: none; }
+
+/* Homepage hero with the MZ-800 badge */
+.hero { display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
+.hero > div { flex: 1 1 420px; min-width: 0; }
+.hero-badge { flex: 0 0 auto; margin-left: auto; opacity: 0.95; width: 300px; height: 104px; }
+@media (max-width: 760px) { .hero-badge { display: none; } }
+
 /* Small screens */
 @media (max-width: 640px) {
   .site-header .wrap { gap: 0.6rem; }
