@@ -289,10 +289,13 @@ const files = t.files.map((f) => f.path);
       document.body.appendChild(s);
     };
     startBtn.addEventListener('click', () => { enterFullscreenIfTouch(); start(); });
-    // Desktop: arriving from a click inside the catalog counts as interaction with this
-    // origin, so start immediately. Touch devices always get the explicit Start tap —
-    // it is the user gesture that legitimately carries audio unlock + fullscreen.
-    const fromCatalog = params.has('autostart') || (document.referrer.startsWith(location.origin) && !isTouch);
+    // Arriving from a click inside the catalog counts as interaction with this origin,
+    // so start immediately on every device. Fullscreen needs a same-page gesture, so on
+    // touch devices the FIRST touch of the game area (pad, canvas) also enters fullscreen.
+    const fromCatalog = params.has('autostart') || document.referrer.startsWith(location.origin);
+    if (isTouch) {
+      document.querySelector('.play-frame').addEventListener('pointerdown', () => enterFullscreenIfTouch(), { capture: true });
+    }
     if (fromCatalog) start();
   </script>
 </Base>
