@@ -34,7 +34,7 @@ const files = t.files.map((f) => f.path);
     <summary>Keys &amp; tips</summary>
     <ul>
       <li>Click the screen to give it keyboard focus. Sharp specials: GRAPH = Caps Lock, ALPHA = <code>\</code>, INST = Insert, DEL = Backspace.</li>
-      <li>The emulator runs in kiosk mode: every key goes to the MZ (no emulator hotkeys). Use ↻ Restart to reload the game, ⛶ Fullscreen for a big screen (Esc leaves it).</li>
+      <li>The emulator runs in kiosk mode: every key goes to the MZ except <kbd>F11</kbd> (zoom: fullscreen on/off, Esc also leaves it) and <kbd>F12</kbd> (restart the game) — same as the ⛶ Fullscreen and ↻ Restart buttons.</li>
       <li>Everything runs locally in your browser; nothing is uploaded.</li>
     </ul>
   </details>
@@ -50,14 +50,25 @@ const files = t.files.map((f) => f.path);
     const canvas = document.getElementById('canvas');
 
     const startBtn = document.getElementById('play-start');
-    document.getElementById('play-fullscreen').addEventListener('click', () => {
+    const toggleFullscreen = () => {
       const el = document.querySelector('.play-frame');
       if (document.fullscreenElement) { document.exitFullscreen(); return; }
       // Phones: fullscreen + landscape gives the 16:10 screen the whole display (lock is best-effort).
       el.requestFullscreen?.({ navigationUI: 'hide' })?.then(() => screen.orientation?.lock?.('landscape').catch(() => {})).catch(() => {});
-    });
+    };
+    const restart = () => location.reload();
+    document.getElementById('play-fullscreen').addEventListener('click', toggleFullscreen);
+    document.getElementById('play-reload').addEventListener('click', restart);
     document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) { try { screen.orientation?.unlock?.(); } catch {} } });
-    document.getElementById('play-reload').addEventListener('click', () => location.reload());
+    // Emulator-style hotkeys, handled before the browser (F11 = browser fullscreen, F12 = devtools)
+    // and before SDL sees the key: F11 zoom toggle, F12 restart.
+    window.addEventListener('keydown', (e) => {
+      if (e.key !== 'F11' && e.key !== 'F12') return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      if (e.repeat) return;
+      if (e.key === 'F11') toggleFullscreen(); else restart();
+    }, { capture: true });
+    window.addEventListener('keyup', (e) => { if (e.key === 'F11' || e.key === 'F12') { e.preventDefault(); e.stopImmediatePropagation(); } }, { capture: true });
     // ?debug=1 — on-page diagnostics for devices without devtools (phones).
     const debug = params.has('debug');
     const debugEl = document.getElementById('play-debug');
