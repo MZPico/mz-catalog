@@ -1,7 +1,7 @@
 From 0ad1c7025bc97bdf3e16d16aee0e0a6f8e2399ab Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 15:15:53 +0200
-Subject: [PATCH 19/22] bootstrap (MZ-800): clear the MZ-700 text screen like
+Subject: [PATCH 19/23] bootstrap (MZ-800): clear the MZ-700 text screen like
  the monitor does
 
 Character VRAM (plane I + 0x1000) to 0x00 and attributes (plane I +

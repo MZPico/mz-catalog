@@ -47,6 +47,11 @@ emulator bug where any 8255 PA7 pulse reset the 556 cursor timer
 published on the `wasm` branch of https://github.com/MZPico/mz800emu
 (pushed 2026-09-01) and mirrored as a patch series in
 `tools/wasm/patches/` (the GPL "corresponding source").
+Mobile: the SDL window is fixed-size (SDL's Emscripten backend otherwise
+shrinks the GL buffer to the CSS size on every resize event) and the
+screen is drawn by an attribute-less GL triangle instead of ImGui's quad
+(a Samsung Xclipse/ANGLE-Vulkan driver rendered half the quad with
+zeroed vertex attributes); `?debug=1` shows on-page diagnostics.
 Remaining: upstream the patches (SDL hint fix, PA7 fix, bootstrap
 parity), keyboard/virtual-keyboard UX and touch controls,
 MZ-700 build variant for pure MZ-700 titles, residual audio crackle on

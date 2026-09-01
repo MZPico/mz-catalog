@@ -1,7 +1,7 @@
 From 91e732e5d944e9f9abc26a0d70eb67d44dde2af7 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 10:43:25 +0200
-Subject: [PATCH 05/22] Emscripten: drive the SDL app loop from
+Subject: [PATCH 05/23] Emscripten: drive the SDL app loop from
  emscripten_set_main_loop (poll mode, RAF-paced)
 
 ---

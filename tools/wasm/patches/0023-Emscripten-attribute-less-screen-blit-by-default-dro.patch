@@ -1,0 +1,115 @@
+From 7ed9d3160e299dac85159328376af910b7390a83 Mon Sep 17 00:00:00 2001
+From: Martin Matyas <martin.matyas@tietoevry.com>
+Date: Tue, 1 Sep 2026 18:12:52 +0200
+Subject: [PATCH 23/23] Emscripten: attribute-less screen blit by default, drop
+ bisection switches
+
+The blit fixed the half-corrupted screen on a Samsung Xclipse 940
+(ANGLE/Vulkan); MZ_WASM_IMGUI_QUAD=1 restores ImGui's textured quad for
+comparison. Removes the RECREATE/FULLREDRAW/NOLUT/SUBDATA experiment
+switches, which changed nothing there.
+---
+ src/iface-video/sdl3/iface_video_sdl3.c       | 12 ++--------
+ src/iface-video/sdlapp/sdlapp_imgui_video.cpp | 22 +++++++------------
+ .../imgui/backends/imgui_impl_opengl3.cpp     | 10 ---------
+ 3 files changed, 10 insertions(+), 34 deletions(-)
+
+diff --git a/src/iface-video/sdl3/iface_video_sdl3.c b/src/iface-video/sdl3/iface_video_sdl3.c
+index 3920d89..6937be1 100644
+--- a/src/iface-video/sdl3/iface_video_sdl3.c
++++ b/src/iface-video/sdl3/iface_video_sdl3.c
+@@ -202,15 +202,7 @@ gboolean video_sdl3_update_texture_from_surface(GLuint texture, SDL_Surface *sur
+     if (!surface || !texture || surface->w != tex_w || surface->h != tex_h)
+         return FALSE;
+     SDL_Surface *converted = NULL;
+-#ifdef __EMSCRIPTEN__
+-    static const int exp_nolut = -1; /* resolved below */
+-    static int use_lut = -1;
+-    if (use_lut < 0) use_lut = (getenv("MZ_WASM_EXP_NOLUT") == NULL); /* NOLUT: SDL_ConvertSurface instead of the palette LUT */
+-    (void)exp_nolut;
+-#else
+-    const int use_lut = 1;
+-#endif
+-    if (surface->format == SDL_PIXELFORMAT_INDEX8 && use_lut)
++    if (surface->format == SDL_PIXELFORMAT_INDEX8)
+     {
+         static SDL_Surface *scratch = NULL;
+         if (!scratch || scratch->w != surface->w || scratch->h != surface->h)
+@@ -355,7 +347,7 @@ void video_sdl3_set_GL_swap_interval(int value)
+ #ifdef __EMSCRIPTEN__
+ /* Attribute-less screen blit: one triangle generated from gl_VertexID, no
+  * vertex/index buffers. Used instead of ImGui's textured quad when
+- * MZ_WASM_EXP_BLIT is set (some mobile GL drivers returned zeroed
++ * the browser build runs (some mobile GL drivers returned zeroed
+  * attributes for the quad's last vertex, corrupting half of the screen). */
+ GLuint g_video_blit_texture = 0;
+ gboolean g_video_blit_enabled = FALSE;
+diff --git a/src/iface-video/sdlapp/sdlapp_imgui_video.cpp b/src/iface-video/sdlapp/sdlapp_imgui_video.cpp
+index 888f258..5d9d0b3 100644
+--- a/src/iface-video/sdlapp/sdlapp_imgui_video.cpp
++++ b/src/iface-video/sdlapp/sdlapp_imgui_video.cpp
+@@ -123,21 +123,11 @@ static void video_sdlapp_imgui_render_cb(SdlAppWindow *win, gpointer user_data)
+ #endif
+ 
+     static GLuint imageTexture = 0;
+-#ifdef __EMSCRIPTEN__
+-    /* Device bisection switches (set from the embedding page via ENV, see ?exp=):
+-     * RECREATE  - fresh texture every frame instead of glTexSubImage2D
+-     * FULLREDRAW - upload every frame regardless of the emulator's change flag */
+-    static const bool exp_recreate = getenv("MZ_WASM_EXP_RECREATE") != NULL;
+-    static const bool exp_fullredraw = getenv("MZ_WASM_EXP_FULLREDRAW") != NULL;
+-    if (exp_fullredraw) have_new_screen = TRUE;
+-#else
+-    const bool exp_recreate = false;
+-#endif
+     if ((have_new_screen) || (DISPLAY_TEST_FORCED_FULL_SCREEN_REDRAWING))
+     {
+         // g_print("Redrawing screen fb: %u, ren_id: %u\n", g_iface_video->fbsnapshot_screen_id, g_iface_video->renderer_screen_id);
+         static int imageTexW = 0, imageTexH = 0;
+-        if (!imageTexture || exp_recreate || !video_sdl3_update_texture_from_surface(imageTexture, surface, imageTexW, imageTexH))
++        if (!imageTexture || !video_sdl3_update_texture_from_surface(imageTexture, surface, imageTexW, imageTexH))
+         {
+             if (imageTexture)
+                 glDeleteTextures(1, &imageTexture);
+@@ -148,10 +138,14 @@ static void video_sdlapp_imgui_render_cb(SdlAppWindow *win, gpointer user_data)
+     };
+ 
+ #ifdef __EMSCRIPTEN__
+-    static const bool exp_blit = getenv("MZ_WASM_EXP_BLIT") != NULL;
+-    g_video_blit_enabled = exp_blit;
++    /* Browser build: the screen is drawn by an attribute-less GL blit before
++     * ImGui (see video_sdl3_blit_texture) - some mobile drivers rendered half
++     * of ImGui's textured quad with zeroed vertex attributes. MZ_WASM_IMGUI_QUAD
++     * restores the ImGui quad for comparison. */
++    static const bool use_blit = getenv("MZ_WASM_IMGUI_QUAD") == NULL;
++    g_video_blit_enabled = use_blit;
+     g_video_blit_texture = imageTexture;
+-    imgui_main_window(exp_blit ? 0 : imageTexture);
++    imgui_main_window(use_blit ? 0 : imageTexture);
+ #else
+     imgui_main_window(imageTexture);
+ #endif
+diff --git a/src/libs/imgui/backends/imgui_impl_opengl3.cpp b/src/libs/imgui/backends/imgui_impl_opengl3.cpp
+index 08b0995..247bf2f 100644
+--- a/src/libs/imgui/backends/imgui_impl_opengl3.cpp
++++ b/src/libs/imgui/backends/imgui_impl_opengl3.cpp
+@@ -365,16 +365,6 @@ bool    ImGui_ImplOpenGL3_Init(const char* glsl_version)
+ #endif
+ 
+     bd->UseBufferSubData = false;
+-
+-    #ifdef __EMSCRIPTEN__
+-
+-        /* Device bisection switch (?exp=subdata): stream vertex data with
+-
+-         * glBufferSubData into a preallocated buffer instead of glBufferData per draw list. */
+-
+-        if (getenv("MZ_WASM_EXP_SUBDATA")) bd->UseBufferSubData = true;
+-
+-    #endif
+     /*
+     // Query vendor to enable glBufferSubData kludge
+ #ifdef _WIN32
+-- 
+2.43.0
+

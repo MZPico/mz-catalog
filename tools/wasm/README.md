@@ -31,7 +31,11 @@ published at https://github.com/MZPico/mz800emu/tree/wasm). They contain the
 Emscripten port (main loop, GLES 3.0 context, no curl/version check, audio
 callback and screen-upload changes, ImGui backend tweaks), `--kiosk`,
 `--cmthack-autofile`, the 8255 PA7/556 cursor-timer fix and the `--run-mzf`
-bootstrap fixes that reproduce the monitor ROM's program-entry state.
+bootstrap fixes that reproduce the monitor ROM's program-entry state, a
+fixed-size SDL window (the Emscripten backend would follow browser resize
+events and shrink the GL buffer to the CSS size) and an attribute-less GL
+screen blit (`MZ_WASM_IMGUI_QUAD=1` restores ImGui's quad, which a Samsung
+Xclipse 940 / ANGLE-Vulkan driver renders half-corrupted).
 
 Native debugging recipe used for the bootstrap work: build natively
 (`cmake --build build --target mz800emu`), run the GUI under WSLg with

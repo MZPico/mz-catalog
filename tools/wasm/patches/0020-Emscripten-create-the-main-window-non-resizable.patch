@@ -1,7 +1,7 @@
 From 1e8e08cba338580c67aad0e0ed7e1feba8b43eb3 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 16:10:44 +0200
-Subject: [PATCH 20/22] Emscripten: create the main window non-resizable
+Subject: [PATCH 20/23] Emscripten: create the main window non-resizable
 
 SDL's Emscripten backend reacts to every browser resize event on a
 resizable window by shrinking the canvas drawing buffer to the canvas'

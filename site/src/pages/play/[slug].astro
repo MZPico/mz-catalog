@@ -52,8 +52,11 @@ const files = t.files.map((f) => f.path);
     const startBtn = document.getElementById('play-start');
     document.getElementById('play-fullscreen').addEventListener('click', () => {
       const el = document.querySelector('.play-frame');
-      if (document.fullscreenElement) document.exitFullscreen(); else el.requestFullscreen?.({ navigationUI: 'hide' });
+      if (document.fullscreenElement) { document.exitFullscreen(); return; }
+      // Phones: fullscreen + landscape gives the 16:10 screen the whole display (lock is best-effort).
+      el.requestFullscreen?.({ navigationUI: 'hide' })?.then(() => screen.orientation?.lock?.('landscape').catch(() => {})).catch(() => {});
     });
+    document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) { try { screen.orientation?.unlock?.(); } catch {} } });
     document.getElementById('play-reload').addEventListener('click', () => location.reload());
     // ?debug=1 — on-page diagnostics for devices without devtools (phones).
     const debug = params.has('debug');
@@ -83,7 +86,7 @@ const files = t.files.map((f) => f.path);
         `cores: ${navigator.hardwareConcurrency}  mem: ${navigator.deviceMemory ?? '?'} GB  dpr: ${devicePixelRatio}  isolated: ${self.crossOriginIsolated}`,
         `canvas attr: ${canvas.width}x${canvas.height}  css: ${Math.round(r.width)}x${Math.round(r.height)}  gl drawing: ${g.drawing ?? '?'}`,
         `gl: ${g.renderer}  (${g.version ?? ''})  preserve: ${g.preserve}  aa: ${g.aa}  glError: ${g.err}`,
-        `audio: ${ctx ? `${ctx.state} @${ctx.sampleRate} Hz` : 'no context'}  buf: ${buf}  starved: ${audioStarved}  exp: ${params.get('exp') || '-'}`,
+        `audio: ${ctx ? `${ctx.state} @${ctx.sampleRate} Hz` : 'no context'}  buf: ${buf}  starved: ${audioStarved}`,
         `t: ${(performance.now() / 1000).toFixed(0)} s`,
       ].join('\n');
     };
@@ -103,12 +106,6 @@ const files = t.files.map((f) => f.path);
           // The emulator paces itself on the audio callback; the wasm build pulls as many
           // frames per callback as the buffer needs, so this only trades latency vs. robustness.
           ENV.SDL_AUDIO_DEVICE_SAMPLE_FRAMES = buf; // module-scope runtime global
-          // ?exp=a,b — rendering experiments for bisecting GPU-specific glitches on devices:
-          //   recreate  = build a fresh GL texture every frame instead of glTexSubImage2D
-          //   fullredraw = upload the screen every frame even when the emulator reports no change
-          //   subdata   = ImGui streams vertices with glBufferSubData into a preallocated buffer
-          //   blit      = draw the screen with an attribute-less GL triangle instead of an ImGui quad
-          for (const e of (params.get('exp') || '').split(',')) if (e) ENV[`MZ_WASM_EXP_${e.toUpperCase()}`] = '1';
           Module.FS.writeFile('/tape.mzf', mzf);
         }],
         locateFile: (p) => `/play/emu/${p}`,

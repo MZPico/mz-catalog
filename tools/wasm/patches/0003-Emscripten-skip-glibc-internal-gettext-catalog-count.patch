@@ -1,7 +1,7 @@
 From 7bd2a8cbf82dd8513eeff8ae85aced83997b7bd4 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 10:02:14 +0200
-Subject: [PATCH 03/22] Emscripten: skip glibc-internal gettext catalog counter
+Subject: [PATCH 03/23] Emscripten: skip glibc-internal gettext catalog counter
 
 ---
  src/emulator/i18n_lang.c | 2 ++
