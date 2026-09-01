@@ -19,6 +19,13 @@ const files = t.files.map((f) => f.path);
   </div>
   <div class="play-frame">
     <canvas id="canvas" tabindex="0" width="928" height="576"></canvas>
+    <div id="play-touch" class="play-touch" hidden aria-hidden="true">
+      <div class="touch-pad" id="touch-pad" aria-label="direction pad"><span class="pad-arrow up">▲</span><span class="pad-arrow down">▼</span><span class="pad-arrow left">◀</span><span class="pad-arrow right">▶</span><span class="pad-nub" id="pad-nub"></span></div>
+      <div class="touch-buttons">
+        <button type="button" class="touch-btn" data-code="Enter" data-key="Enter" data-keycode="13">RET</button>
+        <button type="button" class="touch-btn fire" data-code="Space" data-key=" " data-keycode="32">FIRE</button>
+      </div>
+    </div>
     <div id="play-overlay" class="play-overlay">
       <button type="button" id="play-start" class="btn">▶ Start {t.title}</button>
       <p class="meta">Loads the MZ-800 emulator (~7 MB) and runs the tape image. Sound needs a click — that's it.</p>
@@ -27,6 +34,7 @@ const files = t.files.map((f) => f.path);
   <div class="play-controls">
     <button type="button" id="play-fullscreen" class="btn" title="Fullscreen (F11, Esc to leave)">⛶ Fullscreen</button>
     <button type="button" id="play-reload" class="btn secondary" title="Restart the game (F12)">↻ Restart</button>
+    <button type="button" id="play-touch-toggle" class="btn secondary" title="Show / hide the touch controls (d-pad, FIRE = Space, RET = Enter)">🎮 Touch</button>
     <span class="play-status meta" id="play-status"></span>
   </div>
   <pre id="play-debug" class="play-debug meta" hidden></pre>
@@ -35,6 +43,7 @@ const files = t.files.map((f) => f.path);
     <ul>
       <li>Click the screen to give it keyboard focus. Sharp specials: GRAPH = Caps Lock, ALPHA = <code>\</code>, INST = Insert, DEL = Backspace.</li>
       <li>The emulator runs in kiosk mode: every key goes to the MZ except <kbd>F11</kbd> (zoom: fullscreen on/off, Esc also leaves it) and <kbd>F12</kbd> (restart the game) — same as the ⛶ Fullscreen and ↻ Restart buttons.</li>
+      <li>Phones/tablets: 🎮 Touch shows an on-screen pad (cursor keys, diagonals included), FIRE (Space) and RET (Enter) — enough for most games. Turn the phone sideways and use ⛶ Fullscreen.</li>
       <li>Everything runs locally in your browser; nothing is uploaded.</li>
     </ul>
   </details>
@@ -107,6 +116,48 @@ const files = t.files.map((f) => f.path);
         `t: ${(performance.now() / 1000).toFixed(0)} s`,
       ].join('\n');
     };
+    // ---- Touch controls: synthetic keyboard events into the canvas (SDL maps KeyboardEvent.code).
+    const touchEl = document.getElementById('play-touch');
+    const sendKey = (type, code, key, keyCode) => {
+      const ev = new KeyboardEvent(type, { code, key, keyCode, which: keyCode, bubbles: true, cancelable: true });
+      canvas.dispatchEvent(ev);
+    };
+    const DIRS = { ArrowUp: ['ArrowUp', 38], ArrowDown: ['ArrowDown', 40], ArrowLeft: ['ArrowLeft', 37], ArrowRight: ['ArrowRight', 39] };
+    const held = new Set();
+    const setHeld = (codes) => {
+      for (const c of held) if (!codes.has(c)) { held.delete(c); sendKey('keyup', c, DIRS[c][0], DIRS[c][1]); }
+      for (const c of codes) if (!held.has(c)) { held.add(c); sendKey('keydown', c, DIRS[c][0], DIRS[c][1]); }
+    };
+    const pad = document.getElementById('touch-pad'); const nub = document.getElementById('pad-nub');
+    let padPointer = null;
+    const padUpdate = (e) => {
+      const r = pad.getBoundingClientRect(); const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      const dx = e.clientX - cx, dy = e.clientY - cy; const dist = Math.hypot(dx, dy); const dead = r.width * 0.12;
+      const codes = new Set();
+      if (dist > dead) {
+        const a = Math.atan2(dy, dx); // 8 sectors of 45°, diagonals get two keys
+        if (a > -2.75 && a < -0.39) codes.add('ArrowUp');
+        if (a > 0.39 && a < 2.75) codes.add('ArrowDown');
+        if (Math.abs(a) < 1.18) codes.add('ArrowRight');
+        if (Math.abs(a) > 1.96) codes.add('ArrowLeft');
+      }
+      setHeld(codes);
+      const k = Math.min(dist, r.width * 0.3) / (dist || 1); nub.style.transform = `translate(${dx * k}px, ${dy * k}px)`;
+    };
+    const padRelease = () => { padPointer = null; setHeld(new Set()); nub.style.transform = ''; };
+    pad.addEventListener('pointerdown', (e) => { e.preventDefault(); padPointer = e.pointerId; pad.setPointerCapture(e.pointerId); padUpdate(e); });
+    pad.addEventListener('pointermove', (e) => { if (e.pointerId === padPointer) padUpdate(e); });
+    for (const t of ['pointerup', 'pointercancel', 'lostpointercapture']) pad.addEventListener(t, (e) => { if (e.pointerId === padPointer) padRelease(); });
+    for (const b of touchEl.querySelectorAll('.touch-btn')) {
+      const down = (e) => { e.preventDefault(); b.classList.add('down'); sendKey('keydown', b.dataset.code, b.dataset.key, Number(b.dataset.keycode)); };
+      const up = () => { if (!b.classList.contains('down')) return; b.classList.remove('down'); sendKey('keyup', b.dataset.code, b.dataset.key, Number(b.dataset.keycode)); };
+      b.addEventListener('pointerdown', down); for (const t of ['pointerup', 'pointercancel', 'pointerleave']) b.addEventListener(t, up);
+      b.addEventListener('contextmenu', (e) => e.preventDefault());
+    }
+    const setTouch = (on) => { touchEl.hidden = !on; touchEl.setAttribute('aria-hidden', String(!on)); document.getElementById('play-touch-toggle').classList.toggle('active', on); if (!on) { padRelease(); } };
+    document.getElementById('play-touch-toggle').addEventListener('click', () => setTouch(touchEl.hidden));
+    if (params.has('touch') || matchMedia('(pointer: coarse)').matches) setTouch(true);
+
     let started = false;
     const start = async () => {
       if (started) return; started = true;

@@ -134,3 +134,18 @@ dl.facts dd { margin: 0; overflow-wrap: anywhere; }
 
 /* Play page on-screen diagnostics (?debug=1) */
 .play-debug { white-space: pre-wrap; word-break: break-all; font-size: 0.75rem; line-height: 1.35; margin: 0.5rem 0; }
+
+/* Touch controls overlay on the play page */
+.play-touch { position:absolute; inset:0; pointer-events:none; user-select:none; -webkit-user-select:none; touch-action:none; }
+.play-touch[hidden] { display:none; }
+.touch-pad { position:absolute; left:4%; bottom:6%; width:min(38vw, 42%); aspect-ratio:1; max-width:220px; border-radius:50%; background:rgba(255,255,255,0.10); border:2px solid rgba(255,255,255,0.35); pointer-events:auto; touch-action:none; }
+.touch-pad .pad-arrow { position:absolute; color:rgba(255,255,255,0.7); font-size:clamp(12px, 3vw, 20px); line-height:1; }
+.touch-pad .up { top:6%; left:50%; transform:translateX(-50%); } .touch-pad .down { bottom:6%; left:50%; transform:translateX(-50%); }
+.touch-pad .left { left:6%; top:50%; transform:translateY(-50%); } .touch-pad .right { right:6%; top:50%; transform:translateY(-50%); }
+.touch-pad .pad-nub { position:absolute; left:50%; top:50%; width:34%; height:34%; margin:-17% 0 0 -17%; border-radius:50%; background:rgba(255,255,255,0.35); pointer-events:none; }
+.touch-buttons { position:absolute; right:4%; bottom:6%; display:flex; gap:min(3vw, 18px); align-items:flex-end; pointer-events:auto; }
+.touch-btn { width:min(16vw, 84px); height:min(16vw, 84px); border-radius:50%; border:2px solid rgba(255,255,255,0.35); background:rgba(255,255,255,0.12); color:rgba(255,255,255,0.85); font:600 clamp(11px, 2.6vw, 16px) system-ui, sans-serif; touch-action:none; padding:0; }
+.touch-btn.fire { width:min(20vw, 104px); height:min(20vw, 104px); background:rgba(255,80,80,0.28); border-color:rgba(255,120,120,0.6); }
+.touch-btn.down { background:rgba(255,255,255,0.4); }
+.touch-btn.fire.down { background:rgba(255,80,80,0.6); }
+.btn.active { outline:2px solid var(--accent, #3b82f6); }
