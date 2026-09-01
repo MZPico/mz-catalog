@@ -1,7 +1,7 @@
 From 5b7e35838dc72e9152d4b9ab17dd85592176498c Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 09:58:37 +0200
-Subject: [PATCH 02/21] Emscripten: keep minizip and platform defines, exclude
+Subject: [PATCH 02/22] Emscripten: keep minizip and platform defines, exclude
  only curl/GL/zlib find
 
 ---

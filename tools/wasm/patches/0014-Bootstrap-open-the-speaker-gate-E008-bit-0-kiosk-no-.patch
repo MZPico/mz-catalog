@@ -1,7 +1,7 @@
 From 60b43d0a19a11ecd39ba8bffab9ee366e82182f2 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 13:52:03 +0200
-Subject: [PATCH 14/21] Bootstrap: open the speaker gate (E008 bit 0); kiosk:
+Subject: [PATCH 14/22] Bootstrap: open the speaker gate (E008 bit 0); kiosk:
  no main-window popup, no MZF size dialog
 
 ---

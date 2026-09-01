@@ -1,0 +1,188 @@
+From 87075ddeabc95c282a5b70d39b528ea67e0100e5 Mon Sep 17 00:00:00 2001
+From: Martin Matyas <martin.matyas@tietoevry.com>
+Date: Tue, 1 Sep 2026 16:58:51 +0200
+Subject: [PATCH 22/22] Emscripten: attribute-less screen blit
+ (MZ_WASM_EXP_BLIT)
+
+Draw the emulator screen as one triangle generated from gl_VertexID (no
+vertex/index buffers) right after the clear, and let ImGui draw only its
+UI on top. Bisection switch for a mobile driver (Samsung Xclipse 940,
+ANGLE/Vulkan) that renders half of ImGui's textured quad with zeroed
+attributes.
+---
+ src/iface-video/sdl3/iface_video_sdl3.c       | 72 ++++++++++++++++++-
+ src/iface-video/sdl3/iface_video_sdl3.h       |  6 ++
+ src/iface-video/sdlapp/sdlapp_imgui_video.cpp |  7 ++
+ src/ui-imgui/bootstrap/myimgui.cpp            | 10 ++-
+ src/ui-imgui/main_window.cpp                  |  5 +-
+ 5 files changed, 97 insertions(+), 3 deletions(-)
+
+diff --git a/src/iface-video/sdl3/iface_video_sdl3.c b/src/iface-video/sdl3/iface_video_sdl3.c
+index c9a9f97..3920d89 100644
+--- a/src/iface-video/sdl3/iface_video_sdl3.c
++++ b/src/iface-video/sdl3/iface_video_sdl3.c
+@@ -1,6 +1,9 @@
+ #include <stdlib.h>
+ #include <SDL3/SDL.h>
+ #include <SDL3/SDL_opengl.h>
++#ifdef __EMSCRIPTEN__
++#include <GLES3/gl3.h>
++#endif
+ #include <glib.h>
+ #include <stdint.h>
+ #include "iface/iface_video.h"
+@@ -347,4 +350,71 @@ void video_sdl3_set_GL_swap_interval(int value)
+             display_set_framerate_mode(DISPLAY_FRAMERATE_MODE_VSYNC);
+         };
+     };
+-}
+\ No newline at end of file
++}
++
++#ifdef __EMSCRIPTEN__
++/* Attribute-less screen blit: one triangle generated from gl_VertexID, no
++ * vertex/index buffers. Used instead of ImGui's textured quad when
++ * MZ_WASM_EXP_BLIT is set (some mobile GL drivers returned zeroed
++ * attributes for the quad's last vertex, corrupting half of the screen). */
++GLuint g_video_blit_texture = 0;
++gboolean g_video_blit_enabled = FALSE;
++
++static GLuint video_sdl3_blit_program(void)
++{
++    static GLuint prog = 0;
++    static gboolean tried = FALSE;
++    if (prog || tried) return prog;
++    tried = TRUE;
++    const char *vs_src =
++        "#version 300 es\n"
++        "out vec2 v_uv;\n"
++        "void main() {\n"
++        "  vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));\n"
++        "  v_uv = vec2(p.x, 1.0 - p.y);\n"
++        "  gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);\n"
++        "}\n";
++    const char *fs_src =
++        "#version 300 es\n"
++        "precision mediump float;\n"
++        "uniform sampler2D u_tex;\n"
++        "in vec2 v_uv;\n"
++        "out vec4 o_color;\n"
++        "void main() { o_color = texture(u_tex, v_uv); }\n";
++    GLuint vs = glCreateShader(GL_VERTEX_SHADER);
++    glShaderSource(vs, 1, &vs_src, NULL); glCompileShader(vs);
++    GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
++    glShaderSource(fs, 1, &fs_src, NULL); glCompileShader(fs);
++    GLint ok = 0;
++    glGetShaderiv(vs, GL_COMPILE_STATUS, &ok); if (!ok) { g_warning("blit: vertex shader failed"); return 0; }
++    glGetShaderiv(fs, GL_COMPILE_STATUS, &ok); if (!ok) { g_warning("blit: fragment shader failed"); return 0; }
++    prog = glCreateProgram();
++    glAttachShader(prog, vs); glAttachShader(prog, fs); glLinkProgram(prog);
++    glGetProgramiv(prog, GL_LINK_STATUS, &ok);
++    glDeleteShader(vs); glDeleteShader(fs);
++    if (!ok) { g_warning("blit: program link failed"); glDeleteProgram(prog); prog = 0; return 0; }
++    glUseProgram(prog);
++    glUniform1i(glGetUniformLocation(prog, "u_tex"), 0);
++    glUseProgram(0);
++    return prog;
++}
++
++void video_sdl3_blit_texture(GLuint texture, int fb_w, int fb_h)
++{
++    GLuint prog = video_sdl3_blit_program();
++    if (!prog || !texture) return;
++    glViewport(0, 0, fb_w, fb_h);
++    glDisable(GL_SCISSOR_TEST);
++    glDisable(GL_BLEND);
++    glDisable(GL_CULL_FACE);
++    glDisable(GL_DEPTH_TEST);
++    glUseProgram(prog);
++    glActiveTexture(GL_TEXTURE0);
++    glBindTexture(GL_TEXTURE_2D, texture);
++    glBindBuffer(GL_ARRAY_BUFFER, 0);
++    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
++    glDrawArrays(GL_TRIANGLES, 0, 3);
++    glBindTexture(GL_TEXTURE_2D, 0);
++    glUseProgram(0);
++}
++#endif /* __EMSCRIPTEN__ */
+diff --git a/src/iface-video/sdl3/iface_video_sdl3.h b/src/iface-video/sdl3/iface_video_sdl3.h
+index 72568c0..11abc54 100644
+--- a/src/iface-video/sdl3/iface_video_sdl3.h
++++ b/src/iface-video/sdl3/iface_video_sdl3.h
+@@ -23,4 +23,10 @@ extern "C"
+ }
+ #endif
+ 
++
++#ifdef __EMSCRIPTEN__
++    extern GLuint g_video_blit_texture;
++    extern gboolean g_video_blit_enabled;
++    extern void video_sdl3_blit_texture(GLuint texture, int fb_w, int fb_h);
++#endif
+ #endif /* IFACE_VIDEO_SDL3_H */
+diff --git a/src/iface-video/sdlapp/sdlapp_imgui_video.cpp b/src/iface-video/sdlapp/sdlapp_imgui_video.cpp
+index 7636ba1..888f258 100644
+--- a/src/iface-video/sdlapp/sdlapp_imgui_video.cpp
++++ b/src/iface-video/sdlapp/sdlapp_imgui_video.cpp
+@@ -147,7 +147,14 @@ static void video_sdlapp_imgui_render_cb(SdlAppWindow *win, gpointer user_data)
+         }
+     };
+ 
++#ifdef __EMSCRIPTEN__
++    static const bool exp_blit = getenv("MZ_WASM_EXP_BLIT") != NULL;
++    g_video_blit_enabled = exp_blit;
++    g_video_blit_texture = imageTexture;
++    imgui_main_window(exp_blit ? 0 : imageTexture);
++#else
+     imgui_main_window(imageTexture);
++#endif
+ 
+     // TODO: chtelo by to merit presneji a az po vyrenderovani obrazu
+     // Pokud je nastaveno Custom FPS, tak pockame pozadovanou dobu
+diff --git a/src/ui-imgui/bootstrap/myimgui.cpp b/src/ui-imgui/bootstrap/myimgui.cpp
+index f1cbd30..9ee6a1e 100644
+--- a/src/ui-imgui/bootstrap/myimgui.cpp
++++ b/src/ui-imgui/bootstrap/myimgui.cpp
+@@ -19,6 +19,11 @@
+ #include "libs/sdlapp/sdlapp.h"
+ #include "libs/sdlapp/sdlapp_options.h"
+ #include "myimgui.h"
++#ifdef __EMSCRIPTEN__
++extern "C" {
++#include "iface-video/sdl3/iface_video_sdl3.h"
++}
++#endif
+ #include "ui-imgui/filechooser/res/CustomFont.cpp"
+ #include "ui-imgui/filechooser/res/CustomFont.h"
+ 
+@@ -550,7 +555,10 @@ static void myimgui_rendering_sdl3_opengl(SdlAppWindow *win, gpointer user_data)
+         glClearColor(gui->bg.r, gui->bg.g, gui->bg.b, gui->bg.a);
+         glClear(GL_COLOR_BUFFER_BIT);
+     }
+-
++#ifdef __EMSCRIPTEN__
++    if (g_video_blit_enabled && g_video_blit_texture)
++        video_sdl3_blit_texture(g_video_blit_texture, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
++#endif
+     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+ 
+     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+diff --git a/src/ui-imgui/main_window.cpp b/src/ui-imgui/main_window.cpp
+index 4ddef15..4e8d11c 100644
+--- a/src/ui-imgui/main_window.cpp
++++ b/src/ui-imgui/main_window.cpp
+@@ -197,7 +197,10 @@ static void ShowFullScreenImageEmulatorWindow(GLuint texture)
+         ImGui::OpenPopup("EmulatorPopupMenu");
+     };
+ 
+-    ImGui::Image(texture, ImVec2(viewport->Size.x, viewport->Size.y));
++    if (texture)
++        ImGui::Image(texture, ImVec2(viewport->Size.x, viewport->Size.y));
++    else
++        ImGui::Dummy(ImVec2(viewport->Size.x, viewport->Size.y)); /* screen drawn by the GL blit before ImGui */
+     ImGui::PopStyleVar(2);
+ 
+     // bool isPopupOpen = ImGui::IsPopupOpen("ContextMenu", ImGuiPopupFlags_AnyPopup);
+-- 
+2.43.0
+

@@ -1,7 +1,7 @@
 From 071e6cfeecac2d0e608eb35f6781b200097fc737 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 13:31:56 +0200
-Subject: [PATCH 13/21] Bootstrap: init 8253 channel 0; add --kiosk (no
+Subject: [PATCH 13/22] Bootstrap: init 8253 channel 0; add --kiosk (no
  hotkeys/context menu) for embedded use
 
 ---

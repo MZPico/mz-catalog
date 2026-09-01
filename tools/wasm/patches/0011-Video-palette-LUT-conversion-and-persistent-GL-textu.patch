@@ -1,7 +1,7 @@
 From 198ba4cc90b3b89eb6e9fc48abdbe413cc794044 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 13:07:44 +0200
-Subject: [PATCH 11/21] Video: palette LUT conversion and persistent GL texture
+Subject: [PATCH 11/22] Video: palette LUT conversion and persistent GL texture
  for the emulator screen
 
 ---

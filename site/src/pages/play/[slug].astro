@@ -107,6 +107,7 @@ const files = t.files.map((f) => f.path);
           //   recreate  = build a fresh GL texture every frame instead of glTexSubImage2D
           //   fullredraw = upload the screen every frame even when the emulator reports no change
           //   subdata   = ImGui streams vertices with glBufferSubData into a preallocated buffer
+          //   blit      = draw the screen with an attribute-less GL triangle instead of an ImGui quad
           for (const e of (params.get('exp') || '').split(',')) if (e) ENV[`MZ_WASM_EXP_${e.toUpperCase()}`] = '1';
           Module.FS.writeFile('/tape.mzf', mzf);
         }],

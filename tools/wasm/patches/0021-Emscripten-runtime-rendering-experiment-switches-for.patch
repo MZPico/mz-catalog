@@ -1,7 +1,7 @@
 From 21ea879d65f833dc2a9b4951e17244d08a9c2d3f Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 16:35:46 +0200
-Subject: [PATCH 21/21] Emscripten: runtime rendering-experiment switches for
+Subject: [PATCH 21/22] Emscripten: runtime rendering-experiment switches for
  device bisection
 
 MZ_WASM_EXP_RECREATE (fresh GL texture per frame), MZ_WASM_EXP_FULLREDRAW
