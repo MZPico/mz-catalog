@@ -1,6 +1,15 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+
+// Content hash of the emulator build — cache-busts phones that would otherwise
+// keep a stale wasm for days (the file names never change).
+const emuVersion = createHash('md5')
+  .update(readFileSync(new URL('../../../public/play/emu/mz800emu.wasm', import.meta.url)))
+  .digest('hex')
+  .slice(0, 8);
 
 export async function getStaticPaths() {
   const titles = await getCollection('titles');
@@ -49,7 +58,7 @@ const files = t.files.map((f) => f.path);
   </details>
   <p class="meta">Emulation by <a href="https://github.com/michalhucik/mz800emu" rel="noopener">mz800emu</a> (GPL) compiled to WebAssembly — <a href="/play/emu/README.md">build notes &amp; source</a>.</p>
 
-  <script define:vars={{ slug: t.slug, files, touch: t.touch ?? null }}>
+  <script define:vars={{ slug: t.slug, files, touch: t.touch ?? null, emuVersion }}>
     const params = new URLSearchParams(location.search);
     const file = files.includes(params.get('file')) ? params.get('file') : files[0];
     // Audio buffer size in frames (power of two, 256..16384). Larger = fewer crackles, more latency.
@@ -247,7 +256,7 @@ const files = t.files.map((f) => f.path);
           ENV.SDL_AUDIO_DEVICE_SAMPLE_FRAMES = buf; // module-scope runtime global
           Module.FS.writeFile('/tape.mzf', mzf);
         }],
-        locateFile: (p) => `/play/emu/${p}`,
+        locateFile: (p) => `/play/emu/${p}?v=${emuVersion}`,
         print: () => {},
         printErr: (m) => {
           if (/20ms_sync/.test(m)) audioStarved++;
@@ -275,14 +284,15 @@ const files = t.files.map((f) => f.path);
         onAbort: (w) => { status.textContent = `emulator aborted: ${w}`; },
       };
       const s = document.createElement('script');
-      s.src = '/play/emu/mz800emu.js';
+      s.src = `/play/emu/mz800emu.js?v=${emuVersion}`;
       s.onerror = () => { status.textContent = 'failed to load the emulator script'; };
       document.body.appendChild(s);
     };
     startBtn.addEventListener('click', () => { enterFullscreenIfTouch(); start(); });
-    // Arriving from a click inside the catalog counts as user interaction with this origin,
-    // so start immediately; direct visits keep the explicit start button.
-    const fromCatalog = document.referrer.startsWith(location.origin) || params.has('autostart');
+    // Desktop: arriving from a click inside the catalog counts as interaction with this
+    // origin, so start immediately. Touch devices always get the explicit Start tap —
+    // it is the user gesture that legitimately carries audio unlock + fullscreen.
+    const fromCatalog = params.has('autostart') || (document.referrer.startsWith(location.origin) && !isTouch);
     if (fromCatalog) start();
   </script>
 </Base>
