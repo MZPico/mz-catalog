@@ -52,7 +52,9 @@ const files = t.files.map((f) => f.path);
     const params = new URLSearchParams(location.search);
     const file = files.includes(params.get('file')) ? params.get('file') : files[0];
     // Audio buffer size in frames (power of two, 256..16384). Larger = fewer crackles, more latency.
-    const buf = ['256', '512', '1024', '2048', '4096'].includes(params.get('buf')) ? params.get('buf') : '1024';
+    // Edge throttles the main-thread audio callback harder than Chrome, so give it more slack.
+    const defaultBuf = /Edg\//.test(navigator.userAgent) ? '2048' : '1024';
+    const buf = ['256', '512', '1024', '2048', '4096'].includes(params.get('buf')) ? params.get('buf') : defaultBuf;
     const status = document.getElementById('play-status');
     const overlay = document.getElementById('play-overlay');
     const canvas = document.getElementById('canvas');
@@ -220,6 +222,11 @@ const files = t.files.map((f) => f.path);
         setStatus: (m) => { status.textContent = m; },
         onRuntimeInitialized: () => {
           status.textContent = ''; canvas.focus(); runtimeReady = true;
+          // Keep the screen awake while playing — also stops aggressive tab throttling (Edge efficiency mode).
+          let lock = null;
+          const acquire = () => navigator.wakeLock?.request('screen').then((l) => { lock = l; }).catch(() => {});
+          acquire();
+          document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && (!lock || lock.released)) acquire(); });
           if (debug) { debugEl.hidden = false; setInterval(updateDebug, 1000); }
           // If the browser kept audio locked (no user gesture on this origin yet), ask for one click.
           setTimeout(() => {
