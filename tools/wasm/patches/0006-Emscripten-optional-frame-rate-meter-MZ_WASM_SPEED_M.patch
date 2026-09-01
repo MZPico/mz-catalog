@@ -1,0 +1,43 @@
+From 7bcbc48bd15973f6676bbcdd31e7da696f2a07fa Mon Sep 17 00:00:00 2001
+From: Martin Matyas <martin.matyas@tietoevry.com>
+Date: Tue, 1 Sep 2026 11:55:07 +0200
+Subject: [PATCH 06/19] Emscripten: optional frame-rate meter
+ (MZ_WASM_SPEED_METER) for browser profiling
+
+---
+ src/iface/iface_video.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/src/iface/iface_video.h b/src/iface/iface_video.h
+index 56c35c5..2d960dc 100644
+--- a/src/iface/iface_video.h
++++ b/src/iface/iface_video.h
+@@ -8,6 +8,10 @@
+ #include "emulator.h"
+ #include "display.h"
+ #include "emulator/emulator_measuring.h"
++#ifdef __EMSCRIPTEN__
++#include <emscripten.h>
++#include <stdio.h>
++#endif
+ 
+ typedef struct iface_video_callbacks_t
+ {
+@@ -78,6 +82,14 @@ static inline bool iface_video_get_redraw_full_screen_request(void)
+ 
+ static inline void iface_video_framebuffer_screen_done(uint8_t *pixels)
+ {
++#if defined(__EMSCRIPTEN__) && defined(MZ_WASM_SPEED_METER)
++    { /* wasm speed meter: emulated frames per wall second, printed every 250 frames */
++        static int n = 0; static double t0 = 0;
++        double now = emscripten_get_now();
++        if (t0 == 0) t0 = now;
++        if (++n == 250) { printf("[speed] %.1f fps\n", 250000.0 / (now - t0)); fflush(stdout); n = 0; t0 = now; }
++    }
++#endif
+ #if 0
+     while (1)
+     {
+-- 
+2.43.0
+

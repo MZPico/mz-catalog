@@ -1,0 +1,73 @@
+From 60b43d0a19a11ecd39ba8bffab9ee366e82182f2 Mon Sep 17 00:00:00 2001
+From: Martin Matyas <martin.matyas@tietoevry.com>
+Date: Tue, 1 Sep 2026 13:52:03 +0200
+Subject: [PATCH 14/19] Bootstrap: open the speaker gate (E008 bit 0); kiosk:
+ no main-window popup, no MZF size dialog
+
+---
+ src/emulator/mzarch/bootstrap.c      | 6 ++++++
+ src/ui-imgui/cmt/cmt_fix_mzfsize.cpp | 3 +++
+ src/ui-imgui/main_window.cpp         | 3 ++-
+ 3 files changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/src/emulator/mzarch/bootstrap.c b/src/emulator/mzarch/bootstrap.c
+index 82ffd07..04ceb7c 100644
+--- a/src/emulator/mzarch/bootstrap.c
++++ b/src/emulator/mzarch/bootstrap.c
+@@ -49,6 +49,12 @@ static void mzarch_bootstrap_init(void)
+     pioz80_write_byte(1, 0x07);
+ #endif
+ 
++#if MZARCH != 700
++    /* The ROM leaves the 8253 channel-0 (speaker) gate open after boot (E008 bit 0);
++     * programs started directly rely on that, otherwise MZ-700-mode games stay silent. */
++    g_gdg.regct53g7 = 1;
++    ctc8253_gate(0, 1, gdg_get_insigeop_ticks());
++#endif
+     // Zavolame platform-specific bootstrap init, ktery muze nastavit mapovani pameti a podobne
+     mzarch_platform_bootstrap_init();
+ }
+diff --git a/src/ui-imgui/cmt/cmt_fix_mzfsize.cpp b/src/ui-imgui/cmt/cmt_fix_mzfsize.cpp
+index 8823ce2..4dc5b3f 100644
+--- a/src/ui-imgui/cmt/cmt_fix_mzfsize.cpp
++++ b/src/ui-imgui/cmt/cmt_fix_mzfsize.cpp
+@@ -14,6 +14,7 @@
+ #include "emulator/hw-generic/cmt/cmthack.h"
+ #include "baseui/baseui_tools.h"
+ #include "baseui/baseui_filechooser.h"
++#include "libs/sdlapp/sdlapp_options.h"
+ 
+ extern "C"
+ {
+@@ -32,6 +33,8 @@ ui_cmt_mzfsize_t g_ui_cmt_mzfsize = {NULL, 0, 0};
+ 
+ void imgui_cmt_fix_mzfsize_popup_activate(const char *filename, int valid_size, int file_size)
+ {
++    if (sdlapp_option_present("--kiosk"))
++        return; /* kiosk: silently ignore padded MZF files, as the "Ignore" button would */
+     g_print("MZF file size check: %s (%d) > %d\n", filename, file_size, valid_size);
+ 
+     if (g_ui_cmt_mzfsize.filename != NULL)
+diff --git a/src/ui-imgui/main_window.cpp b/src/ui-imgui/main_window.cpp
+index 3de5055..4ddef15 100644
+--- a/src/ui-imgui/main_window.cpp
++++ b/src/ui-imgui/main_window.cpp
+@@ -1,5 +1,6 @@
+ #include "main.h"
+ #include "libs/sdlapp/sdlapp.h"
++#include "libs/sdlapp/sdlapp_options.h"
+ #include "ui-imgui/bootstrap/myimgui.h"
+ #include "libs/imgui/imgui.h"
+ #include <SDL3/SDL.h>
+@@ -191,7 +192,7 @@ static void ShowFullScreenImageEmulatorWindow(GLuint texture)
+     };
+ 
+     // Detekce pravého kliknutí -> otevření popup menu
+-    if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
++    if (!sdlapp_option_present("--kiosk") && ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+     {
+         ImGui::OpenPopup("EmulatorPopupMenu");
+     };
+-- 
+2.43.0
+

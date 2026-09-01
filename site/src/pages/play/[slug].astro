@@ -1,0 +1,104 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const titles = await getCollection('titles');
+  return titles
+    .filter((e) => e.data.machine !== 'mz-1500')
+    .map((entry) => ({ params: { slug: entry.data.slug }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const t = entry.data;
+const files = t.files.map((f) => f.path);
+---
+<Base title={`Play ${t.title}`} description={`Run ${t.title} in the browser with the mz800emu emulator.`}>
+  <div class="play-head">
+    <h1>{t.title} <span class="meta">— play online</span></h1>
+    <a href={`/titles/${t.slug}/`}>← back to the title page</a>
+  </div>
+  <div class="play-frame">
+    <canvas id="canvas" tabindex="0" width="928" height="576"></canvas>
+    <div id="play-overlay" class="play-overlay">
+      <button type="button" id="play-start" class="btn">▶ Start {t.title}</button>
+      <p class="meta">Loads the MZ-800 emulator (~7 MB) and runs the tape image. Sound needs a click — that's it.</p>
+    </div>
+  </div>
+  <div class="play-controls">
+    <button type="button" id="play-fullscreen" class="btn" title="Fullscreen (Esc to leave)">⛶ Fullscreen</button>
+    <button type="button" id="play-reload" class="btn secondary" title="Reload the page and restart the game">↻ Restart</button>
+    <span class="play-status meta" id="play-status"></span>
+  </div>
+  <details class="play-help">
+    <summary>Keys &amp; tips</summary>
+    <ul>
+      <li>Click the screen to give it keyboard focus. Sharp specials: GRAPH = Caps Lock, ALPHA = <code>\</code>, INST = Insert, DEL = Backspace.</li>
+      <li>The emulator runs in kiosk mode: every key goes to the MZ (no emulator hotkeys). Use ↻ Restart to reload the game, ⛶ Fullscreen for a big screen (Esc leaves it).</li>
+      <li>Everything runs locally in your browser; nothing is uploaded.</li>
+    </ul>
+  </details>
+  <p class="meta">Emulation by <a href="https://github.com/michalhucik/mz800emu" rel="noopener">mz800emu</a> (GPL) compiled to WebAssembly — <a href="/play/emu/README.md">build notes &amp; source</a>.</p>
+
+  <script define:vars={{ slug: t.slug, files }}>
+    const params = new URLSearchParams(location.search);
+    const file = files.includes(params.get('file')) ? params.get('file') : files[0];
+    // Audio buffer size in frames (power of two, 256..16384). Larger = fewer crackles, more latency.
+    const buf = ['256', '512', '1024', '2048', '4096'].includes(params.get('buf')) ? params.get('buf') : '1024';
+    const status = document.getElementById('play-status');
+    const overlay = document.getElementById('play-overlay');
+    const canvas = document.getElementById('canvas');
+
+    const startBtn = document.getElementById('play-start');
+    document.getElementById('play-fullscreen').addEventListener('click', () => {
+      const el = document.querySelector('.play-frame');
+      if (document.fullscreenElement) document.exitFullscreen(); else el.requestFullscreen?.({ navigationUI: 'hide' });
+    });
+    document.getElementById('play-reload').addEventListener('click', () => location.reload());
+    let started = false;
+    const start = async () => {
+      if (started) return; started = true;
+      overlay.hidden = true;
+      status.textContent = 'downloading tape image…';
+      const resp = await fetch(`/files/${slug}/${file}`);
+      if (!resp.ok) { status.textContent = `could not fetch ${file} (${resp.status})`; return; }
+      const mzf = new Uint8Array(await resp.arrayBuffer());
+      status.textContent = 'loading emulator…';
+      window.Module = {
+        canvas,
+        arguments: ['--no-first-run-windows', '--no-save-ini', '--kiosk', '--run-mzf', '/tape.mzf'],
+        preRun: [() => {
+          // The emulator paces itself on the audio callback; the wasm build pulls as many
+          // frames per callback as the buffer needs, so this only trades latency vs. robustness.
+          ENV.SDL_AUDIO_DEVICE_SAMPLE_FRAMES = buf; // module-scope runtime global
+          Module.FS.writeFile('/tape.mzf', mzf);
+        }],
+        locateFile: (p) => `/play/emu/${p}`,
+        print: () => {},
+        printErr: (m) => { if (/error|fail/i.test(m)) console.warn('[mz800emu]', m); },
+        setStatus: (m) => { status.textContent = m; },
+        onRuntimeInitialized: () => {
+          status.textContent = ''; canvas.focus();
+          // If the browser kept audio locked (no user gesture on this origin yet), ask for one click.
+          setTimeout(() => {
+            const ctx = window.Module?.SDL3?.audioContext;
+            if (ctx && ctx.state !== 'running') {
+              startBtn.textContent = '🔊 Click to enable sound';
+              overlay.hidden = false;
+              startBtn.onclick = () => { ctx.resume(); overlay.hidden = true; canvas.focus(); };
+            }
+          }, 1500);
+        },
+        onAbort: (w) => { status.textContent = `emulator aborted: ${w}`; },
+      };
+      const s = document.createElement('script');
+      s.src = '/play/emu/mz800emu.js';
+      s.onerror = () => { status.textContent = 'failed to load the emulator script'; };
+      document.body.appendChild(s);
+    };
+    startBtn.addEventListener('click', start);
+    // Arriving from a click inside the catalog counts as user interaction with this origin,
+    // so start immediately; direct visits keep the explicit start button.
+    const fromCatalog = document.referrer.startsWith(location.origin) || params.has('autostart');
+    if (fromCatalog) start();
+  </script>
+</Base>

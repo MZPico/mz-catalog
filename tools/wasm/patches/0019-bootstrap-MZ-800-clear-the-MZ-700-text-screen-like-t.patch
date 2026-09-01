@@ -1,0 +1,36 @@
+From 0ad1c7025bc97bdf3e16d16aee0e0a6f8e2399ab Mon Sep 17 00:00:00 2001
+From: Martin Matyas <martin.matyas@tietoevry.com>
+Date: Tue, 1 Sep 2026 15:15:53 +0200
+Subject: [PATCH 19/19] bootstrap (MZ-800): clear the MZ-700 text screen like
+ the monitor does
+
+Character VRAM (plane I + 0x1000) to 0x00 and attributes (plane I +
+0x1800) to 0x71, as captured at program entry on the ROM path. S-BASIC
+1Z-013B leaves the attributes alone and showed the power-on VRAM
+pattern as vertical stripes when started via --run-mzf.
+---
+ src/emulator/mzarch/mz800/mz800_bootstrap.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/src/emulator/mzarch/mz800/mz800_bootstrap.c b/src/emulator/mzarch/mz800/mz800_bootstrap.c
+index 2aa98a5..bd37f3d 100644
+--- a/src/emulator/mzarch/mz800/mz800_bootstrap.c
++++ b/src/emulator/mzarch/mz800/mz800_bootstrap.c
+@@ -33,6 +33,14 @@ void mzarch_platform_bootstrap_init(void)
+      * CG-ROM v paměti: g_memory.ROM[0x1000-0x1FFF] (= addr & 0x3fff pro
+      * bus 0x1000-0x1FFF, viz MEMORY_ROM_READ_BYTE makro). */
+     memcpy ( g_memoryVRAM_I, &g_memory.ROM[ 0x1000 ], 0x1000 );
++
++    /* The monitor clears the MZ-700 mode text screen at boot: character VRAM
++     * (D000-D7FF = plane I + 0x1000) to 0x00 and attribute VRAM (D800-DFFF =
++     * plane I + 0x1800) to 0x71 (white on blue). Programs such as S-BASIC
++     * 1Z-013B never touch the attributes themselves and rely on this; without
++     * it the power-on VRAM pattern shows through as stripes. */
++    memset ( g_memoryVRAM_I + 0x1000, 0x00, 0x0800 );
++    memset ( g_memoryVRAM_I + 0x1800, 0x71, 0x0800 );
+ }
+ 
+ void mzarch_platform_load_prepare_body_map(uint16_t fstrt)
+-- 
+2.43.0
+

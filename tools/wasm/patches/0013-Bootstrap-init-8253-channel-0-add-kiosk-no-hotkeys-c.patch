@@ -1,0 +1,83 @@
+From 071e6cfeecac2d0e608eb35f6781b200097fc737 Mon Sep 17 00:00:00 2001
+From: Martin Matyas <martin.matyas@tietoevry.com>
+Date: Tue, 1 Sep 2026 13:31:56 +0200
+Subject: [PATCH 13/19] Bootstrap: init 8253 channel 0; add --kiosk (no
+ hotkeys/context menu) for embedded use
+
+---
+ src/emulator/mzarch/bootstrap.c           | 1 +
+ src/main.c                                | 2 ++
+ src/ui-imgui/topmenu/global_shortcuts.cpp | 3 +++
+ src/ui-imgui/topmenu/topmenu.cpp          | 3 +++
+ 4 files changed, 9 insertions(+)
+
+diff --git a/src/emulator/mzarch/bootstrap.c b/src/emulator/mzarch/bootstrap.c
+index 6312429..82ffd07 100644
+--- a/src/emulator/mzarch/bootstrap.c
++++ b/src/emulator/mzarch/bootstrap.c
+@@ -26,6 +26,7 @@ static void mzarch_bootstrap_init(void)
+     pio8255_write(3, 0x05);
+ 
+     // CTC init
++    ctc8253_write_byte(3, 0x36); // channel 0 = sound: mode 3 (square wave), LSB+MSB — the monitor does this at boot
+     ctc8253_write_byte(3, 0x74);
+     ctc8253_write_byte(3, 0xb0);
+     ctc8253_write_byte(2, 0xc0);
+diff --git a/src/main.c b/src/main.c
+index d9aac04..bb46c16 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -201,6 +201,8 @@ static const st_SDLAPP_OPTION_DEF g_known_options[] = {
+       "(MZ-800, MZ-1500)." },
+     { "--no-save-ini",      SDLAPP_OPTION_FLAG,  SDLAPP_OPTVAL_NONE,        NULL,        NULL,
+       "Do not write the .ini file at exit (CLI overrides become session-only)." },
++    { "--kiosk",            SDLAPP_OPTION_FLAG,  SDLAPP_OPTVAL_NONE,        NULL,        NULL,
++      "Kiosk mode: disable emulator hotkeys, context menu and dialogs (embedded/browser use)." },
+     { "--no-first-run-windows", SDLAPP_OPTION_FLAG, SDLAPP_OPTVAL_NONE,     NULL,        NULL,
+       "Suppress About + Version Check Setup windows shown automatically on first run "
+       "(when no .ini file exists). Useful for headless / scripted launches." },
+diff --git a/src/ui-imgui/topmenu/global_shortcuts.cpp b/src/ui-imgui/topmenu/global_shortcuts.cpp
+index 386e5da..3e70740 100644
+--- a/src/ui-imgui/topmenu/global_shortcuts.cpp
++++ b/src/ui-imgui/topmenu/global_shortcuts.cpp
+@@ -28,6 +28,7 @@
+ #include "ui-imgui/debugger/debugger_state.h"
+ #include "ui-imgui/debugger/breakpoints/bpt_state.h"
+ #include "ui-imgui/debugger/dbgapi_helpers.h"
++#include "libs/sdlapp/sdlapp_options.h"
+ 
+ extern "C"
+ {
+@@ -42,6 +43,8 @@ extern "C"
+ 
+ void imgui_global_shortcuts(void)
+ {
++    if (sdlapp_option_present("--kiosk"))
++        return; /* kiosk: no emulator hotkeys, the MZ keyboard gets everything */
+     // Globalni klavesove zkratky aplikovane na cely ImGui
+ 
+     ImGuiIO &io = ImGui::GetIO();
+diff --git a/src/ui-imgui/topmenu/topmenu.cpp b/src/ui-imgui/topmenu/topmenu.cpp
+index 9371c40..4997873 100644
+--- a/src/ui-imgui/topmenu/topmenu.cpp
++++ b/src/ui-imgui/topmenu/topmenu.cpp
+@@ -13,6 +13,7 @@
+ // #include "iface/iface_video.h"
+ #include "topmenu.h"
+ #include "ui-imgui/debugger/dbgapi_helpers.h"
++#include "libs/sdlapp/sdlapp_options.h"
+ 
+ // #if HAVE_JOY
+ // #include "iface/iface_joy.h"
+@@ -64,6 +65,8 @@ void imgui_topmenu_body(void)
+ 
+ void imgui_topmenu_handler(void) // pouzivame pokud je emulator zobrazen jako pozadi
+ {
++    if (sdlapp_option_present("--kiosk"))
++        return; /* kiosk: no context menu */
+     if (ImGui::BeginPopupContextVoid("EmulatorPopupMenu", ImGuiPopupFlags_MouseButtonRight))
+     {
+         imgui_topmenu_body();
+-- 
+2.43.0
+

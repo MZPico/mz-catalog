@@ -1,0 +1,34 @@
+From ee0b497e0880658a1a814141f30b58b8228a15f7 Mon Sep 17 00:00:00 2001
+From: Martin Matyas <martin.matyas@tietoevry.com>
+Date: Tue, 1 Sep 2026 10:11:00 +0200
+Subject: [PATCH 04/19] Emscripten: request an OpenGL ES 3.0 context (WebGL)
+ instead of desktop Core
+
+---
+ src/libs/sdlapp/sdl3_backend/sdl3_backend.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/libs/sdlapp/sdl3_backend/sdl3_backend.c b/src/libs/sdlapp/sdl3_backend/sdl3_backend.c
+index 2b1e18b..2e8aafd 100644
+--- a/src/libs/sdlapp/sdl3_backend/sdl3_backend.c
++++ b/src/libs/sdlapp/sdl3_backend/sdl3_backend.c
+@@ -144,9 +144,16 @@ gboolean sdl3_backend_video_opengl_init(void)
+     };
+ 
+     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
++#ifdef __EMSCRIPTEN__
++    /* Browsers only offer WebGL (= OpenGL ES); a desktop Core profile request fails. */
++    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
++    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
++    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
++#else
+     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
++#endif
+ 
+     // Create window with graphics context
+     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+-- 
+2.43.0
+

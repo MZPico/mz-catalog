@@ -1,0 +1,14 @@
+--- a/src/audio/emscripten/SDL_emscriptenaudio.c
++++ b/src/audio/emscripten/SDL_emscriptenaudio.c
+@@ -183,7 +183,11 @@
+ 
+     // limit to native freq
+     device->spec.freq = MAIN_THREAD_EM_ASM_INT({ return Module['SDL3'].audioContext.sampleRate; });
++    // mz-catalog: honor an explicit SDL_AUDIO_DEVICE_SAMPLE_FRAMES hint so callers that pace
++    // emulation on the audio callback can request small ScriptProcessor buffers.
++    if (!SDL_GetHint(SDL_HINT_AUDIO_DEVICE_SAMPLE_FRAMES)) {
+     device->sample_frames = SDL_GetDefaultSampleFramesFromFreq(device->spec.freq) * 2;  // double the buffer size, some browsers need more, and we'll just have to live with the latency.
++    }
+ 
+     SDL_UpdatedAudioDeviceFormat(device);
+ 

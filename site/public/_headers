@@ -19,6 +19,12 @@
 /pagefind/*
   Cache-Control: public, max-age=3600
 
+# In-browser emulator (Emscripten pthreads need SharedArrayBuffer => cross-origin isolation).
+/play/*
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Embedder-Policy: require-corp
+  Cache-Control: public, max-age=3600
+
 # Device-facing index: short cache so firmware picks up new titles quickly.
 /manifest.json
   Cache-Control: public, max-age=300

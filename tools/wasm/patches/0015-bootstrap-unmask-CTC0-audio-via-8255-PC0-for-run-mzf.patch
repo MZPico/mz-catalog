@@ -1,0 +1,29 @@
+From f9777758e1b155bf191eb87b742b1dc3458f9d89 Mon Sep 17 00:00:00 2001
+From: Martin Matyas <martin.matyas@tietoevry.com>
+Date: Tue, 1 Sep 2026 14:08:24 +0200
+Subject: [PATCH 15/19] bootstrap: unmask CTC0 audio via 8255 PC0 for --run-mzf
+ on MZ-800
+
+The MZ-800/MZ-1500 gate the 8253 channel-0 speaker output with PPI
+port C bit 0 (CTC_AUDIO_MASK). The bootstrap initialised PC3/PC2 but
+never PC0, so titles started via --run-mzf were silent until a ROM
+boot set it. Verified via MCP get_periph_i8255: signal_pc00 = 1.
+---
+ src/emulator/mzarch/bootstrap.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/emulator/mzarch/bootstrap.c b/src/emulator/mzarch/bootstrap.c
+index 04ceb7c..abf665e 100644
+--- a/src/emulator/mzarch/bootstrap.c
++++ b/src/emulator/mzarch/bootstrap.c
+@@ -24,6 +24,7 @@ static void mzarch_bootstrap_init(void)
+     pio8255_write(3, 0x8a);
+     pio8255_write(3, 0x07);
+     pio8255_write(3, 0x05);
++    pio8255_write(3, 0x01); /* PC0 = CTC0 audio unmasked (MZ-800/MZ-1500 gate the speaker with it; the ROM sets it at boot) */
+ 
+     // CTC init
+     ctc8253_write_byte(3, 0x36); // channel 0 = sound: mode 3 (square wave), LSB+MSB — the monitor does this at boot
+-- 
+2.43.0
+

@@ -1,0 +1,148 @@
+From 198ba4cc90b3b89eb6e9fc48abdbe413cc794044 Mon Sep 17 00:00:00 2001
+From: Martin Matyas <martin.matyas@tietoevry.com>
+Date: Tue, 1 Sep 2026 13:07:44 +0200
+Subject: [PATCH 11/19] Video: palette LUT conversion and persistent GL texture
+ for the emulator screen
+
+---
+ src/iface-video/sdl3/iface_video_sdl3.c       | 79 +++++++++++++++----
+ src/iface-video/sdl3/iface_video_sdl3.h       |  1 +
+ src/iface-video/sdlapp/sdlapp_imgui_video.cpp | 12 ++-
+ 3 files changed, 72 insertions(+), 20 deletions(-)
+
+diff --git a/src/iface-video/sdl3/iface_video_sdl3.c b/src/iface-video/sdl3/iface_video_sdl3.c
+index 7e79d46..59edc80 100644
+--- a/src/iface-video/sdl3/iface_video_sdl3.c
++++ b/src/iface-video/sdl3/iface_video_sdl3.c
+@@ -114,24 +114,21 @@ SDL_Surface *ConvertIndexedSurfaceToRGBA(SDL_Surface *surface)
+         return NULL;
+     }
+ 
+-    Uint8 *srcPixels = (Uint8 *)surface->pixels;
+-    Uint32 *dstPixels = (Uint32 *)converted->pixels;
+-    int pixelCount = surface->w * surface->h;
+-
+-    // Kopírujeme a převádíme indexované pixely na RGBA
+-    for (int i = 0; i < pixelCount; i++)
++    /* 256-entry lookup table: one SDL_MapRGBA per palette entry instead of one per pixel. */
++    const SDL_PixelFormatDetails *rgba = SDL_GetPixelFormatDetails(SDL_PIXELFORMAT_RGBA32);
++    Uint32 lut[256];
++    for (int c = 0; c < 256; c++)
+     {
+-        Uint8 index = srcPixels[i];               // Index v paletě
+-        SDL_Color color = palette->colors[index]; // Skutečná barva
+-        dstPixels[i] = SDL_MapRGBA(SDL_GetPixelFormatDetails(SDL_PIXELFORMAT_RGBA32), NULL, color.r, color.g, color.b, 255);
+-#if 0
+-        if (i == 0) {
+-            SDL_Log("First pixel index: %d (R=%d G=%d B=%d A=%d)",
+-                index,
+-                color.r, color.g, color.b, color.a);
+-        };
+-#endif
+-    };
++        SDL_Color color = palette->colors[c];
++        lut[c] = SDL_MapRGBA(rgba, NULL, color.r, color.g, color.b, 255);
++    }
++    for (int y = 0; y < surface->h; y++)
++    {
++        const Uint8 *src = (const Uint8 *)surface->pixels + (size_t)y * surface->pitch;
++        Uint32 *dst = (Uint32 *)((Uint8 *)converted->pixels + (size_t)y * converted->pitch);
++        for (int x = 0; x < surface->w; x++)
++            dst[x] = lut[src[x]];
++    }
+     return converted;
+ }
+ 
+@@ -193,6 +190,54 @@ GLuint SDL_SurfaceToTexture(SDL_Surface *surface)
+     return texture;
+ }
+ 
++/* Re-upload a surface into an existing texture created by SDL_SurfaceToTexture()
++ * (same size), avoiding per-frame texture creation. Returns FALSE if the sizes
++ * differ (caller should recreate the texture). */
++gboolean video_sdl3_update_texture_from_surface(GLuint texture, SDL_Surface *surface, int tex_w, int tex_h)
++{
++    if (!surface || !texture || surface->w != tex_w || surface->h != tex_h)
++        return FALSE;
++    SDL_Surface *converted = NULL;
++    if (surface->format == SDL_PIXELFORMAT_INDEX8)
++    {
++        static SDL_Surface *scratch = NULL;
++        if (!scratch || scratch->w != surface->w || scratch->h != surface->h)
++        {
++            if (scratch) SDL_DestroySurface(scratch);
++            scratch = SDL_CreateSurface(surface->w, surface->h, SDL_PIXELFORMAT_RGBA32);
++            if (!scratch) return FALSE;
++        }
++        SDL_Palette *palette = SDL_GetSurfacePalette(surface);
++        if (!palette) return FALSE;
++        const SDL_PixelFormatDetails *rgba = SDL_GetPixelFormatDetails(SDL_PIXELFORMAT_RGBA32);
++        Uint32 lut[256];
++        for (int c = 0; c < 256; c++)
++        {
++            SDL_Color color = palette->colors[c];
++            lut[c] = SDL_MapRGBA(rgba, NULL, color.r, color.g, color.b, 255);
++        }
++        for (int y = 0; y < surface->h; y++)
++        {
++            const Uint8 *src = (const Uint8 *)surface->pixels + (size_t)y * surface->pitch;
++            Uint32 *dst = (Uint32 *)((Uint8 *)scratch->pixels + (size_t)y * scratch->pitch);
++            for (int x = 0; x < surface->w; x++)
++                dst[x] = lut[src[x]];
++        }
++        surface = scratch;
++    }
++    else if (surface->format != SDL_PIXELFORMAT_RGBA32)
++    {
++        converted = SDL_ConvertSurface(surface, SDL_PIXELFORMAT_RGBA32);
++        if (!converted) return FALSE;
++        surface = converted;
++    }
++    glBindTexture(GL_TEXTURE_2D, texture);
++    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, surface->w, surface->h, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
++    glBindTexture(GL_TEXTURE_2D, 0);
++    if (converted) SDL_DestroySurface(converted);
++    return TRUE;
++}
++
+ gboolean video_sdl3_update_surface_from_framebuffer(SDL_Surface *surface)
+ {
+     if (!surface)
+diff --git a/src/iface-video/sdl3/iface_video_sdl3.h b/src/iface-video/sdl3/iface_video_sdl3.h
+index ea561a7..72568c0 100644
+--- a/src/iface-video/sdl3/iface_video_sdl3.h
++++ b/src/iface-video/sdl3/iface_video_sdl3.h
+@@ -15,6 +15,7 @@ extern "C"
+     gboolean video_sdl3_update_surface_from_framebuffer(SDL_Surface *surface);
+     void video_sdl3_render_surface_as_background(SDL_Surface *surface, SDL_Renderer *renderer, float aspect_ratio, gboolean have_new_screen);
+     GLuint SDL_SurfaceToTexture(SDL_Surface *surface);
++    gboolean video_sdl3_update_texture_from_surface(GLuint texture, SDL_Surface *surface, int tex_w, int tex_h);
+     SDL_Surface *ConvertIndexedSurfaceToRGBA(SDL_Surface *surface);
+     void video_sdl3_set_render_vsync(bool enabled);
+     void video_sdl3_set_GL_swap_interval(int value);
+diff --git a/src/iface-video/sdlapp/sdlapp_imgui_video.cpp b/src/iface-video/sdlapp/sdlapp_imgui_video.cpp
+index d32eb43..39417cd 100644
+--- a/src/iface-video/sdlapp/sdlapp_imgui_video.cpp
++++ b/src/iface-video/sdlapp/sdlapp_imgui_video.cpp
+@@ -125,9 +125,15 @@ static void video_sdlapp_imgui_render_cb(SdlAppWindow *win, gpointer user_data)
+     if ((have_new_screen) || (DISPLAY_TEST_FORCED_FULL_SCREEN_REDRAWING))
+     {
+         // g_print("Redrawing screen fb: %u, ren_id: %u\n", g_iface_video->fbsnapshot_screen_id, g_iface_video->renderer_screen_id);
+-        if (imageTexture)
+-            glDeleteTextures(1, &imageTexture);
+-        imageTexture = SDL_SurfaceToTexture(surface);
++        static int imageTexW = 0, imageTexH = 0;
++        if (!imageTexture || !video_sdl3_update_texture_from_surface(imageTexture, surface, imageTexW, imageTexH))
++        {
++            if (imageTexture)
++                glDeleteTextures(1, &imageTexture);
++            imageTexture = SDL_SurfaceToTexture(surface);
++            imageTexW = surface->w;
++            imageTexH = surface->h;
++        }
+     };
+ 
+     imgui_main_window(imageTexture);
+-- 
+2.43.0
+

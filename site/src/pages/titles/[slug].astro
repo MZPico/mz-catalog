@@ -70,7 +70,10 @@ const summary = `${t.title} — ${machineLabel[t.machine]} ${t.genre.join(', ')}
             {t.files.map((f) => (
               <>
                 <tr>
-                  <td><a class="btn" href={`/files/${t.slug}/${f.path}`} download>Download</a></td>
+                  <td class="actions">
+                    <a class="btn" href={`/files/${t.slug}/${f.path}`} download>Download</a>
+                    {t.machine !== 'mz-1500' && <a class="btn play" href={`/play/${t.slug}/?file=${f.path}`}>▶ Play</a>}
+                  </td>
                   <td class="mono">{f.path}</td>
                   <td>{kindLabel[f.kind]}</td>
                   <td class="mono">{f.header?.name}</td>

@@ -27,12 +27,29 @@ WAV download on every title page, with polarity-invert and pilot/layout
 knobs (fast short-pilot vs authentic with header/file retry copies).
 Remaining: Czech turbo-loader variants (2400+ Bd second stage).
 
-## Phase 4 — emulator
-Browser MZ-800 emulation, "Play online" per title. Preferred: Emscripten
-port of mz800emu core (now SDL3 + ImGui, both Emscripten-friendly) —
-coordinate with upstream author first. Fallback: MAME mz800 driver via
-Emscripten.
-
+## Phase 4 — emulator (first pass done 2026-09-01)
+Done: Emscripten port of mz800emu v2 (SDL3 + ImGui + GLib cross-built to
+wasm) — every MZ-700/MZ-800 title page has a ▶ Play button that boots
+the MZ-800 in the browser and autoloads the tape image
+(`site/src/pages/play/[slug].astro`, assets in `site/public/play/emu/`,
+COOP/COEP headers on `/play/*`). Kiosk mode (no emulator hotkeys, menus
+or dialogs), instant autostart from the catalog, fullscreen and restart
+buttons. Performance: emulation is paced by the SDL audio callback, so
+SDL's Emscripten backend is patched to allow small buffers
+(`tools/wasm/`), otherwise it caps at ~21 fps. The `--run-mzf` bootstrap
+was brought to parity with what the monitor ROM leaves behind at program
+entry (captured over the emulator's MCP debug API on the real ROM path):
+8255 PC0 sound unmask, IM 1 + EI, entry registers, RST 38h vector and
+work variables, cleared MZ-700 text screen (0x71 attributes) — fixes
+silent MZ-700 games, frozen cursors and striped screens. Also fixed an
+emulator bug where any 8255 PA7 pulse reset the 556 cursor timer
+(1Z-016 BASIC cursor never blinked). The emulator source changes are
+kept as a patch series in `tools/wasm/patches/` (the GPL "corresponding
+source"; a public MZPico fork of mz800emu is still to be decided).
+Remaining: publish the fork and upstream the patches (SDL hint fix, PA7
+fix, bootstrap parity), keyboard/virtual-keyboard UX and touch controls,
+MZ-700 build variant for pure MZ-700 titles, residual audio crackle on
+slow machines.
 ## Infra notes
 - Site + files: Cloudflare Workers static assets (git-connected build),
   live at https://mzpico.com since 2026-09-01 — never hardcode

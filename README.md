@@ -116,6 +116,51 @@ software into a real MZ through its tape-in jack.
 `_headers` for Cloudflare Pages. Search is client-side (Pagefind), so it
 is only available in the built site, not in `npm run dev`.
 
+## Play online (browser emulator)
+
+Every MZ-700/MZ-800 title page has a **▶ Play** button that runs the tape
+image in the browser using a WebAssembly build of
+[mz800emu](https://github.com/michalhucik/mz800emu) (GNU GPL, by Michal
+Hučík). The prebuilt files live in `site/public/play/emu/`
+(`mz800emu.js`, `.wasm`, `.data`); `/play/*` is served with
+`Cross-Origin-Opener-Policy: same-origin` and
+`Cross-Origin-Embedder-Policy: require-corp` (see `site/public/_headers`)
+because the emulator uses pthreads (SharedArrayBuffer).
+
+The page fetches the MZF from `/files/<slug>/<file>`, stages it into the
+emulator's in-memory filesystem and starts it with `--run-mzf --kiosk`
+(no emulator hotkeys or menus — the MZ keyboard gets every key). It
+auto-starts when reached from a catalog page (browsers allow audio after
+an interaction with the origin) and otherwise shows a start button; a
+fullscreen button and a `?buf=` audio-buffer override are available.
+
+### Rebuilding the emulator
+
+Done offline (not in CI): Emscripten SDK ≥ 6.0, meson + ninja, and a
+wasm sysroot with SDL3, SDL3_image, minizip-ng, libffi ≥ 3.8, glib 2.82
+and json-glib built via `emcmake` / a meson cross file (`-pthread`,
+`-sALLOW_TABLE_GROWTH=1`, `-Wno-incompatible-function-pointer-types`;
+stub `libresolv`/`posix_spawn` archives satisfy GIO's link checks). The emulator is configured with `emcmake cmake -DMZ_NO_DEBUGGER=ON
+-DMZ_NO_MCP=ON -DBUILD_TESTING=OFF` and linked with `-O3 -pthread
+-sPTHREAD_POOL_SIZE=8 -sINITIAL_MEMORY=256MB -sUSE_WEBGL2=1 -sFULL_ES3=1
+-sUSE_ZLIB=1 --preload-file ui_resources/imgui/{fonts,symbols,images}`
+(no `ALLOW_MEMORY_GROWTH` — it slows every JS-side memory access under
+pthreads). SDL3's Emscripten audio backend is patched to honor
+`SDL_AUDIO_DEVICE_SAMPLE_FRAMES` (`tools/wasm/sdl3-emscripten-audio-buffer.patch`):
+mz800emu paces emulation on the audio callback, and SDL's hard-coded
+2048-frame ScriptProcessor buffer would cap it at ~21 fps; the play page
+requests 512-frame buffers via `Module.ENV`. Scripts, cross file and
+stub libraries: `tools/wasm/`.
+The emulator source changes (Emscripten main loop, GLES 3.0 context, no
+curl/version check, audio callback that fills the whole device buffer,
+palette-LUT screen upload into a persistent texture, ImGui backend
+without per-frame GL state queries, `--kiosk`, and the `--run-mzf`
+bootstrap fixes that make it start programs the way the monitor ROM
+does) are published as a patch series against upstream mz800emu in
+`tools/wasm/patches/` — together with the upstream commit named in
+`tools/wasm/README.md` this is the complete corresponding source for the
+shipped binaries.
+
 ## manifest.json (device API)
 
 `manifest.json` at the site root is the machine-readable index consumed

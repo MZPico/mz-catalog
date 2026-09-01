@@ -1,0 +1,78 @@
+From 44450c982c7cf386636787846191156628f57b9f Mon Sep 17 00:00:00 2001
+From: Martin Matyas <martin.matyas@tietoevry.com>
+Date: Tue, 1 Sep 2026 09:13:57 +0200
+Subject: [PATCH 01/19] Emscripten: guard curl/GL deps and version-check
+ network backend
+
+---
+ cmake/Dependencies.cmake          | 10 +++++-----
+ src/version_check/version_check.c |  4 +++-
+ 2 files changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/cmake/Dependencies.cmake b/cmake/Dependencies.cmake
+index b5e1a1c..b2339f1 100644
+--- a/cmake/Dependencies.cmake
++++ b/cmake/Dependencies.cmake
+@@ -138,7 +138,7 @@ target_link_libraries(mz_json_glib INTERFACE PkgConfig::JSON_GLIB)
+ # minizip-ng (snapshot system)
+ # Linux používá static + transitivní deps, Windows dynamic
+ # ----------------------------------------------------------------------------
+-if(UNIX)
++if(UNIX AND NOT EMSCRIPTEN)
+     pkg_check_modules(MINIZIP REQUIRED IMPORTED_TARGET minizip-ng)
+     # Pro statické linkování - Linux variant
+     pkg_check_modules(MINIZIP_STATIC REQUIRED minizip-ng)
+@@ -160,7 +160,7 @@ endif()
+ # argument v pkg_check_modules vyzaduje CMake >=3.29). Reseni: explicitni
+ # find_package(ZLIB) + link na UNIX. Pokud je dostupna shared verze, link
+ # je redundantni ale neskodi.
+-if(UNIX)
++if(UNIX AND NOT EMSCRIPTEN)
+     find_package(ZLIB REQUIRED)
+     target_link_libraries(mz_minizip INTERFACE ZLIB::ZLIB)
+ endif()
+@@ -172,7 +172,7 @@ endif()
+ add_library(mz_libcurl INTERFACE)
+ add_library(mz::libcurl ALIAS mz_libcurl)
+ 
+-if(UNIX)
++if(UNIX AND NOT EMSCRIPTEN)
+     pkg_check_modules(CURL REQUIRED IMPORTED_TARGET libcurl)
+     target_link_libraries(mz_libcurl INTERFACE PkgConfig::CURL)
+ endif()
+@@ -220,7 +220,7 @@ endif()
+ add_library(mz_opengl INTERFACE)
+ add_library(mz::opengl ALIAS mz_opengl)
+ 
+-if(UNIX)
++if(UNIX AND NOT EMSCRIPTEN)
+     if (APPLE)
+         find_package(OpenGL REQUIRED)
+         target_link_libraries(mz_opengl INTERFACE OpenGL::GL)
+@@ -240,7 +240,7 @@ endif()
+ add_library(mz_platform INTERFACE)
+ add_library(mz::platform ALIAS mz_platform)
+ 
+-if(UNIX)
++if(UNIX AND NOT EMSCRIPTEN)
+     target_compile_definitions(mz_platform INTERFACE
+         LINUX
+         _POSIX_C_SOURCE=200809L
+diff --git a/src/version_check/version_check.c b/src/version_check/version_check.c
+index fba1c26..05b1ab3 100644
+--- a/src/version_check/version_check.c
++++ b/src/version_check/version_check.c
+@@ -30,7 +30,9 @@
+ #include <strings.h>
+ 
+ //#define VERCHECK_USE_LIBSOUP
+-#define VERCHECK_USE_LIBCURL
++#ifndef __EMSCRIPTEN__
++#define VERCHECK_USE_LIBCURL   /* no network backend in the browser build */
++#endif
+ 
+ #ifdef VERCHECK_USE_LIBSOUP
+ #include <libsoup/soup.h>
+-- 
+2.43.0
+
