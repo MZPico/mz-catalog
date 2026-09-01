@@ -70,6 +70,16 @@ const files = t.files.map((f) => f.path);
     // Restart in place (machine reset + re-run of the tape) so fullscreen survives; before the
     // emulator is up, a reload is the only option.
     let runtimeReady = false;
+    // Touch devices: the first on-page tap (Start / enable-sound overlay) also enters
+    // fullscreen + landscape — the tiny windowed canvas is never what you want on a phone.
+    // If the player explicitly leaves fullscreen, don't force it again this session.
+    const isTouch = matchMedia('(pointer: coarse)').matches;
+    let fsAutoDone = false;
+    const enterFullscreenIfTouch = () => {
+      if (!isTouch || fsAutoDone || document.fullscreenElement) return;
+      fsAutoDone = true;
+      toggleFullscreen();
+    };
     const restart = () => {
       if (runtimeReady && typeof window.Module?._mz_wasm_restart === 'function') { window.Module._mz_wasm_restart(); canvas.focus(); }
       else location.reload();
@@ -258,7 +268,7 @@ const files = t.files.map((f) => f.path);
             if (ctx && ctx.state !== 'running') {
               startBtn.textContent = '🔊 Click to enable sound';
               overlay.hidden = false;
-              startBtn.onclick = () => { ctx.resume(); overlay.hidden = true; canvas.focus(); };
+              startBtn.onclick = () => { ctx.resume(); overlay.hidden = true; enterFullscreenIfTouch(); canvas.focus(); };
             }
           }, 1500);
         },
@@ -269,7 +279,7 @@ const files = t.files.map((f) => f.path);
       s.onerror = () => { status.textContent = 'failed to load the emulator script'; };
       document.body.appendChild(s);
     };
-    startBtn.addEventListener('click', start);
+    startBtn.addEventListener('click', () => { enterFullscreenIfTouch(); start(); });
     // Arriving from a click inside the catalog counts as user interaction with this origin,
     // so start immediately; direct visits keep the explicit start button.
     const fromCatalog = document.referrer.startsWith(location.origin) || params.has('autostart');
