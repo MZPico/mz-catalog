@@ -8,7 +8,7 @@
 //   GET /list?path=/            -> {"path":"","folders":["games-700",...],"files":[]}
 //   GET /list?path=/games-700   -> {"path":"games-700/","folders":[],"files":[{"name":"x.mzf","size":123},...]}
 //   GET /list?path=/unknown     -> {"path":"unknown/","folders":[],"files":[]}
-//   GET /download?path=/games-700/x.mzf -> raw MZF bytes
+//   GET /download?path=/games-700/x.mzf -> MZF bytes in HTTP chunked framing (see below)
 const DEFAULT_ORIGIN = 'https://mzpico.com';
 
 async function legacyMap(origin) {
@@ -39,11 +39,25 @@ export default {
       if (!entry) return new Response('not found', { status: 404 });
       const r = await fetch(`${origin}${entry.path}`, { cf: { cacheTtl: 3600, cacheEverything: true } });
       if (!r.ok) return new Response('upstream error', { status: 502 });
-      const body = await r.arrayBuffer(); // buffered so Content-Length is exact
+      const file = new Uint8Array(await r.arrayBuffer());
+      // The firmware's download parser (cloud_download_fn) expects an HTTP/1.1
+      // *chunked* body - the old nginx service always chunked /download - and
+      // reads hex size lines itself. Frame the file as one chunk ourselves and
+      // send it with an exact Content-Length, so Cloudflare never adds a second
+      // transfer-coding layer regardless of the client's HTTP version.
+      const enc = new TextEncoder();
+      const head = enc.encode(`${file.byteLength.toString(16)}\r\n`);
+      const tail = enc.encode('\r\n0\r\n\r\n');
+      const body = new Uint8Array(head.byteLength + file.byteLength + tail.byteLength);
+      body.set(head, 0);
+      body.set(file, head.byteLength);
+      body.set(tail, head.byteLength + file.byteLength);
       return new Response(body, {
         headers: {
           'Content-Type': 'application/octet-stream',
           'Content-Length': String(body.byteLength),
+          'Connection': 'close',
+          'Cache-Control': 'no-transform',
           'Content-Disposition': `attachment; filename*=UTF-8''${entry.name}`,
         },
       });

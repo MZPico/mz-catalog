@@ -60,7 +60,10 @@ slow machines.
   (`GET /list?path=…` → `{"path","folders":[],"files":[{"name","size"}]}`,
   `GET /download?path=…`). Replacement is ready: `workers/api-shim/`
   emulates it byte-compatibly from the static catalog (`legacy-api.json`).
-  CUT OVER 2026-09-01 — api.mzpico.com is served by the Worker shim;
+  CUT OVER 2026-09-01 — api.mzpico.com is served by the Worker shim
+  (note: the firmware parses /download bodies as HTTP chunked framing,
+  which nginx always produced — the shim frames the file as one chunk
+  itself; fixed 2026-09-01 after the card could browse but not load);
   rollback = flip the `api` record back to DNS-only. Oracle VM + bucket
   stay up as the safety net until a real card has loaded through the
   shim, then retire them.
