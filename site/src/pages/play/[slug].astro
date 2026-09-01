@@ -294,7 +294,9 @@ const files = t.files.map((f) => f.path);
     // touch devices the FIRST touch of the game area (pad, canvas) also enters fullscreen.
     const fromCatalog = params.has('autostart') || document.referrer.startsWith(location.origin);
     if (isTouch) {
-      document.querySelector('.play-frame').addEventListener('pointerdown', () => enterFullscreenIfTouch(), { capture: true });
+      // pointerup, not pointerdown: for touch input only the release grants the
+      // transient user activation that requestFullscreen() needs.
+      document.querySelector('.play-frame').addEventListener('pointerup', () => enterFullscreenIfTouch(), { capture: true });
     }
     if (fromCatalog) start();
   </script>
