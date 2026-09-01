@@ -1,7 +1,7 @@
 From 7ed9d3160e299dac85159328376af910b7390a83 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 18:12:52 +0200
-Subject: [PATCH 23/23] Emscripten: attribute-less screen blit by default, drop
+Subject: [PATCH 23/24] Emscripten: attribute-less screen blit by default, drop
  bisection switches
 
 The blit fixed the half-corrupted screen on a Samsung Xclipse 940

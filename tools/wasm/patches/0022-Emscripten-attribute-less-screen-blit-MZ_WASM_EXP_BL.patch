@@ -1,7 +1,7 @@
 From 87075ddeabc95c282a5b70d39b528ea67e0100e5 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 16:58:51 +0200
-Subject: [PATCH 22/23] Emscripten: attribute-less screen blit
+Subject: [PATCH 22/24] Emscripten: attribute-less screen blit
  (MZ_WASM_EXP_BLIT)
 
 Draw the emulator screen as one triangle generated from gl_VertexID (no

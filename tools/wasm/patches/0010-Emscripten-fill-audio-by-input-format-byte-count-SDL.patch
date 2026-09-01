@@ -1,7 +1,7 @@
 From 6a20894cc3a7e35e8ef1c32f308d3bea04497d4f Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 12:56:49 +0200
-Subject: [PATCH 10/23] Emscripten: fill audio by input-format byte count (SDL
+Subject: [PATCH 10/24] Emscripten: fill audio by input-format byte count (SDL
  amounts are in input format)
 
 ---

@@ -1,7 +1,7 @@
 From f9777758e1b155bf191eb87b742b1dc3458f9d89 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 1 Sep 2026 14:08:24 +0200
-Subject: [PATCH 15/23] bootstrap: unmask CTC0 audio via 8255 PC0 for --run-mzf
+Subject: [PATCH 15/24] bootstrap: unmask CTC0 audio via 8255 PC0 for --run-mzf
  on MZ-800
 
 The MZ-800/MZ-1500 gate the 8253 channel-0 speaker output with PPI

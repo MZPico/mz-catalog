@@ -1,0 +1,124 @@
+From befcf241d7a4fa9e999672b757c07a3d97bbb0db Mon Sep 17 00:00:00 2001
+From: Martin Matyas <martin.matyas@tietoevry.com>
+Date: Tue, 1 Sep 2026 19:00:06 +0200
+Subject: [PATCH 24/24] Emscripten: in-place restart (mz_wasm_restart) - reset
+ and re-run --run-mzf
+
+Exported to the embedding page so a restart keeps the browser's
+fullscreen state (a page reload always leaves fullscreen). The reset
+request path gained a rerun flag consumed together with the reset.
+---
+ src/emulator/mzarch/mzarch.c | 52 +++++++++++++++++++++++++++---------
+ src/emulator/mzarch/mzarch.h |  1 +
+ 2 files changed, 41 insertions(+), 12 deletions(-)
+
+diff --git a/src/emulator/mzarch/mzarch.c b/src/emulator/mzarch/mzarch.c
+index 694465e..610b221 100644
+--- a/src/emulator/mzarch/mzarch.c
++++ b/src/emulator/mzarch/mzarch.c
+@@ -10,8 +10,13 @@
+ #include "emulator_measuring.h"
+ #include "customspeed.h"
+ #include "bootstrap.h"
++#ifdef __EMSCRIPTEN__
++#include <emscripten.h>
++#endif
+ #include "libs/sdlapp/sdlapp_options.h"
+ #include "mzarch.h"
++
++static void mzarch_rerun_mzf_after_reset(void);
+ #include "mzarch_platform.h"
+ #include "libs/dasm-z80/z80_dasm.h"
+ #include "hw-generic/memory/memory.h"
+@@ -869,11 +874,15 @@ static inline void mzzarch_main_do_emulator_paused(void)
+          * neodpauzne). */
+         APP_MUTEX_LOCK(g_mzarch_main.reset_request_mutex);
+         bool do_reset = g_mzarch_main.reset_request;
++        bool do_rerun = g_mzarch_main.rerun_mzf_request;
+         if (do_reset)
+-            g_mzarch_main.reset_request = false;
++            g_mzarch_main.reset_request = g_mzarch_main.rerun_mzf_request = false;
+         APP_MUTEX_UNLOCK(g_mzarch_main.reset_request_mutex);
+         if (do_reset)
++        {
+             mzarch_main_reset();
++            if (do_rerun) mzarch_rerun_mzf_after_reset();
++        }
+ 
+         g_usleep(20 * 1000);
+     };
+@@ -1054,19 +1063,36 @@ static uint8_t mzarch_debug_dasm_read(uint16_t addr, void *user_data)
+     return memory_read_byte(addr);
+ }
+ 
++/* CLI option --run-mzf: po resetu automaticky spustit zadaný MZF. */
++static void mzarch_rerun_mzf_after_reset(void)
++{
++    const char *mzf_path = sdlapp_option_value("--run-mzf");
++    if (mzf_path)
++    {
++        g_print("CLI --run-mzf: %s\n", mzf_path);
++        mzarch_bootstrap_run_mzf(mzf_path);
++    };
++}
++
++#ifdef __EMSCRIPTEN__
++/* Called from the embedding page (Module._mz_wasm_restart): reset the machine
++ * and run the --run-mzf program again, in place - no page reload, so the
++ * browser's fullscreen state survives. */
++EMSCRIPTEN_KEEPALIVE int mz_wasm_restart(void)
++{
++    if (g_mzarch_main.reset_request_mutex == NULL) return 1;
++    APP_MUTEX_LOCK(g_mzarch_main.reset_request_mutex);
++    g_mzarch_main.rerun_mzf_request = true;
++    g_mzarch_main.reset_request = true;
++    APP_MUTEX_UNLOCK(g_mzarch_main.reset_request_mutex);
++    return 0;
++}
++#endif
++
+ void mzarch_main(void)
+ {
+     mzarch_main_reset();
+-
+-    /* CLI option --run-mzf: po resetu automaticky spustit zadaný MZF. */
+-    {
+-        const char *mzf_path = sdlapp_option_value("--run-mzf");
+-        if (mzf_path)
+-        {
+-            g_print("CLI --run-mzf: %s\n", mzf_path);
+-            mzarch_bootstrap_run_mzf(mzf_path);
+-        };
+-    }
++    mzarch_rerun_mzf_after_reset();
+ 
+     g_print("%s main loop started\n", g_mzarch_full_name);
+ 
+@@ -1076,9 +1102,11 @@ void mzarch_main(void)
+         APP_MUTEX_LOCK(g_mzarch_main.reset_request_mutex);
+         if (g_mzarch_main.reset_request)
+         {
+-            g_mzarch_main.reset_request = false;
++            bool do_rerun = g_mzarch_main.rerun_mzf_request;
++            g_mzarch_main.reset_request = g_mzarch_main.rerun_mzf_request = false;
+             APP_MUTEX_UNLOCK(g_mzarch_main.reset_request_mutex);
+             mzarch_main_reset();
++            if (do_rerun) mzarch_rerun_mzf_after_reset();
+         }
+         else
+         {
+diff --git a/src/emulator/mzarch/mzarch.h b/src/emulator/mzarch/mzarch.h
+index 5eed598..0214b97 100644
+--- a/src/emulator/mzarch/mzarch.h
++++ b/src/emulator/mzarch/mzarch.h
+@@ -60,6 +60,7 @@ typedef struct st_mzarch_main
+ 
+     app_mutex_t *reset_request_mutex;
+     bool reset_request;
++    bool rerun_mzf_request;     /**< Po resetu znovu spustit --run-mzf (in-place restart z hostitelské stránky). */
+     unsigned reset_count;       /**< Inkrementuje se při každém dokončeném resetu. UI vlákno detekuje reset přes porovnání s předchozí hodnotou - umožňuje sync focus_addr na nové PC i při resetu z paused stavu (= bez normálního pause→run→pause přechodu). */
+ 
+ #ifdef MZ800EMU_CFG_DEBUGGER_ENABLED
+-- 
+2.43.0
+

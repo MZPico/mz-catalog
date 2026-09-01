@@ -25,8 +25,8 @@ const files = t.files.map((f) => f.path);
     </div>
   </div>
   <div class="play-controls">
-    <button type="button" id="play-fullscreen" class="btn" title="Fullscreen (Esc to leave)">⛶ Fullscreen</button>
-    <button type="button" id="play-reload" class="btn secondary" title="Reload the page and restart the game">↻ Restart</button>
+    <button type="button" id="play-fullscreen" class="btn" title="Fullscreen (F11, Esc to leave)">⛶ Fullscreen</button>
+    <button type="button" id="play-reload" class="btn secondary" title="Restart the game (F12)">↻ Restart</button>
     <span class="play-status meta" id="play-status"></span>
   </div>
   <pre id="play-debug" class="play-debug meta" hidden></pre>
@@ -56,7 +56,13 @@ const files = t.files.map((f) => f.path);
       // Phones: fullscreen + landscape gives the 16:10 screen the whole display (lock is best-effort).
       el.requestFullscreen?.({ navigationUI: 'hide' })?.then(() => screen.orientation?.lock?.('landscape').catch(() => {})).catch(() => {});
     };
-    const restart = () => location.reload();
+    // Restart in place (machine reset + re-run of the tape) so fullscreen survives; before the
+    // emulator is up, a reload is the only option.
+    let runtimeReady = false;
+    const restart = () => {
+      if (runtimeReady && typeof window.Module?._mz_wasm_restart === 'function') { window.Module._mz_wasm_restart(); canvas.focus(); }
+      else location.reload();
+    };
     document.getElementById('play-fullscreen').addEventListener('click', toggleFullscreen);
     document.getElementById('play-reload').addEventListener('click', restart);
     document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) { try { screen.orientation?.unlock?.(); } catch {} } });
@@ -127,7 +133,7 @@ const files = t.files.map((f) => f.path);
         },
         setStatus: (m) => { status.textContent = m; },
         onRuntimeInitialized: () => {
-          status.textContent = ''; canvas.focus();
+          status.textContent = ''; canvas.focus(); runtimeReady = true;
           if (debug) { debugEl.hidden = false; setInterval(updateDebug, 1000); }
           // If the browser kept audio locked (no user gesture on this origin yet), ask for one click.
           setTimeout(() => {
