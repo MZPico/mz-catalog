@@ -16,22 +16,22 @@ rom = open(sys.argv[1], 'rb').read()
 PX, UPM = 100, 800
 
 def glyph(code):
-    """Return (glyph, advance): proportional spacing — ink starts at a 1px left
-    bearing and the advance is ink + 1px each side, so narrow glyphs (I, 1, .)
-    do not carry the full 8px cell's dead space with them."""
+    """Return (glyph, advance): monospaced — every glyph keeps the authentic
+    8px cell advance, with its ink centred exactly in the cell (half-pixel
+    offsets in font units, so narrow glyphs like I sit truly centred)."""
     pen = TTGlyphPen(None)
     g = rom[code * 8: code * 8 + 8]
     cols = [x for y in range(8) for x in range(8) if (g[y] >> x) & 1]
     if not cols:
-        return pen.glyph(), 5 * PX  # space
-    dx = PX - min(cols) * PX
+        return pen.glyph(), 8 * PX  # space
+    dx = (8 * PX - (max(cols) - min(cols) + 1) * PX) // 2 - min(cols) * PX
     for y in range(8):
         for x in range(8):
             if (g[y] >> x) & 1:
                 x0, y0 = x * PX + dx, (7 - y) * PX
                 pen.moveTo((x0, y0)); pen.lineTo((x0 + PX, y0))
                 pen.lineTo((x0 + PX, y0 + PX)); pen.lineTo((x0, y0 + PX)); pen.closePath()
-    return pen.glyph(), (max(cols) - min(cols) + 1) * PX + 2 * PX
+    return pen.glyph(), 8 * PX
 
 cmap, glyphs, advances = {}, {'.notdef': TTGlyphPen(None).glyph()}, {'.notdef': 8 * PX}
 def add(ch, code):
