@@ -29,6 +29,7 @@ const files = t.files.map((f) => f.path);
     <button type="button" id="play-reload" class="btn secondary" title="Reload the page and restart the game">↻ Restart</button>
     <span class="play-status meta" id="play-status"></span>
   </div>
+  <pre id="play-debug" class="play-debug meta" hidden></pre>
   <details class="play-help">
     <summary>Keys &amp; tips</summary>
     <ul>
@@ -54,6 +55,38 @@ const files = t.files.map((f) => f.path);
       if (document.fullscreenElement) document.exitFullscreen(); else el.requestFullscreen?.({ navigationUI: 'hide' });
     });
     document.getElementById('play-reload').addEventListener('click', () => location.reload());
+    // ?debug=1 — on-page diagnostics for devices without devtools (phones).
+    const debug = params.has('debug');
+    const debugEl = document.getElementById('play-debug');
+    let audioStarved = 0;
+    const glInfo = () => {
+      try {
+        const gl = window.Module?.GL?.currentContext?.GLctx || window.GL?.currentContext?.GLctx;
+        if (!gl) return { renderer: 'n/a', err: '-' };
+        const d = gl.getExtension('WEBGL_debug_renderer_info');
+        const attrs = gl.getContextAttributes?.() || {};
+        return {
+          renderer: d ? gl.getParameter(d.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER),
+          version: gl.getParameter(gl.VERSION),
+          err: gl.getError(),
+          preserve: attrs.preserveDrawingBuffer, aa: attrs.antialias,
+          drawing: `${gl.drawingBufferWidth}x${gl.drawingBufferHeight}`,
+        };
+      } catch (e) { return { renderer: `err ${e.message}`, err: '-' }; }
+    };
+    const updateDebug = () => {
+      const g = glInfo();
+      const ctx = window.Module?.SDL3?.audioContext;
+      const r = canvas.getBoundingClientRect();
+      debugEl.textContent = [
+        `ua: ${navigator.userAgent.slice(0, 110)}`,
+        `cores: ${navigator.hardwareConcurrency}  mem: ${navigator.deviceMemory ?? '?'} GB  dpr: ${devicePixelRatio}  isolated: ${self.crossOriginIsolated}`,
+        `canvas attr: ${canvas.width}x${canvas.height}  css: ${Math.round(r.width)}x${Math.round(r.height)}  gl drawing: ${g.drawing ?? '?'}`,
+        `gl: ${g.renderer}  (${g.version ?? ''})  preserve: ${g.preserve}  aa: ${g.aa}  glError: ${g.err}`,
+        `audio: ${ctx ? `${ctx.state} @${ctx.sampleRate} Hz` : 'no context'}  buf: ${buf}  starved: ${audioStarved}`,
+        `t: ${(performance.now() / 1000).toFixed(0)} s`,
+      ].join('\n');
+    };
     let started = false;
     const start = async () => {
       if (started) return; started = true;
@@ -74,10 +107,14 @@ const files = t.files.map((f) => f.path);
         }],
         locateFile: (p) => `/play/emu/${p}`,
         print: () => {},
-        printErr: (m) => { if (/error|fail/i.test(m)) console.warn('[mz800emu]', m); },
+        printErr: (m) => {
+          if (/20ms_sync/.test(m)) audioStarved++;
+          else if (/error|fail/i.test(m)) console.warn('[mz800emu]', m);
+        },
         setStatus: (m) => { status.textContent = m; },
         onRuntimeInitialized: () => {
           status.textContent = ''; canvas.focus();
+          if (debug) { debugEl.hidden = false; setInterval(updateDebug, 1000); }
           // If the browser kept audio locked (no user gesture on this origin yet), ask for one click.
           setTimeout(() => {
             const ctx = window.Module?.SDL3?.audioContext;

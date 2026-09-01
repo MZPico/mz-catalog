@@ -131,3 +131,6 @@ dl.facts dd { margin: 0; overflow-wrap: anywhere; }
 .btn.secondary { background:var(--muted); }
 .play-frame:fullscreen { border:0; border-radius:0; background:#000; display:flex; align-items:center; justify-content:center; }
 .play-frame:fullscreen canvas { width:auto; height:100%; max-width:100%; aspect-ratio: 928 / 576; }
+
+/* Play page on-screen diagnostics (?debug=1) */
+.play-debug { white-space: pre-wrap; word-break: break-all; font-size: 0.75rem; line-height: 1.35; margin: 0.5rem 0; }
