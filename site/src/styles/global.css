@@ -154,3 +154,7 @@ dl.facts dd { margin: 0; overflow-wrap: anywhere; }
 .touch-btn.extra { width:min(12vw, 60px); height:min(12vw, 60px); font-size:clamp(10px, 2.2vw, 14px); background:rgba(80,160,255,0.22); border-color:rgba(120,180,255,0.6); }
 .touch-btn.extra.down { background:rgba(80,160,255,0.55); }
 .touch-btn:disabled { opacity:0.35; }
+/* touch: swap: true — pad right, buttons left, extras top-right */
+.play-touch.swapped .touch-pad { left:auto; right:4%; }
+.play-touch.swapped .touch-buttons { right:auto; left:4%; flex-direction:row-reverse; }
+.play-touch.swapped .touch-extra { left:auto; right:4%; justify-content:flex-end; }

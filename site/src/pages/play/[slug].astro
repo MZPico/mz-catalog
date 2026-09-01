@@ -33,6 +33,7 @@ const files = t.files.map((f) => f.path);
     <button type="button" id="play-fullscreen" class="btn" title="Fullscreen (F11, Esc to leave)">⛶ Fullscreen</button>
     <button type="button" id="play-reload" class="btn secondary" title="Restart the game (F12)">↻ Restart</button>
     <button type="button" id="play-touch-toggle" class="btn secondary" title="Show / hide the touch controls (d-pad, FIRE = Space, RET = Enter)">🎮 Touch</button>
+    <button type="button" id="play-swap" class="btn secondary" title="Swap sides: pad right, buttons left" hidden>⇄ Sides</button>
     <span class="play-status meta" id="play-status"></span>
   </div>
   <pre id="play-debug" class="play-debug meta" hidden></pre>
@@ -183,7 +184,12 @@ const files = t.files.map((f) => f.path);
     [...buttons].reverse().forEach((b, i) => btnBox.appendChild(makeButton(b, i === buttons.length - 1 ? 'fire' : ''))); // primary (first) ends up rightmost & largest
     const extraBox = document.getElementById('touch-extra');
     for (const b of (Array.isArray(spec.extra) ? spec.extra : [])) extraBox.appendChild(makeButton(b, 'extra'));
-    const setTouch = (on) => { touchEl.hidden = !on; touchEl.setAttribute('aria-hidden', String(!on)); document.getElementById('play-touch-toggle').classList.toggle('active', on); if (!on) { padRelease(); } };
+    // Side preference (left/right-handed) is per player, remembered in this browser.
+    const swapBtn = document.getElementById('play-swap');
+    const setSwap = (on) => { touchEl.classList.toggle('swapped', on); swapBtn.classList.toggle('active', on); try { localStorage.setItem('mz-touch-swap', on ? '1' : ''); } catch {} };
+    swapBtn.addEventListener('click', () => setSwap(!touchEl.classList.contains('swapped')));
+    try { if (localStorage.getItem('mz-touch-swap')) setSwap(true); } catch {}
+    const setTouch = (on) => { touchEl.hidden = !on; touchEl.setAttribute('aria-hidden', String(!on)); swapBtn.hidden = !on; document.getElementById('play-touch-toggle').classList.toggle('active', on); if (!on) { padRelease(); } };
     document.getElementById('play-touch-toggle').addEventListener('click', () => setTouch(touchEl.hidden));
     if (params.has('touch') || params.has('touchspec') || matchMedia('(pointer: coarse)').matches) setTouch(true);
 
