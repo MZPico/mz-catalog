@@ -35,6 +35,50 @@ const summary = `${t.title} — ${machineLabel[t.machine]} ${t.genre.join(', ')}
       {t.language && <span class="tag" title="Language">{languageName(t.language)}</span>}
     </div>
 
+    <div class="actionbar" data-pagefind-ignore>
+      {t.files.length === 1 ? (
+        <>
+          {t.machine !== 'mz-1500' && <a class="btn primary" href={`/play/${t.slug}/?file=${t.files[0].path}`}>▶ Play in browser</a>}
+          <a class="btn" href={`/files/${t.slug}/${t.files[0].path}`} download>⬇ Download .mzf</a>
+          <button class="btn" type="button" id="tape-toggle" aria-expanded="false" aria-controls="tape-panel">♪ Tape audio</button>
+        </>
+      ) : (
+        <div class="multi">
+          {t.files.map((f) => (
+            <div class="tape-row">
+              <span class="file-label">{f.path}</span>
+              {t.machine !== 'mz-1500' && <a class="btn primary" href={`/play/${t.slug}/?file=${f.path}`}>▶ Play</a>}
+              <a class="btn" href={`/files/${t.slug}/${f.path}`} download>⬇ .mzf</a>
+            </div>
+          ))}
+          <button class="btn" type="button" id="tape-toggle" aria-expanded="false" aria-controls="tape-panel">♪ Tape audio</button>
+        </div>
+      )}
+    </div>
+
+    <section data-pagefind-ignore class="tape-audio tape-panel" id="tape-panel" hidden data-machine={t.machine}>
+      <p class="hint">Turn any phone or laptop into a Sharp datacorder: connect the
+      headphone output to the MZ's tape-in (read) jack, set volume to maximum, press PLAY here, and type{" "}
+      <code>L</code> + CR (monitor)  or the boot menu's <code>C</code> on the machine.
+      Or download the WAV for later.</p>
+      {t.files.map((f) => (
+        <div class="tape-row" data-file={`/files/${t.slug}/${f.path}`} data-name={f.header?.name ?? f.path}>
+          <span class="mono file">{f.path}</span>
+          <label>Layout
+            <select class="tape-layout">
+              <option value="short" selected>fast (short pilot)</option>
+              <option value="authentic">authentic (with retry copies)</option>
+            </select>
+          </label>
+          <label class="pol"><input type="checkbox" class="tape-invert" /> invert polarity</label>
+          <button class="btn accent tape-play" type="button">▶ Play tape audio</button>
+          <button class="btn tape-download" type="button">⬇ Download .wav</button>
+          <span class="tape-status meta"></span>
+          <audio class="tape-player" controls preload="none" hidden></audio>
+        </div>
+      ))}
+    </section>
+
     {t.screenshots.length > 0 && (
       <ul class="shots">
         {t.screenshots.map((s, i) => (
@@ -62,19 +106,17 @@ const summary = `${t.title} — ${machineLabel[t.machine]} ${t.genre.join(', ')}
 
     <section data-pagefind-ignore>
       <h2>Files</h2>
+      <details class="tech">
+      <summary>Technical details — tape header, addresses, checksums</summary>
       <div class="table-wrap">
         <table class="files">
           <thead>
-            <tr><th></th><th>File</th><th>Kind</th><th>Tape name</th><th>Type</th><th>Load</th><th>Exec</th><th>Size</th><th>CRC-32</th></tr>
+            <tr><th>File</th><th>Kind</th><th>Tape name</th><th>Type</th><th>Load</th><th>Exec</th><th>Size</th><th>CRC-32</th></tr>
           </thead>
           <tbody>
             {t.files.map((f) => (
               <>
                 <tr>
-                  <td class="actions">
-                    <a class="btn" href={`/files/${t.slug}/${f.path}`} download>Download</a>
-                    {t.machine !== 'mz-1500' && <a class="btn play" href={`/play/${t.slug}/?file=${f.path}`}>▶ Play</a>}
-                  </td>
                   <td class="mono">{f.path}</td>
                   <td>{kindLabel[f.kind]}</td>
                   <td class="mono">{f.header?.name}</td>
@@ -84,38 +126,16 @@ const summary = `${t.title} — ${machineLabel[t.machine]} ${t.genre.join(', ')}
                   <td title={`${f.size} bytes`}>{kb(f.size)}</td>
                   <td class="mono">{f.crc32}</td>
                 </tr>
-                {f.note && <tr><td></td><td class="note" colspan="8">{f.note}</td></tr>}
+                {f.note && <tr><td class="note" colspan="8">{f.note}</td></tr>}
               </>
             ))}
           </tbody>
         </table>
       </div>
       <p class="meta"><small>MZF = 128-byte Sharp tape header + program data. Load in an emulator, write to tape, or copy to an MZPico card.</small></p>
+      </details>
     </section>
 
-    <section data-pagefind-ignore class="tape-audio" data-machine={t.machine}>
-      <h2>Tape audio</h2>
-      <p class="meta" style="max-width:70ch">Turn any phone or laptop into a Sharp datacorder: connect the
-      headphone output to the MZ's tape-in (read) jack, set volume to maximum, press PLAY here, and type
-      <code>L</code> + CR (monitor)  or the boot menu's <code>C</code> on the machine.
-      Or download the WAV for later.</p>
-      {t.files.map((f) => (
-        <div class="tape-row" data-file={`/files/${t.slug}/${f.path}`} data-name={f.header?.name ?? f.path}>
-          <span class="mono file">{f.path}</span>
-          <label>Layout
-            <select class="tape-layout">
-              <option value="short" selected>fast (short pilot)</option>
-              <option value="authentic">authentic (with retry copies)</option>
-            </select>
-          </label>
-          <label class="pol"><input type="checkbox" class="tape-invert" /> invert polarity</label>
-          <button class="btn tape-play" type="button">⏵ Generate tape</button>
-          <button class="btn tape-download" type="button">Download WAV</button>
-          <span class="tape-status meta"></span>
-          <audio class="tape-player" controls preload="none" hidden></audio>
-        </div>
-      ))}
-    </section>
 
     <section data-pagefind-ignore>
       <h2>Provenance</h2>
@@ -131,6 +151,18 @@ const summary = `${t.title} — ${machineLabel[t.machine]} ${t.genre.join(', ')}
 
 <script>
   import { mzfToWav } from '../../lib/mzf2wav.js';
+
+  // "♪ Tape audio" reveals the tape panel.
+  const tapeToggle = document.getElementById('tape-toggle');
+  const tapePanel = document.getElementById('tape-panel');
+  if (tapeToggle && tapePanel) {
+    tapeToggle.addEventListener('click', () => {
+      const open = tapePanel.hidden;
+      tapePanel.hidden = !open;
+      tapeToggle.setAttribute('aria-expanded', String(open));
+      if (open) tapePanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  }
 
   const section = document.querySelector('.tape-audio') as HTMLElement | null;
   if (section) {

@@ -18,12 +18,13 @@ const repo = 'https://github.com/MZPico/mz-catalog';
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="canonical" href={Astro.url.href} />
+    <link rel="preload" href="/fonts/mz800.woff2" as="font" type="font/woff2" crossorigin />
     <slot name="head" />
   </head>
   <body>
     <header class="site-header">
       <div class="wrap">
-        <a class="brand" href="/">MZ <span>Software Catalog</span></a>
+        <a class="brand" href="/">MZ&nbsp;<b>SOFTWARE&nbsp;CATALOG</b><span class="cursor"></span></a>
         <nav>
           <a href="/">Titles</a>
           <a href="/machines/">Machines</a>
