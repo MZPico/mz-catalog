@@ -1,0 +1,30 @@
+--- /home/matyamar/src/SDL3-3.4.14/src/video/emscripten/SDL_emscriptenvideo.c.orig-fs	2026-09-02 01:15:18.666756924 +0200
++++ /home/matyamar/src/SDL3-3.4.14/src/video/emscripten/SDL_emscriptenvideo.c	2026-09-02 01:15:18.696439128 +0200
+@@ -715,7 +715,8 @@
+         }
+ 
+         EmscriptenFullscreenChangeEvent fsevent;
+-        if (emscripten_get_fullscreen_status(&fsevent) == EMSCRIPTEN_RESULT_SUCCESS) {
++        bool have_fsstatus = (emscripten_get_fullscreen_status(&fsevent) == EMSCRIPTEN_RESULT_SUCCESS);
++        if (have_fsstatus) {
+             if ((fullscreen == SDL_FULLSCREEN_OP_ENTER) == fsevent.isFullscreen) {
+                 return SDL_FULLSCREEN_SUCCEEDED;  // already there.
+             }
+@@ -746,6 +747,17 @@
+ 
+             res = emscripten_request_fullscreen_strategy(data->canvas_id, 1, &strategy);
+         } else {
++            // Only leave fullscreen when the fullscreen element is our canvas.
++            // The hosting page may have put one of its own elements (e.g. a
++            // wrapper around the canvas) into fullscreen; exiting that during
++            // SDL's own state sync would yank the page out of fullscreen.
++            const char *canvas_name = data->canvas_id;
++            if (*canvas_name == '#') {
++                canvas_name++;
++            }
++            if (have_fsstatus && !(fsevent.isFullscreen && fsevent.id[0] != '\0' && SDL_strcmp(fsevent.id, canvas_name) == 0)) {
++                return SDL_FULLSCREEN_SUCCEEDED;  // nothing of ours to exit.
++            }
+             res = emscripten_exit_fullscreen();
+         }
+     }

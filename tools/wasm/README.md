@@ -5,7 +5,9 @@ Offline, one-time recipe (not part of the site build). Requires Emscripten
 `SDL3-3.4.14`, `SDL3_image-3.4.4`, `minizip-ng`, `libffi-3.8.0`,
 `glib-2.82.5`, `json-glib-1.10.6`, and the `wasm` branch of mz800emu.
 
-1. Apply `sdl3-emscripten-audio-buffer.patch` to the SDL3 tree.
+1. Apply `sdl3-emscripten-audio-buffer.patch` and
+   `sdl3-emscripten-host-fullscreen.patch` to the SDL3 tree (the second one
+   stops SDL exiting a fullscreen that belongs to the hosting page).
 2. Compile the stub archives once into the sysroot:
    `emcc -pthread -O2 -c stubs/resolv_stub.c && emar rcs $SYS/lib/libresolv.a resolv_stub.o`
    (same for `spawn_stub.c` → `libmzwasmstubs.a`).
