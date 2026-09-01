@@ -44,10 +44,11 @@ work variables, cleared MZ-700 text screen (0x71 attributes) — fixes
 silent MZ-700 games, frozen cursors and striped screens. Also fixed an
 emulator bug where any 8255 PA7 pulse reset the 556 cursor timer
 (1Z-016 BASIC cursor never blinked). The emulator source changes are
-kept as a patch series in `tools/wasm/patches/` (the GPL "corresponding
-source"; a public MZPico fork of mz800emu is still to be decided).
-Remaining: publish the fork and upstream the patches (SDL hint fix, PA7
-fix, bootstrap parity), keyboard/virtual-keyboard UX and touch controls,
+published on the `wasm` branch of https://github.com/MZPico/mz800emu
+(pushed 2026-09-01) and mirrored as a patch series in
+`tools/wasm/patches/` (the GPL "corresponding source").
+Remaining: upstream the patches (SDL hint fix, PA7 fix, bootstrap
+parity), keyboard/virtual-keyboard UX and touch controls,
 MZ-700 build variant for pure MZ-700 titles, residual audio crackle on
 slow machines.
 ## Infra notes

@@ -26,7 +26,8 @@ pthread workers (build with `--profiling-funcs` for symbol names).
 The shipped `mz800emu.{js,wasm,data}` are built from upstream
 [mz800emu](https://github.com/michalhucik/mz800emu) at commit `cfe2bb3acd19`
 (2026-08-24) plus the patches in `patches/`, in order (`git am patches/*.patch`
-on a checkout of that commit reproduces the `wasm` branch). They contain the
+on a checkout of that commit reproduces the `wasm` branch, which is also
+published at https://github.com/MZPico/mz800emu/tree/wasm). They contain the
 Emscripten port (main loop, GLES 3.0 context, no curl/version check, audio
 callback and screen-upload changes, ImGui backend tweaks), `--kiosk`,
 `--cmthack-autofile`, the 8255 PA7/556 cursor-timer fix and the `--run-mzf`

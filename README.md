@@ -156,9 +156,10 @@ curl/version check, audio callback that fills the whole device buffer,
 palette-LUT screen upload into a persistent texture, ImGui backend
 without per-frame GL state queries, `--kiosk`, and the `--run-mzf`
 bootstrap fixes that make it start programs the way the monitor ROM
-does) are published as a patch series against upstream mz800emu in
-`tools/wasm/patches/` — together with the upstream commit named in
-`tools/wasm/README.md` this is the complete corresponding source for the
+does) are published on the `wasm` branch of the MZPico fork,
+<https://github.com/MZPico/mz800emu/tree/wasm>, and mirrored as a patch
+series against upstream in `tools/wasm/patches/` (base commit named in
+`tools/wasm/README.md`) — the complete corresponding source for the
 shipped binaries.
 
 ## manifest.json (device API)
