@@ -271,13 +271,20 @@ const files = t.files.map((f) => f.path);
           acquire();
           document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && (!lock || lock.released)) acquire(); });
           if (debug) { debugEl.hidden = false; setInterval(updateDebug, 1000); }
-          // If the browser kept audio locked (no user gesture on this origin yet), ask for one click.
+          // If the browser kept audio locked (no user gesture on this origin yet), ask for one
+          // click. A click ANYWHERE dismisses it, and if audio starts by other means (e.g. the
+          // browser resumes it after any interaction), the overlay hides itself.
           setTimeout(() => {
             const ctx = window.Module?.SDL3?.audioContext;
             if (ctx && ctx.state !== 'running') {
               startBtn.textContent = '🔊 Click to enable sound';
               overlay.hidden = false;
-              startBtn.onclick = () => { ctx.resume(); overlay.hidden = true; enterFullscreenIfTouch(); canvas.focus(); };
+              const dismiss = () => { ctx.resume?.(); overlay.hidden = true; enterFullscreenIfTouch(); canvas.focus(); };
+              startBtn.onclick = dismiss;
+              overlay.onclick = dismiss;
+              const watch = setInterval(() => {
+                if (ctx.state === 'running' || overlay.hidden) { clearInterval(watch); overlay.hidden = true; }
+              }, 500);
             }
           }, 1500);
         },
@@ -298,12 +305,14 @@ const files = t.files.map((f) => f.path);
       startBtn.textContent = '▶ Tap to play';
       overlay.querySelector('.meta').textContent = 'Fullscreen, landscape, sound on.';
       start().then(() => { overlay.hidden = false; }); // boot behind the overlay, keep it visible
-      startBtn.onclick = () => {
+      const go = () => {
         overlay.hidden = true;
         enterFullscreenIfTouch();
         window.Module?.SDL3?.audioContext?.resume?.();
         canvas.focus();
       };
+      startBtn.onclick = go;
+      overlay.onclick = go;
     } else if (fromCatalog) {
       start();
     }
