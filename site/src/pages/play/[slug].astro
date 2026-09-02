@@ -43,6 +43,7 @@ const files = t.files.map((f) => f.path);
     <button type="button" id="play-reload" class="btn secondary" title="Restart the game (F12)">↻ Restart</button>
     <button type="button" id="play-touch-toggle" class="btn secondary" title="Show / hide the touch controls (d-pad, FIRE = Space, RET = Enter)">🎮 Touch</button>
     <button type="button" id="play-swap" class="btn secondary" title="Swap sides: pad right, buttons left" hidden>⇄ Sides</button>
+    <button type="button" id="play-mute" class="btn secondary" title="Mute / unmute the emulator">🔇 Mute</button>
     <span class="play-status meta" id="play-status"></span>
   </div>
   <p class="play-pace" id="play-pace" hidden></p>
@@ -238,6 +239,29 @@ const files = t.files.map((f) => f.path);
       paceBase = { s, t };
     }, 4000);
 
+    // Mute = zero-gain node after SDL's audio node. The emulation is paced by the audio
+    // pipeline, so the context must keep running — only the output is silenced.
+    const muteBtn = document.getElementById('play-mute');
+    let muted = false, muteGain = null;
+    const setMuted = (on) => {
+      try {
+        const sdl = window.Module?.SDL3;
+        const node = sdl?.audio_playback?.scriptProcessorNode;
+        if (!sdl || !node) return;
+        if (!muteGain) {
+          muteGain = sdl.audioContext.createGain();
+          node.disconnect();
+          node.connect(muteGain);
+          muteGain.connect(sdl.audioContext.destination);
+        }
+        muteGain.gain.value = on ? 0 : 1;
+        muted = on;
+        muteBtn.textContent = on ? '🔊 Unmute' : '🔇 Mute';
+        muteBtn.classList.toggle('active', on);
+      } catch {}
+    };
+    muteBtn.addEventListener('click', () => setMuted(!muted));
+
     let started = false;
     const start = async () => {
       if (started) return; started = true;
@@ -277,13 +301,22 @@ const files = t.files.map((f) => f.path);
           setTimeout(() => {
             const ctx = window.Module?.SDL3?.audioContext;
             if (ctx && ctx.state !== 'running') {
-              startBtn.textContent = '🔊 Click to enable sound';
+              startBtn.textContent = '🔊 Enable sound';
+              const noSound = document.createElement('button');
+              noSound.type = 'button'; noSound.className = 'btn secondary'; noSound.textContent = '✕ Play without sound';
+              startBtn.after(noSound);
               overlay.hidden = false;
-              const dismiss = () => { ctx.resume?.(); overlay.hidden = true; enterFullscreenIfTouch(); canvas.focus(); };
-              startBtn.onclick = dismiss;
-              overlay.onclick = dismiss;
+              const dismiss = (withSound) => {
+                ctx.resume?.(); // the audio clock must run either way — it paces the emulation
+                setMuted(!withSound);
+                overlay.hidden = true; noSound.remove(); enterFullscreenIfTouch(); canvas.focus();
+              };
+              startBtn.onclick = (e) => { e.stopPropagation(); dismiss(true); };
+              noSound.onclick = (e) => { e.stopPropagation(); dismiss(false); };
+              overlay.onclick = () => dismiss(false); // clicking past the button = declining sound
               const watch = setInterval(() => {
-                if (ctx.state === 'running' || overlay.hidden) { clearInterval(watch); overlay.hidden = true; }
+                if (overlay.hidden) { clearInterval(watch); return; }
+                if (ctx.state === 'running') { clearInterval(watch); overlay.hidden = true; noSound.remove(); }
               }, 500);
             }
           }, 1500);
