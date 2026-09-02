@@ -1,0 +1,80 @@
+---
+import Base from '../layouts/Base.astro';
+const gh = 'https://github.com/MZPico';
+---
+<Base title="The MZPico Card" description="MZPico — an open-hardware Raspberry Pi Pico storage card for the Sharp MZ-800: instant MZF loading, floppy / Quick Disk / RAM disk emulation, I2S sound and WiFi cloud storage.">
+  <div class="hero">
+    <div>
+      <h1>The MZPico card</h1>
+      <p class="lead">
+        An open-hardware storage system for the <a href="/machines/mz-800/">Sharp MZ-800</a>, powered by a
+        Raspberry&nbsp;Pi&nbsp;Pico. No cassette tapes, no original floppy or Quick Disk drives —
+        a Pico, a small PCB, a few solder joints, and the machine loads anything in seconds.
+      </p>
+    </div>
+  </div>
+
+  <figure class="card-photo">
+    <img src="/card/MZPico-all.jpg" alt="MZPico boards" width="1200" height="746" loading="eager" />
+    <figcaption class="meta">The MZPico family — Frugal and Deluxe boards.</figcaption>
+  </figure>
+
+  <section>
+    <h2>What it does</h2>
+    <ul class="feature-list">
+      <li><b>MZF program loader</b> — loads <code>.mzf</code> tape images straight into the MZ-800. Instant, no audio cassette involved.</li>
+      <li><b>Floppy disk emulator</b> — mounts <code>.dsk</code> images and emulates a floppy drive.</li>
+      <li><b>Quick Disk emulator</b> — <code>.mzq</code> images, or the on-the-fly mode where a plain directory behaves as a Quick Disk.</li>
+      <li><b>RAM disk emulator</b> — SRAM boot disk, paged RAM disk and PicoRD, with instant system boot via SRAM emulation.</li>
+      <li><b>Sound over I2S</b> <span class="meta">(Deluxe board)</span> — both MZ-800 sound sources rendered to an on-board I2S DAC: the SN76489 PSG with stereo panning and the 8253 beeper.</li>
+      <li><b>WiFi cloud storage</b> <span class="meta">(Pico&nbsp;W)</span> — the card browses <em>this catalog</em> over WiFi as a <code>cloud:/</code> device. Every title on this site, loadable on real hardware without touching a computer.</li>
+      <li><b>Highly configurable</b> — one firmware for all boards, an INI-style config file, user-defined I/O ports, multiple instances of any virtual device.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>On the machine</h2>
+    <div class="duo">
+      <figure><img src="/card/MZPico-menu.png" alt="MZPico boot menu on the MZ-800" width="671" height="428" loading="lazy" /><figcaption class="meta">Customizable boot menu with favorite programs.</figcaption></figure>
+      <figure><img src="/card/MZPico-explorer.png" alt="MZPico file explorer on the MZ-800" width="700" height="434" loading="lazy" /><figcaption class="meta">File explorer with directory trees and fast search.</figcaption></figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Two boards</h2>
+    <div class="duo boards">
+      <figure>
+        <img src="/card/MZPico-frugal-Purple16m.jpg" alt="MZPico Frugal board" width="950" height="1188" loading="lazy" />
+        <figcaption>
+          <b>Frugal board</b> — the simplest option: a Pico soldered directly to a very small PCB.
+          Internal flash for storage, optional microSD socket, no level shifters — solder &amp; go.
+          Works with the original Pico (2&nbsp;MB) and 16&nbsp;MB “purple” clones.{' '}
+          <a href={`${gh}/MZPico-800-Frugal-Board`} rel="noopener">KiCad design →</a>
+        </figcaption>
+      </figure>
+      <figure>
+        <img src="/card/MZPico-deluxe-inserted.jpg" alt="MZPico Deluxe board inserted in an MZ-800" width="1200" height="614" loading="lazy" />
+        <figcaption>
+          <b>Deluxe board</b> — the full-featured build: level shifters for guaranteed 5&nbsp;V safety,
+          microSD slot, I2S sound card, fits the MZ-800 upper slot rails, and takes a Pico&nbsp;W for
+          WiFi and cloud storage.{' '}
+          <a href={`${gh}/MZPico-800-Deluxe-board`} rel="noopener">KiCad design →</a>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Getting started</h2>
+    <ol class="steps">
+      <li>Build a board from the open KiCad designs (basic soldering skills are enough), or start with just a Pico on a Frugal PCB.</li>
+      <li>Download the firmware <code>.uf2</code> for your board from the <a href={`${gh}/MZPico-firmware/releases`} rel="noopener">releases page</a>, hold <kbd>BOOTSEL</kbd>, and copy it onto the Pico's USB drive.</li>
+      <li>Upload MZ-800 software over USB mass storage — or <a href="/">grab it from this catalog</a> — insert the card, switch the machine on. Done.</li>
+    </ol>
+    <p class="meta">Full documentation, configuration reference and build notes live in the
+      <a href={`${gh}/MZPico-firmware`} rel="noopener">MZPico-firmware</a> repository.
+      Hardware designs are working; firmware is actively developed. Boards are licensed{' '}
+      <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener">CC&nbsp;BY-NC-SA&nbsp;4.0</a>,
+      the firmware and this catalog are on <a href={gh} rel="noopener">GitHub</a>.</p>
+  </section>
+</Base>

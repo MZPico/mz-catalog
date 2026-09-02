@@ -209,6 +209,19 @@ kbd { font-family: var(--mono); background: var(--surface-2); border: 1px solid 
 .hero-badge { flex: 0 0 auto; margin-left: auto; opacity: 0.95; width: 300px; height: auto; }
 @media (max-width: 760px) { .hero-badge { display: none; } }
 
+/* The Card page */
+.card-photo { margin: 0 0 1rem; }
+.card-photo img, .duo img { width: 100%; height: auto; border: 1px solid var(--line); border-radius: var(--radius); display: block; }
+.feature-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.55rem; max-width: 75ch; }
+.feature-list li { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 0.55rem 0.85rem; }
+.duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+.duo figure { margin: 0; }
+.duo figcaption { margin-top: 0.5rem; font-size: 0.92rem; color: var(--muted); }
+.duo figcaption b { color: var(--text); }
+ol.steps { max-width: 75ch; padding-left: 1.2rem; }
+ol.steps li { margin: 0.4rem 0; }
+.hero-cta { margin-top: -0.75rem; font-size: 0.95rem; }
+
 /* Small screens */
 @media (max-width: 640px) {
   .site-header .wrap { gap: 0.6rem; }
