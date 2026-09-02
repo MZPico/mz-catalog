@@ -6,8 +6,8 @@ import Base from '../layouts/Base.astro';
 const titles = (await getCollection('titles')).filter((t) => t.data.web).sort((a, b) =>
   a.data.title.localeCompare(b.data.title, 'en', { sensitivity: 'base' }),
 );
-const machines = ['mz-700', 'mz-800', 'mz-1500'] as const;
-const machineLabel: Record<string, string> = { 'mz-700': 'MZ-700', 'mz-800': 'MZ-800', 'mz-1500': 'MZ-1500' };
+const machines = ['mz-700', 'mz-800'] as const;
+const machineLabel: Record<string, string> = { 'mz-700': 'MZ-700', 'mz-800': 'MZ-800' };
 const genres = [...new Set(titles.flatMap((t) => t.data.genre))].sort();
 const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((t) => t.data.machine === m).length]));
 ---
@@ -16,7 +16,7 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((t) => t
     <div>
       <h1>Sharp MZ software catalog</h1>
       <p class="lead">
-        {titles.length} preserved {titles.length === 1 ? 'title' : 'titles'} for the Sharp MZ-700, MZ-800 and MZ-1500 —
+        {titles.length} preserved {titles.length === 1 ? 'title' : 'titles'} for the Sharp MZ-700 and MZ-800 —
         metadata, screenshots and original <code>.mzf</code> tape images, ready for emulators and the <a href="https://github.com/MZPico" rel="noopener">MZPico</a> card.
       </p>
     </div>

@@ -26,7 +26,7 @@ export const machines: Machine[] = [
       ['Variants', 'MZ-711 (base), MZ-721 (tape recorder), MZ-731 (tape + colour plotter)'],
     ],
     softwareNote:
-      'MZ-700 titles also run on the MZ-800 in its MZ-700 compatibility mode and on the Japanese MZ-1500.',
+      'MZ-700 titles also run on the MZ-800 in its MZ-700 compatibility mode.',
   },
   {
     id: 'mz-800',
@@ -47,22 +47,5 @@ export const machines: Machine[] = [
     ],
     softwareNote:
       'MZ-800 software is split between native-mode titles and MZ-700-mode titles; each catalog entry records which mode it uses.',
-  },
-  {
-    id: 'mz-1500',
-    name: 'Sharp MZ-1500',
-    years: '1984 · Japan only',
-    intro:
-      'The Japanese sibling of the MZ-700 generation: an MZ-700-compatible machine extended with programmable ' +
-      'character graphics (PCG), dual sound chips and a built-in Quick Disk drive. It was never officially sold in Europe.',
-    specs: [
-      ['CPU', 'Z80A @ 3.5 MHz'],
-      ['RAM', '64 KB'],
-      ['Display', '40×25 text with PCG — freely definable characters give practical 320×200 graphics'],
-      ['Sound', 'Two SN76489 PSGs — 6 tone channels + 2 noise'],
-      ['Storage', 'Built-in Quick Disk (2.8", 64 KB per side) and cassette interface'],
-      ['Compatibility', 'Runs most MZ-700 cassette software'],
-    ],
-    softwareNote: 'MZ-700 titles in this catalog generally run on the MZ-1500 as well.',
   },
 ];

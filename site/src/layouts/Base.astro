@@ -5,8 +5,8 @@ interface Props {
   title?: string;
   description?: string;
 }
-const { title, description = 'Software catalog and preservation library for Sharp MZ-700, MZ-800 and MZ-1500 computers.' } = Astro.props;
-const fullTitle = title ? `${title} · Sharp MZ Software Catalog` : 'Sharp MZ Software Catalog — MZ-700 / MZ-800 / MZ-1500';
+const { title, description = 'Software catalog and preservation library for Sharp MZ-700 and MZ-800 computers.' } = Astro.props;
+const fullTitle = title ? `${title} · Sharp MZ Software Catalog` : 'Sharp MZ Software Catalog — MZ-700 / MZ-800';
 const repo = 'https://github.com/MZPico/mz-catalog';
 ---
 <!doctype html>

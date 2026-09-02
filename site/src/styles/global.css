@@ -237,22 +237,30 @@ kbd { font-family: var(--mono); background: var(--surface-2); border: 1px solid 
 /* Touch controls overlay on the play page */
 .play-touch { position:absolute; inset:0; pointer-events:none; user-select:none; -webkit-user-select:none; touch-action:none; }
 .play-touch[hidden] { display:none; }
-.touch-pad { position:absolute; left:4%; bottom:6%; width:min(38vw, 42%); aspect-ratio:1; max-width:220px; border-radius:50%; background:rgba(255,255,255,0.10); border:2px solid rgba(255,255,255,0.35); pointer-events:auto; touch-action:none; }
+.touch-pad { position:absolute; left:4%; bottom:6%; width:min(34vmin, 38vw); aspect-ratio:1; max-width:200px; border-radius:50%; background:rgba(255,255,255,0.10); border:2px solid rgba(255,255,255,0.35); pointer-events:auto; touch-action:none; }
 .touch-pad .pad-arrow { position:absolute; color:rgba(255,255,255,0.7); font-size:clamp(12px, 3vw, 20px); line-height:1; }
 .touch-pad .up { top:6%; left:50%; transform:translateX(-50%); } .touch-pad .down { bottom:6%; left:50%; transform:translateX(-50%); }
 .touch-pad .left { left:6%; top:50%; transform:translateY(-50%); } .touch-pad .right { right:6%; top:50%; transform:translateY(-50%); }
 .touch-pad .pad-nub { position:absolute; left:50%; top:50%; width:34%; height:34%; margin:-17% 0 0 -17%; border-radius:50%; background:rgba(255,255,255,0.35); pointer-events:none; }
 .touch-buttons { position:absolute; right:4%; bottom:6%; display:flex; gap:min(3vw, 18px); align-items:flex-end; pointer-events:auto; }
-.touch-btn { width:min(16vw, 84px); height:min(16vw, 84px); border-radius:50%; border:2px solid rgba(255,255,255,0.35); background:rgba(255,255,255,0.12); color:rgba(255,255,255,0.85); font:600 clamp(11px, 2.6vw, 16px) system-ui, sans-serif; touch-action:none; padding:0; }
-.touch-btn.fire { width:min(20vw, 104px); height:min(20vw, 104px); background:rgba(255,80,80,0.28); border-color:rgba(255,120,120,0.6); }
+.touch-btn { width:min(17vmin, 80px); height:min(17vmin, 80px); border-radius:50%; border:2px solid rgba(255,255,255,0.35); background:rgba(255,255,255,0.12); color:rgba(255,255,255,0.85); font:600 clamp(11px, 2.6vw, 16px) system-ui, sans-serif; touch-action:none; padding:0; }
+.touch-btn.fire { width:min(21vmin, 96px); height:min(21vmin, 96px); background:rgba(255,80,80,0.28); border-color:rgba(255,120,120,0.6); }
 .touch-btn.down { background:rgba(255,255,255,0.4); }
 .touch-btn.fire.down { background:rgba(255,80,80,0.6); }
 .btn.active { outline:2px solid var(--accent, #3b82f6); }
 .touch-pad[hidden] { display:none; }
 .touch-extra { position:absolute; left:4%; top:6%; display:flex; flex-wrap:wrap; gap:min(2vw, 12px); max-width:45%; pointer-events:auto; }
-.touch-btn.extra { width:min(12vw, 60px); height:min(12vw, 60px); font-size:clamp(10px, 2.2vw, 14px); background:rgba(80,160,255,0.22); border-color:rgba(120,180,255,0.6); }
+.touch-btn.extra { width:min(12vmin, 56px); height:min(12vmin, 56px); font-size:clamp(10px, 2.2vw, 14px); background:rgba(80,160,255,0.22); border-color:rgba(120,180,255,0.6); }
 .touch-btn.extra.down { background:rgba(80,160,255,0.55); }
 .touch-btn:disabled { opacity:0.35; }
+/* Fullscreen: hug the physical screen edges and stay translucent over the picture */
+.play-frame:fullscreen .touch-pad { left: max(env(safe-area-inset-left, 0px), 10px); bottom: 12px; opacity: 0.75; }
+.play-frame:fullscreen .touch-buttons { right: max(env(safe-area-inset-right, 0px), 10px); bottom: 12px; opacity: 0.75; }
+.play-frame:fullscreen .touch-extra { left: max(env(safe-area-inset-left, 0px), 10px); top: 10px; opacity: 0.75; }
+.play-frame:fullscreen .play-touch.swapped .touch-pad { left: auto; right: max(env(safe-area-inset-right, 0px), 10px); }
+.play-frame:fullscreen .play-touch.swapped .touch-buttons { right: auto; left: max(env(safe-area-inset-left, 0px), 10px); }
+.play-frame:fullscreen .play-touch.swapped .touch-extra { left: auto; right: max(env(safe-area-inset-right, 0px), 10px); }
+
 /* touch: swap: true — pad right, buttons left, extras top-right */
 .play-touch.swapped .touch-pad { left:auto; right:4%; }
 .play-touch.swapped .touch-buttons { right:auto; left:4%; flex-direction:row-reverse; }
