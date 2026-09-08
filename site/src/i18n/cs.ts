@@ -79,9 +79,9 @@ export const cs: Ui = {
     download: '⬇ Stáhnout .mzf',
     downloadShort: '⬇ .mzf',
     tapeAudio: '♪ Zvuk pásky',
+    aboutGame: 'O hře',
     controls: 'Ovládání',
     files: 'Soubory',
-    provenance: 'Původ',
     techDetails: 'Technické detaily — hlavička pásky, adresy, kontrolní součty',
     th: {
       file: 'Soubor',
@@ -90,7 +90,8 @@ export const cs: Ui = {
       type: 'Typ',
       load: 'Nahrát',
       exec: 'Start',
-      size: 'Velikost',
+      bodySize: 'Velikost těla',
+      fileSize: 'Velikost souboru',
       crc: 'CRC-32',
     },
     kinds: { standard: 'Standardní', turbo: 'Turbo nahrávání', 'alt-dump': 'Alternativní dump' },
@@ -98,12 +99,6 @@ export const cs: Ui = {
     mode700: 'kompatibilní režim MZ-700',
     modeTitle: 'Provozní režim MZ-800',
     languageTitle: 'Jazyk',
-    mzfNote:
-      'MZF = 128bajtová hlavička pásky Sharp + data programu. Nahrajte do emulátoru, vypalte na pásku, nebo zkopírujte na kartu MZPico.',
-    source: 'Zdroj',
-    notRecorded: 'Neuvedeno',
-    catalogEntry: 'Záznam v katalogu',
-    catalogEntryNote: '— opravy rád přijmu formou pull requestu.',
     screenshotAlt: (title: string, i: number) => `${title} — snímek obrazovky ${i}`,
     summary: (title: string, machine: string, genres: string, year?: number) =>
       `${title} — ${machine} ${genres}${year ? ` (${year})` : ''}. Ke stažení jako páskový obraz .mzf.`,

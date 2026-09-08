@@ -8,6 +8,42 @@ genre: [game]
 files:
   - path: hlipa.mzf
     kind: standard
+description:
+  en: |
+    An isometric arcade adventure in the three-quarter view that Knight Lore turned
+    into a genre. Hlípa the ghost drifts from room to room through a house,
+    collecting coins and keeping clear of whatever else lives there.
+
+    The house runs on time. The game asks for the current hour before the first
+    room, keeps a clock and an alarm panel in the sidebar and can be told to wake
+    you later — a game that doubles as an alarm clock. Every attempt ends with a
+    report card: how much of the house was seen, how many coins were found, and a
+    verdict that starts at "naprosto nemožný", utterly hopeless.
+  cs: |
+    Izometrická akční adventura ve třičtvrtěpohledu, ze kterého Knight Lore udělal
+    žánr. Hlípa, malý duch, se snáší z místnosti do místnosti domem, sbírá korunky
+    a vyhýbá se všemu, co tam ještě bydlí.
+
+    Dům běží na čas. Hra se před první místností zeptá na přesnou hodinu, v
+    postranním panelu drží hodiny a budík a umí tě později vzbudit — hra, která je
+    zároveň budík. Každý pokus končí vysvědčením: kolik domu jsi viděl, kolik
+    korunek našel a verdikt, který začíná na „naprosto nemožný".
+  de: |
+    Ein isometrisches Action-Adventure in jener Dreiviertelansicht, aus der Knight
+    Lore ein Genre gemacht hat. Hlípa, ein kleines Gespenst, schwebt von Raum zu
+    Raum durch ein Haus, sammelt Münzen und hält sich von allem fern, was dort sonst
+    noch wohnt.
+
+    Das Haus läuft nach der Uhr. Vor dem ersten Raum fragt das Spiel nach der
+    aktuellen Uhrzeit, führt Uhr und Weckerfeld in der Seitenleiste mit und lässt
+    sich als Wecker stellen — ein Spiel, das zugleich ein Wecker ist. Jeder Versuch
+    endet mit einem Zeugnis: wie viel vom Haus zu sehen war, wie viele Münzen
+    gefunden wurden, und einem Urteil, das bei „naprosto nemožný" beginnt, völlig
+    hoffnungslos.
+  ja: |
+    『ナイトロア』がひとつのジャンルに変えた四分の三視点によるアイソメトリックのアクションアドベンチャー。小さな幽霊 Hlípa は家の部屋から部屋へと漂い、コインを集めながら、そこに住む者たちを避けて回る。
+
+    この家は時計で動く。最初の部屋に入る前にゲームは現在時刻を尋ね、サイドバーに時計と目覚まし欄を表示し、あとで起こすように設定もできる。ゲームでありながら目覚まし時計でもあるわけだ。挑戦が終わるたびに成績表が出る。家のどれだけを見たか、コインをいくつ見つけたか、そして「naprosto nemožný（まったく話にならない）」から始まる評価が示される。
 controls: |
   H — start game, I — instructions (Czech)
   Then set the clock: type four digits (e.g. 1200), A to confirm

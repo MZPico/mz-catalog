@@ -58,7 +58,13 @@ const titles = defineCollection({
     mode: z.enum(['native', 'mz-700']).optional(),
     language: z.string().optional(),
     files: z.array(file).min(1),
-    description: z.string().optional(),
+    // Either English prose or a per-language map (en required, the fallback).
+    description: z
+      .union([
+        z.string(),
+        z.object({ en: z.string(), cs: z.string().optional(), de: z.string().optional(), ja: z.string().optional() }),
+      ])
+      .optional(),
     controls: z.string().optional(),
     web: z.boolean().optional(),
     touch: z

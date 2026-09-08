@@ -78,9 +78,9 @@ export const ja: Ui = {
     download: '⬇ .mzf をダウンロード',
     downloadShort: '⬇ .mzf',
     tapeAudio: '♪ テープ音声',
+    aboutGame: 'ゲームについて',
     controls: '操作方法',
     files: 'ファイル',
-    provenance: '出所',
     techDetails: '技術情報 — テープヘッダー、アドレス、チェックサム',
     th: {
       file: 'ファイル',
@@ -89,7 +89,8 @@ export const ja: Ui = {
       type: 'タイプ',
       load: 'ロード',
       exec: '実行',
-      size: 'サイズ',
+      bodySize: '本体長',
+      fileSize: 'ファイルサイズ',
       crc: 'CRC-32',
     },
     kinds: { standard: '標準', turbo: 'ターボローダー', 'alt-dump': '別ダンプ' },
@@ -97,12 +98,6 @@ export const ja: Ui = {
     mode700: 'MZ-700 互換モード',
     modeTitle: 'MZ-800 の動作モード',
     languageTitle: '言語',
-    mzfNote:
-      'MZF は 128 バイトのシャープ製テープヘッダーとプログラム本体です。エミュレーターに読み込ませる、テープに書き出す、MZPico カードにコピーする、いずれにも使えます。',
-    source: '入手元',
-    notRecorded: '記録なし',
-    catalogEntry: 'カタログの登録内容',
-    catalogEntryNote: '— 訂正はプルリクエストでお寄せください。',
     screenshotAlt: (title: string, i: number) => `${title} のスクリーンショット ${i}`,
     summary: (title: string, machine: string, genres: string, year?: number) =>
       `${title} — ${machine} ${genres}${year ? `（${year}年）` : ''}。.mzf テープイメージをダウンロードできます。`,

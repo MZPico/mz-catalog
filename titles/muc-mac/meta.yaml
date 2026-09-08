@@ -6,6 +6,35 @@ genre: [game]
 files:
   - path: muc-mac.mzf
     kind: standard
+description:
+  en: |
+    A Pac-Man clone with twice the floor space: the playfield is two complete mazes
+    stacked one above the other and joined by tunnels, so the ghosts can follow you
+    from one to the other and a clean escape upstairs is never quite clean.
+
+    The start screen still asks "COLOR MONITOR (Y/N)" — a courtesy from the days
+    when an MZ-700 was as likely to be wired to a monochrome set as to a colour
+    one.
+  cs: |
+    Klon Pac-Mana s dvojnásobnou podlahovou plochou: hrací pole tvoří dvě celá
+    bludiště nad sebou, propojená tunely, takže tě duchové můžou pronásledovat z
+    jednoho do druhého a útěk o patro výš nikdy není úplně čistý.
+
+    Úvodní obrazovka se pořád ptá „COLOR MONITOR (Y/N)" — zdvořilost z časů, kdy byl
+    MZ-700 stejně často připojený k černobílému televizoru jako k barevnému.
+  de: |
+    Ein Pac-Man-Klon mit doppelter Grundfläche: Das Spielfeld besteht aus zwei
+    vollständigen Labyrinthen übereinander, durch Tunnel verbunden, sodass die
+    Geister einem von einem ins andere folgen können und die Flucht nach oben nie
+    ganz sauber gelingt.
+
+    Der Startbildschirm fragt bis heute „COLOR MONITOR (Y/N)" — eine Höflichkeit aus
+    der Zeit, als ein MZ-700 ebenso oft an einem Schwarzweißgerät hing wie an einem
+    Farbmonitor.
+  ja: |
+    床面積が二倍のパックマンのクローン。プレイフィールドは完全な迷路が上下に二つ並び、トンネルでつながっている。ゴーストは片方からもう片方へ追ってくるので、上の階へ逃げても安心はできない。
+
+    開始画面は今も「COLOR MONITOR (Y/N)」と尋ねてくる。MZ-700がカラーモニタと同じくらい白黒受像機につながれていた時代の気配りである。
 controls: |
   Cursor keys — move
   S — start

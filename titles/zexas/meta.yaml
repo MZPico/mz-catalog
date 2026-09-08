@@ -8,6 +8,37 @@ genre: [game]
 files:
   - path: zexas.mzf
     kind: standard
+description:
+  en: |
+    A shooter built around a vanishing point. Enemy fighters appear far away in the
+    middle of the screen and swell as they come at you; your shots fly into the
+    screen rather than up it, and your ship stays in the near plane, sliding left,
+    right, up and down to line them up.
+
+    Between waves the game drops you into tunnels, where the walls are as lethal as
+    the fighters. dB-Soft — the Flappy people — spread it across the Japanese
+    8-bits in 1984, and an MSX version followed as Zexas Limited.
+  cs: |
+    Střílečka postavená kolem úběžníku. Nepřátelské stíhačky se objeví daleko
+    uprostřed obrazovky a rostou, jak se blíží; tvoje střely letí do hloubky, ne
+    nahoru, a loď zůstává v přední rovině, kde uhýbá doleva, doprava, nahoru a dolů.
+
+    Mezi vlnami tě hra pošle do tunelů, kde jsou stěny stejně smrtelné jako
+    stíhačky. dB-Soft — tedy lidé od Flappy — ji v roce 1984 rozšířil po japonských
+    osmibitech; na MSX pak vyšla jako Zexas Limited.
+  de: |
+    Ein Shooter, der um einen Fluchtpunkt herum gebaut ist. Die Jäger tauchen weit
+    hinten in der Bildmitte auf und werden größer, während sie näher kommen; die
+    eigenen Schüsse fliegen in die Tiefe statt nach oben, und das Schiff bleibt in
+    der vorderen Ebene, wo es nach links, rechts, oben und unten ausweicht.
+
+    Zwischen den Wellen geht es durch Tunnel, in denen die Wände so tödlich sind wie
+    die Jäger. dB-Soft — die Leute hinter Flappy — brachte es 1984 auf die
+    japanischen 8-Bit-Rechner; auf dem MSX folgte es als Zexas Limited.
+  ja: |
+    消失点を中心に据えたシューティング。敵機は画面中央の奥に現れ、近づくにつれて大きくなる。自機の弾は上ではなく奥へ飛び、自機自身は手前の面にとどまって上下左右に動く。
+
+    ウェーブの合間にはトンネル面があり、壁は敵機と同じくらい危険だ。『フラッピー』のdB-SOFTが1984年に日本の8ビット機へ展開した作品で、MSXでは『ゼクサス リミテッド』として発売された。
 controls: |
   1 — start game
   Cursor keys — move

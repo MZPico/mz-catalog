@@ -7,6 +7,42 @@ genre: [game]
 files:
   - path: manicmi1.mzf
     kind: standard
+description:
+  en: |
+    Matthew Smith's 1983 platform classic, converted for the MZ-800. Miner Willy
+    has to collect every flashing key in a cavern and reach the portal while the
+    air supply drains and the hazards — the Kong beasts, the poisonous pansies, the
+    floors that crumble under him — run their fixed, unforgiving loops. One mistimed
+    step and the screen restarts.
+
+    This conversion is Slovak: the caverns keep Slovak names, the title screen asks
+    you to "stlač CR", and Smith's original Software Projects credit still scrolls
+    underneath. Unisoft's work.
+  cs: |
+    Plošinovková klasika Matthewa Smithe z roku 1983 v konverzi pro MZ-800. Miner
+    Willy musí v každé jeskyni posbírat všechny blikající klíče a doskákat k
+    portálu, zatímco ubývá zásoba vzduchu a překážky — opičí bestie, jedovaté
+    macešky, podlahy, které se pod ním drolí — objíždějí své pevné, nemilosrdné
+    smyčky. Jediný špatně načasovaný krok a obrazovka začíná znovu.
+
+    Tahle konverze je slovenská: jeskyně mají slovenské názvy, titulní obrazovka
+    vyzývá „stlač CR" a pod tím pořád běží původní credit Smithe a Software
+    Projects. Dílo Unisoftu.
+  de: |
+    Matthew Smiths Plattform-Klassiker von 1983, umgesetzt für den MZ-800. Miner
+    Willy muss in jeder Höhle sämtliche blinkenden Schlüssel einsammeln und das
+    Portal erreichen, während der Sauerstoffvorrat sinkt und die Gefahren — die
+    Kong-Biester, die giftigen Stiefmütterchen, die unter ihm zerbröselnden Böden —
+    ihre festen, unbarmherzigen Schleifen ziehen. Ein einziger schlecht getimter
+    Schritt, und der Bildschirm beginnt von vorn.
+
+    Diese Umsetzung ist slowakisch: Die Höhlen tragen slowakische Namen, der
+    Titelbildschirm bittet um „stlač CR", und darunter läuft weiterhin Smiths
+    ursprünglicher Software-Projects-Credit. Eine Arbeit von Unisoft.
+  ja: |
+    マシュー・スミスが1983年に作ったプラットフォームの古典を、MZ-800へ移植したもの。マイナー・ウィリーは各洞窟で点滅する鍵をすべて集め、酸素が尽きる前にポータルへたどり着かなければならない。コングの獣、毒のパンジー、足元から崩れる床は、いずれも決まった無慈悲な軌道を繰り返す。一歩でもタイミングを誤れば、その面は最初からだ。
+
+    この移植はスロバキア語版で、洞窟にはスロバキア語の名前が付き、タイトル画面は「stlač CR」と促す。その下にはスミスと Software Projects の原クレジットが今も流れている。手がけたのは Unisoft。
 controls: |
   Left / Right — move
   CR — start game

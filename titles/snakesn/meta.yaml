@@ -8,6 +8,42 @@ files:
   - path: snakesn.mzf
     kind: standard
     note: Tape header name "SNAKE&SNAKE EXP1"; the in-game credit line reads "TECNO-SOFT 83/6 E1.0".
+description:
+  en: |
+    Despite the name, this is not a Nibbler-style snake game. You crawl a walled
+    maze hunting rival snakes: spit poison to whittle them down, and once a rival
+    is shorter than you it can be swallowed whole. Frogs wandering into the middle
+    of the arena make your own body longer, and the colour of your body tells you
+    at a glance whether the snake ahead is prey or a threat.
+
+    One of the earliest releases by Tecno-Soft — the studio that later renamed
+    itself Technosoft and went on to make Thunder Force. Its build stamp, 83/6,
+    sits in the status column.
+  cs: |
+    Navzdory názvu to není had ve stylu Nibbleru. Plazíš se ohrazeným bludištěm a
+    lovíš konkurenční hady: plivnutím jedu je zkracuješ, a jakmile je soupeř kratší
+    než ty, spolkneš ho celého. Žáby, které přijdou doprostřed arény, prodlužují
+    tvoje vlastní tělo, a barva těla na první pohled říká, jestli je had před tebou
+    kořist, nebo hrozba.
+
+    Jeden z prvních titulů Tecno-Softu — studia, které se později přejmenovalo na
+    Technosoft a udělalo Thunder Force. Ve stavovém sloupci svítí jeho značka
+    sestavení, 83/6.
+  de: |
+    Trotz des Namens ist das kein Schlangenspiel im Sinne von Nibbler. Man kriecht
+    durch ein ummauertes Labyrinth und macht Jagd auf rivalisierende Schlangen: Mit
+    Gift spuckt man sie kürzer, und sobald eine kürzer ist als man selbst, lässt sie
+    sich ganz verschlingen. Frösche, die in die Mitte der Arena wandern, verlängern
+    den eigenen Körper, und die Farbe des Körpers verrät auf einen Blick, ob die
+    Schlange voraus Beute oder Bedrohung ist.
+
+    Eine der frühesten Veröffentlichungen von Tecno-Soft — dem Studio, das sich
+    später in Technosoft umbenannte und Thunder Force schuf. Sein Build-Stempel,
+    83/6, steht in der Statusspalte.
+  ja: |
+    名前に反して、『ニブラー』系のヘビゲームではない。壁に囲まれた迷路を這い回り、ライバルのヘビを狩る。毒を吐いて相手を短くし、自分より短くなったところで丸ごと飲み込む。アリーナ中央に現れるカエルを食べると自分の体が伸び、体の色を見れば前方のヘビが獲物か脅威かがすぐ分かる。
+
+    テクノソフト（当時の表記は Tecno-Soft）の最初期の作品で、のちに『サンダーフォース』を生む会社である。ステータス欄にはビルドの刻印 83/6 が表示されている。
 controls: |
   S — start the game
   Y / N — the "DO YOU NEED EXPLANATION?" prompt

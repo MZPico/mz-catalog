@@ -78,9 +78,9 @@ export const de: Ui = {
     download: '⬇ .mzf herunterladen',
     downloadShort: '⬇ .mzf',
     tapeAudio: '♪ Kassettenton',
+    aboutGame: 'Über das Spiel',
     controls: 'Steuerung',
     files: 'Dateien',
-    provenance: 'Herkunft',
     techDetails: 'Technische Details — Kassettenkopf, Adressen, Prüfsummen',
     th: {
       file: 'Datei',
@@ -89,7 +89,8 @@ export const de: Ui = {
       type: 'Typ',
       load: 'Laden',
       exec: 'Start',
-      size: 'Größe',
+      bodySize: 'Datenlänge',
+      fileSize: 'Dateigröße',
       crc: 'CRC-32',
     },
     kinds: { standard: 'Standard', turbo: 'Turbo-Lader', 'alt-dump': 'Alternativer Dump' },
@@ -97,12 +98,6 @@ export const de: Ui = {
     mode700: 'MZ-700-Kompatibilitätsmodus',
     modeTitle: 'MZ-800-Betriebsmodus',
     languageTitle: 'Sprache',
-    mzfNote:
-      'MZF = 128 Byte Sharp-Kassettenkopf plus Programmdaten. In einen Emulator laden, auf Kassette schreiben oder auf eine MZPico-Karte kopieren.',
-    source: 'Quelle',
-    notRecorded: 'Nicht erfasst',
-    catalogEntry: 'Katalogeintrag',
-    catalogEntryNote: '— Korrekturen gern als Pull Request.',
     screenshotAlt: (title: string, i: number) => `${title} — Screenshot ${i}`,
     summary: (title: string, machine: string, genres: string, year?: number) =>
       `${title} — ${machine} ${genres}${year ? ` (${year})` : ''}. Das .mzf-Kassettenabbild herunterladen.`,

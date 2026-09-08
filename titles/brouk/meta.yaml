@@ -8,6 +8,40 @@ genre: [game]
 files:
   - path: brouk.mzf
     kind: standard
+description:
+  en: |
+    You are the beetle of the title, loose in a walled grid, collecting the marked
+    boxes while things that eat beetles work their way towards you. A small stock
+    of bombs is there for when a room closes in, and there are more rooms behind
+    the first.
+
+    Pavel Šuchmann wrote it in 1989 and released it through Triamond VFR, with his
+    home address in Kutná Hora printed on the title screen — the way Czechoslovak
+    8-bit software was distributed before there were shops for it. His own billing
+    for the genre: "nerve stimulative dement game".
+  cs: |
+    Jsi brouk z názvu, puštěný do zazděné mřížky, sbíráš označené krabice a mezitím
+    si to k tobě razí cestu to, co brouky žere. Pro chvíle, kdy se místnost zavírá,
+    je po ruce malá zásoba bomb — a za první místností jsou další.
+
+    Napsal ji v roce 1989 Pavel Šuchmann a vydal přes Triamond VFR, s vlastní
+    domácí adresou v Kutné Hoře vytištěnou na titulní obrazovce — tak se
+    československý osmibitový software šířil v době, kdy pro něj ještě nebyly
+    obchody. Jeho vlastní žánrové zařazení: „nerve stimulative dement game".
+  de: |
+    Man ist der Käfer des Titels, unterwegs in einem ummauerten Raster, sammelt die
+    markierten Kisten ein, während sich das, was Käfer frisst, den Weg heranarbeitet.
+    Für den Moment, in dem sich ein Raum zuzieht, gibt es einen kleinen Vorrat an
+    Bomben — und hinter dem ersten Raum warten weitere.
+
+    Pavel Šuchmann schrieb das Spiel 1989 und veröffentlichte es über Triamond VFR,
+    mit seiner Privatadresse in Kutná Hora auf dem Titelbildschirm — so wurde
+    tschechoslowakische 8-Bit-Software verbreitet, als es dafür noch keine Läden
+    gab. Seine eigene Genrebezeichnung: „nerve stimulative dement game".
+  ja: |
+    プレイヤーはタイトルどおりの甲虫。壁で仕切られた格子の中に放たれ、印のついた箱を集める。その間、甲虫を食べるものたちが少しずつ距離を詰めてくる。部屋が塞がってきたときのために爆弾がわずかに用意されていて、最初の部屋の先にはさらに部屋が続く。
+
+    1989年にパヴェル・シュフマンが書き、Triamond VFR から発表した。タイトル画面にはクトナー・ホラの自宅住所が印字されている。店で売る仕組みがまだなかった時代のチェコスロバキアで、8ビットのソフトはそうやって広まった。作者自身によるジャンル表記は「nerve stimulative dement game」。
 controls: |
   Cursor keys — move
   Space — fire

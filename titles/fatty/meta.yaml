@@ -8,6 +8,35 @@ genre: [game]
 files:
   - path: fatty.mzf
     kind: standard
+description:
+  en: |
+    A Pac-Man variant from the Czechoslovak scene: clear the maze of dots, keep away
+    from the ghosts, and watch the clock in the status line run down. The mazes are
+    drawn as oversized letters, so the walls of the opening screens spell the name
+    of the game.
+
+    OTO Software, 1988. A build labelled "PROFI-N1" circulated widely with infinite
+    lives patched in; the copy archived here is the original program.
+  cs: |
+    Pac-Manovská variace z československé scény: vyčistit bludiště od teček, držet
+    se dál od duchů a sledovat, jak ve stavovém řádku ubývá čas. Bludiště jsou
+    kreslená jako obří písmena, takže zdi prvních obrazovek skládají jméno té hry.
+
+    OTO Software, 1988. Široce koloval build označený „PROFI-N1" s dopsanými
+    nekonečnými životy; kopie archivovaná tady je původní program.
+  de: |
+    Eine Pac-Man-Variante aus der tschechoslowakischen Szene: das Labyrinth von
+    Punkten leerräumen, den Geistern aus dem Weg gehen und zusehen, wie die Uhr in
+    der Statuszeile abläuft. Die Labyrinthe sind aus übergroßen Buchstaben gezeichnet
+    — die Mauern der ersten Bildschirme buchstabieren den Namen des Spiels.
+
+    OTO Software, 1988. Weit verbreitet war eine Fassung namens „PROFI-N1" mit
+    einpatchten unendlichen Leben; die hier archivierte Kopie ist das
+    Originalprogramm.
+  ja: |
+    チェコスロバキアのシーンから生まれたパックマンの変奏。迷路のドットを食べ尽くし、ゴーストを避け、ステータス行の残り時間が減っていくのを横目で見る。迷路は巨大な文字をかたどっており、序盤の面の壁はゲーム自身の名前を綴っている。
+
+    OTO Software、1988年。無限ライフを当てた「PROFI-N1」というビルドが広く出回ったが、ここに保存してあるのはオリジナルのプログラムである。
 controls: |
   CR — start game
   Cursor keys — move

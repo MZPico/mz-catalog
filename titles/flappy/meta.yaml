@@ -8,6 +8,42 @@ genre: [game]
 files:
   - path: flappy.mzf
     kind: standard
+description:
+  en: |
+    A block-pushing puzzle in the Sokoban tradition and dB-Soft's best-known game.
+    Every screen asks the same thing — get the blue stone onto the blue tile — and
+    everything else is in the way: rocks that have to be shoved aside, water that
+    swallows what you push into it, and monsters wandering the maze. A single shove
+    in the wrong direction can leave a screen unsolvable.
+
+    Two hundred "sides", each with its own five-letter password; the list reads
+    like a Japanese phrasebook — sake, ramen, Tokyo, yuki. Anyone who cleared them
+    all was meant to move on to dB-Soft's harder sequel, King Flappy.
+  cs: |
+    Hlavolam s posunováním kamenů v sokobanovské tradici a nejznámější titul
+    dB-Softu. Každá obrazovka chce totéž — dostat modrý kámen na modrou dlaždici —
+    a všechno ostatní překáží: balvany, které je potřeba odstrkat, voda, která
+    spolkne, co do ní zatlačíš, a nestvůry bloudící bludištěm. Jediné strčení
+    špatným směrem umí obrazovku udělat neřešitelnou.
+
+    Dvě stě „sides", každá s vlastním pětipísmenným heslem; jejich seznam vypadá
+    jako japonská konverzační příručka — sake, ramen, Tokyo, yuki. Kdo je vyřešil
+    všechny, měl přejít k těžšímu pokračování King Flappy.
+  de: |
+    Ein Schiebe-Puzzle in der Sokoban-Tradition und dB-Softs bekanntestes Spiel.
+    Jeder Bildschirm verlangt dasselbe — den blauen Stein auf die blaue Kachel
+    bringen — und alles andere steht im Weg: Felsen, die weggeschoben werden wollen,
+    Wasser, das verschluckt, was man hineinschiebt, und Monster, die durch das
+    Labyrinth streifen. Ein einziger Schub in die falsche Richtung kann einen
+    Bildschirm unlösbar machen.
+
+    Zweihundert „Sides", jede mit eigenem fünfstelligem Passwort; die Liste liest
+    sich wie ein japanischer Sprachführer — Sake, Ramen, Tokyo, Yuki. Wer alle
+    geschafft hatte, sollte zum schwereren King Flappy weiterziehen.
+  ja: |
+    倉庫番の系譜にある押し込み型パズルで、dB-SOFTの代表作。どの面も課題は同じ、青い石を青いタイルへ運ぶこと。邪魔をするのは押しのけるべき岩、押し込んだものを飲み込む水、迷路をうろつく敵。一度でも押す向きを間違えると、その面は詰んでしまう。
+
+    全200面、5文字のパスワードが面ごとに用意されている。その一覧は日本語の単語帳のようで、sake、ramen、Tokyo、yuki と並ぶ。全面クリアした人のために、より難しい続編『キングフラッピー』が用意された。
 controls: |
   Cursor keys — move
   Space — fire

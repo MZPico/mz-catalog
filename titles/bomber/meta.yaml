@@ -7,6 +7,40 @@ genre: [game]
 files:
   - path: bomber.mzf
     kind: standard
+description:
+  en: |
+    The first Bomberman. A single screen of brick walls, a handful of enemies and a
+    pocketful of bombs: blast openings through the bricks, catch the enemies in the
+    blast, and find the exit before the bonus counter runs out.
+
+    Hudson Soft released it in July 1983 for Japanese home computers only — MSX,
+    PC-8801, FM-7 and this MZ-700 version. Europe met it a year later under a
+    different name, Eric and the Floaters, a bombing game being an awkward sell in
+    Britain at the time. The series it started is still running.
+  cs: |
+    Úplně první Bomberman. Jedna obrazovka cihlových zdí, hrstka nepřátel a kapsa
+    plná bomb: prostřílet si cihlami průchody, chytit nepřátele do výbuchu a najít
+    východ dřív, než doběhne bonusové počítadlo.
+
+    Hudson Soft ji vydal v červenci 1983 jen pro japonské domácí počítače — MSX,
+    PC-8801, FM-7 a tuhle verzi pro MZ-700. Do Evropy se dostala o rok později pod
+    jiným jménem, Eric and the Floaters; hra o bombových útocích se v tehdejší
+    Británii prodávala těžko. Série, kterou tím začala, běží dodnes.
+  de: |
+    Der allererste Bomberman. Ein einzelner Bildschirm voller Ziegelmauern, eine
+    Handvoll Gegner und eine Tasche voll Bomben: Durchgänge in die Mauern sprengen,
+    die Gegner in der Explosion erwischen und den Ausgang finden, bevor der
+    Bonuszähler abläuft.
+
+    Hudson Soft veröffentlichte das Spiel im Juli 1983 ausschließlich für japanische
+    Heimcomputer — MSX, PC-8801, FM-7 und diese MZ-700-Fassung. Nach Europa kam es
+    ein Jahr später unter anderem Namen, Eric and the Floaters: Ein Spiel über
+    Bombenanschläge ließ sich im Großbritannien jener Jahre schlecht verkaufen. Die
+    Serie, die hier beginnt, läuft bis heute.
+  ja: |
+    シリーズ最初のボンバーマン。一画面のレンガの迷路に数体の敵、そして手にはボム。レンガを吹き飛ばして道を作り、爆風で敵を倒し、ボーナスが尽きる前に出口へたどり着く。
+
+    ハドソンが1983年7月に日本の家庭用パソコン向けだけに発売した作品で、MSX、PC-8801、FM-7、そしてこのMZ-700版がある。翌年ヨーロッパでは「Eric and the Floaters」と改題された。爆破を題材にした作品は当時の英国では売りにくかったからである。ここから始まったシリーズは今も続いている。
 controls: |
   Cursor keys — move
   Space — drop a bomb

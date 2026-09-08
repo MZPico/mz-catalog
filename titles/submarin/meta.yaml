@@ -6,6 +6,39 @@ genre: [game]
 files:
   - path: submarin.mzf
     kind: standard
+description:
+  en: |
+    A horizontal shooter set in an undersea channel. Mines mark the roof and floor
+    of the passage, enemy craft and laser barriers block the way ahead, and even a
+    glancing touch of a mine takes most of the shields. Fuel drains as you go;
+    shooting a fuel canister refills the tank and repairs the damage.
+
+    The channel narrows and the scrolling speeds up the deeper you get. One of
+    Hudson Soft's 1983 batch for Japanese home computers, from the same year as
+    their first Bomber Man.
+  cs: |
+    Horizontální střílečka v podmořském kanálu. Strop i dno chodby lemují miny,
+    cestu blokují nepřátelské stroje a laserové bariéry a i letmý dotek miny sebere
+    většinu štítů. Palivo ubývá cestou; sestřelený kanystr doplní nádrž a zároveň
+    spraví poškození.
+
+    Čím hlouběji, tím užší kanál a rychlejší rolování. Jeden z ročníku 1983 od
+    Hudson Softu pro japonské domácí počítače — ze stejného roku jako jejich první
+    Bomber Man.
+  de: |
+    Ein horizontaler Shooter in einem Unterwasserkanal. Minen säumen Decke und Boden
+    des Gangs, feindliche Fahrzeuge und Lasersperren blockieren den Weg, und schon
+    eine Berührung mit einer Mine kostet fast die gesamte Schildenergie. Der
+    Treibstoff sinkt stetig; ein abgeschossener Kanister füllt den Tank und
+    repariert zugleich den Schaden.
+
+    Je tiefer es geht, desto enger wird der Kanal und desto schneller scrollt das
+    Bild. Einer von Hudson Softs Titeln des Jahres 1983 für japanische Heimcomputer
+    — aus demselben Jahr wie ihr erster Bomber Man.
+  ja: |
+    海中の水路を舞台にした横スクロールシューティング。通路の上下には機雷が並び、行く手は敵艇とレーザーの障壁がふさぐ。機雷はかすっただけでシールドの大半を失う。燃料は減り続け、燃料タンクを撃てば補給と損傷の修復を同時に果たせる。
+
+    進むほど水路は狭く、スクロールは速くなる。ハドソンが1983年に日本の家庭用パソコン向けに送り出した一群の一本で、同社最初の『ボンバーマン』と同じ年の作品である。
 controls: |
   Cursor keys — move
   Space — fire

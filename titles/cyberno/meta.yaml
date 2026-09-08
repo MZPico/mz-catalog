@@ -8,6 +8,40 @@ genre: [game]
 files:
   - path: cyberno.mzf
     kind: standard
+description:
+  en: |
+    An unofficial MZ-800 conversion of Cybernoid — The Fighting Machine, Raffaele
+    Cecco's 1988 game for Hewson. Every screen is a fixed, cave-like chamber packed
+    with turrets, drones, mines and destructible blocks, and you hover through it
+    recovering the cargo that pirates stole. Instead of one gun there is a rack of
+    them — bombs, bouncers, seekers, shields — picked as the situation demands.
+
+    The chambers never vary, so progress is less about reflexes than about learning
+    the one safe line through each of them. The MZ version is credited to Profi.
+  cs: |
+    Neoficiální konverze hry Cybernoid — The Fighting Machine, kterou v roce 1988
+    napsal Raffaele Cecco pro Hewson, na MZ-800. Každá obrazovka je pevná jeskynní
+    komora nacpaná věžemi, drony, minami a rozstřelitelnými bloky; proplouváš jí a
+    sbíráš náklad ukradený piráty. Místo jediné zbraně máš celý regál — bomby,
+    odrážeče, samonaváděcí střely, štíty — a vybíráš podle situace.
+
+    Komory se nikdy nemění, takže postup není o reflexech, ale o naučení té jediné
+    bezpečné stopy skrz každou z nich. MZ verze je připsaná skupině Profi.
+  de: |
+    Eine inoffizielle MZ-800-Umsetzung von Cybernoid — The Fighting Machine,
+    Raffaele Ceccos Spiel von 1988 für Hewson. Jeder Bildschirm ist eine feste,
+    höhlenartige Kammer voller Geschütze, Drohnen, Minen und zerstörbarer Blöcke;
+    man schwebt hindurch und holt die von Piraten geraubte Fracht zurück. Statt
+    einer Waffe gibt es ein ganzes Regal davon — Bomben, Abpraller, Suchköpfe,
+    Schilde — je nach Lage gewählt.
+
+    Die Kammern ändern sich nie, Fortschritt ist deshalb weniger eine Frage der
+    Reflexe als des Auswendiglernens der einen sicheren Linie. Die MZ-Fassung wird
+    Profi zugeschrieben.
+  ja: |
+    1988年にラファエレ・チェッコがヒューソン向けに書いた『サイバーノイド』のMZ-800への非公式移植。各画面は固定の洞窟状の部屋で、砲台、ドローン、機雷、破壊可能なブロックが詰まっている。そこを浮遊しながら海賊に奪われた積荷を回収する。武器は一種類ではなく、爆弾、跳弾、追尾弾、シールドと棚に並び、状況に応じて選ぶ。
+
+    部屋の構成は決して変わらないので、上達とは反射神経よりも各部屋の唯一の安全な線を覚えることを意味する。MZ版は Profi の手によるものとされている。
 controls: |
   1 — start game
   Cursor keys — move

@@ -5,6 +5,39 @@ genre: [game]
 files:
   - path: galao.mzf
     kind: standard
+description:
+  en: |
+    A Galaga adaptation for the MZ. Each wave arrives in three acts: the formation
+    loops onto the screen, individual ships peel off to dive at you, and the last
+    survivors make a final run. Every third stage is a Challenging Stage, where the
+    aliens never form up at all and simply have to be shot down for the bonus.
+
+    Where the machine's other Galaxian clone demands pixel-perfect aim, here a hit
+    anywhere on an enemy counts — which makes this the more playable of the two,
+    even if the aliens fly the trickier patterns.
+  cs: |
+    Adaptace Galagy pro MZ. Každá vlna přichází ve třech dějstvích: formace vletí na
+    obrazovku v obloucích, jednotlivé lodě se odpoutají a střemhlav útočí a poslední
+    přeživší podniknou závěrečný nálet. Každá třetí úroveň je Challenging Stage, kde
+    se mimozemšťané vůbec nesešikují a jde jen o to je sestřelit pro bonus.
+
+    Zatímco druhý klon Galaxianu na téhle mašině vyžaduje zásah přesně doprostřed,
+    tady se počítá trefa kamkoli — což z Galaa dělá hratelnější z té dvojice, i když
+    nepřátelé létají složitější dráhy.
+  de: |
+    Eine Galaga-Umsetzung für den MZ. Jede Welle kommt in drei Akten: Die Formation
+    schwenkt in Schleifen herein, einzelne Schiffe lösen sich zum Sturzflug, und die
+    letzten Überlebenden fliegen einen Schlussangriff. Jede dritte Stufe ist eine
+    Challenging Stage, in der sich die Aliens gar nicht erst formieren und nur für
+    den Bonus abgeschossen werden wollen.
+
+    Wo der andere Galaxian-Klon dieser Maschine punktgenaues Zielen verlangt, zählt
+    hier ein Treffer an beliebiger Stelle — das macht Galao zum spielbareren der
+    beiden, auch wenn die Gegner die kniffligeren Bahnen fliegen.
+  ja: |
+    MZ向けの『ギャラガ』の翻案。各ウェーブは三幕構成で、編隊が弧を描いて画面に入り、個々の機体が離れて急降下し、最後の生き残りが総攻撃をかける。3面ごとにチャレンジングステージが挟まり、そこでは敵は隊列を組まず、ボーナスのために撃ち落とすだけになる。
+
+    同じ機種のもう一本のギャラクシャン系が中心への精密な命中を要求するのに対し、こちらはどこに当たっても有効で、敵の飛び方が難しいぶんを差し引いても遊びやすい。
 controls: |
   Left / Right — move
   Space — fire

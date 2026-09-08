@@ -8,6 +8,36 @@ genre: [game]
 files:
   - path: the-drop.mzf
     kind: standard
+description:
+  en: |
+    Water drips from a row of taps above the platforms, and you catch it in a pot —
+    but only while standing directly under a tap. A full pot has to be carried down
+    to one of the two wells to count, and the more drops caught on the way, the
+    more the trip is worth, which is the whole tension of the game: one more drop,
+    or run for the well.
+
+    An early BBG Software title from 1984, playing entirely on the MZ-700's
+    character graphics.
+  cs: |
+    Z řady kohoutků nad plošinami kape voda a ty ji chytáš do hrnce — ale jen když
+    stojíš přímo pod kohoutkem. Plný hrnec je potřeba donést k jedné ze dvou studní,
+    aby se počítal, a čím víc kapek cestou nachytáš, tím víc ta cesta vynese. V tom
+    je celé napětí: ještě jednu kapku, nebo běžet ke studni.
+
+    Raný titul BBG Software z roku 1984, hraný celý na znakové grafice MZ-700.
+  de: |
+    Aus einer Reihe von Wasserhähnen über den Plattformen tropft Wasser, und man
+    fängt es in einem Topf auf — aber nur, wenn man direkt unter einem Hahn steht.
+    Ein voller Topf muss zu einem der beiden Brunnen getragen werden, damit er
+    zählt, und je mehr Tropfen unterwegs gefangen wurden, desto mehr ist der Gang
+    wert. Genau darin liegt die Spannung: noch ein Tropfen, oder los zum Brunnen.
+
+    Ein früher Titel von BBG Software aus dem Jahr 1984, komplett auf der
+    Zeichengrafik des MZ-700 gespielt.
+  ja: |
+    足場の上に並んだ蛇口から水が滴り、それを鍋で受け止める。ただし受けられるのは蛇口の真下の足場に立っているときだけだ。満たした鍋は二つある井戸のどちらかまで運んで初めて得点になり、道中で受けた滴が多いほど価値は上がる。緊張はそこにある。もう一滴狙うか、井戸へ走るか。
+
+    1984年の BBG Software の初期作で、MZ-700のキャラクタグラフィックだけで作られている。
 controls: |
   Cursor keys — move
   Space — fire

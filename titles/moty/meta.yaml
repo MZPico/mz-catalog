@@ -7,6 +7,42 @@ genre: [game]
 files:
   - path: moty.mzf
     kind: standard
+description:
+  en: |
+    A logic game with a running clock: two hundred screens of brick chambers, and
+    in each one a set of purple balls that all have to be destroyed before the time
+    runs out. Work out the order, get yourself into position, and do it fast enough
+    — thinking and running in equal measure.
+
+    Written for the MZ in 1985 by T. Albertz and K. Schittenhelm for BBG Software
+    of Ahrensburg, in a BASIC compiler rather than assembler, with a password every
+    five screens so nobody had to start over. It has outlived its machine: the game
+    has since been rewritten in Java and JavaScript to be played in a browser.
+  cs: |
+    Logická hra s běžícím časem: dvě stě obrazovek cihlových komor a v každé sada
+    fialových koulí, které je nutné do vypršení času všechny zničit. Vymyslet
+    pořadí, dostat se na místo a stihnout to — přemýšlení a běhání stejným dílem.
+
+    Pro MZ ji v roce 1985 napsali T. Albertz a K. Schittenhelm pro BBG Software z
+    Ahrensburgu, a to v BASICovém kompilátoru, ne v assembleru; heslo po každých
+    pěti obrazovkách zajistilo, že nikdo nemusel začínat od začátku. Svůj počítač
+    přežila: hra byla později přepsaná do Javy a JavaScriptu, aby šla hrát v
+    prohlížeči.
+  de: |
+    Ein Logikspiel mit laufender Uhr: zweihundert Bildschirme aus Ziegelkammern, in
+    jeder ein Satz violetter Kugeln, die alle zerstört sein wollen, bevor die Zeit
+    abläuft. Die Reihenfolge herausfinden, sich in Position bringen und schnell
+    genug sein — Denken und Laufen zu gleichen Teilen.
+
+    Geschrieben 1985 von T. Albertz und K. Schittenhelm für BBG Software aus
+    Ahrensburg, und zwar in einem BASIC-Compiler statt in Assembler; ein Passwort
+    alle fünf Bildschirme ersparte den Neuanfang. Das Spiel hat seine Maschine
+    überlebt: Es wurde später in Java und JavaScript neu geschrieben und läuft im
+    Browser.
+  ja: |
+    時間制限つきの思考ゲーム。レンガの部屋が200面あり、各面に置かれた紫の玉を制限時間内にすべて壊す。順番を考え、位置につき、間に合わせる。頭と足を同じだけ使う。
+
+    1985年、T. アルベルツと K. シッテンヘルムがアーレンスブルクの BBG Software のためにMZ向けに書いた。アセンブラではなく BASIC コンパイラで作られており、5面ごとのパスワードのおかげで最初からやり直す必要はなかった。この作品は機械より長生きした。のちに Java と JavaScript へ書き直され、ブラウザで遊べるようになっている。
 controls: |
   Cursor keys — move
   S — start

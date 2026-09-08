@@ -54,8 +54,11 @@ The structure is flat: machine type is metadata, not a directory level.
      - path: flappy-turbo.mzf
        kind: turbo
        note: Czech turbo loader, 2400 Bd
-   description: >
-     Free-form text. Blank lines separate paragraphs on the site.
+   description:            # or a plain string, which is taken as English
+     en: |
+       Free-form text. Blank lines separate paragraphs on the site.
+     cs: |
+       Translations are optional; a missing language falls back to en.
    controls: |
      Q/A/O/P  move
      SPACE    push
@@ -72,11 +75,11 @@ The structure is flat: machine type is metadata, not a directory level.
    | `mode` | MZ-800 only | `native` or `mz-700` (compatibility mode); forbidden for other machines |
    | `language` | no | ISO 639 code of the software's UI language (`en`, `cs`, `de`, `ja`, …); omit if unknown |
    | `files[]` | yes | `path` (file name in the folder), `kind`, optional `note` |
-   | `description` | no | free text, paragraphs separated by blank lines |
+   | `description` | no | free text, paragraphs separated by blank lines. Either a string (English) or a per-language map (`en` required, the fallback; `cs`, `de`, `ja` optional). Keep Japanese paragraphs on one line — a hard wrap renders as a stray space. |
    | `controls` | no | key / joystick reference, shown verbatim |
    | `web` | no | `true` publishes the title on the web site; absent/false keeps it API-only (manifest.json + device API still serve every title) |
    | `touch` | no | touch-control layout for the browser emulator on phones: `pad` (`cursor` default, `wasd`, `none`, or `{up,down,left,right}`), `buttons` (right side, first = primary), `extra` (small buttons, left side); keys are MZ key names (`A`-`Z`, `0`-`9`, `Space`, `Enter`, `Up`…, `F1`…, see schema). Preview a layout without editing: `/play/<slug>/?touchspec={"pad":"wasd","buttons":[{"label":"JUMP","key":"Space"}],"extra":[{"label":"1","key":"1"}]}` |
-   | `source` | no | provenance — URL or free text |
+   | `source` | no | where the dump came from — URL or free text. Not shown on the site; the legacy device-API folder is derived from a `folder <name>` mention here |
 
 5. Run `npm run validate`. It checks the schema, that every listed file
    exists, that no `.mzf` in the folder is unlisted, and that MZF headers

@@ -7,6 +7,42 @@ genre: [game]
 files:
   - path: nakamot1.mzf
     kind: standard
+description:
+  en: |
+    A single-screen platform game. Each level is a lattice of platforms, ladders and
+    climbing poles holding fifteen to twenty objects to collect, patrolled by
+    ghosts that blink from platform to platform and by bats that ignore the
+    scenery. Gather the lot, reach the cloud, and do it before the bonus counter
+    reaches zero.
+
+    The menu offers something few 8-bit games did: "Load screens from tape". The
+    level set was meant to be extended from cassette, and the built-in one keeps
+    getting harder until the game gives out at level 32. BBG Software was a German
+    house from Ahrensburg, near Hamburg.
+  cs: |
+    Plošinovka na jedné obrazovce. Každá úroveň je mříž plošin, žebříků a tyčí s
+    patnácti až dvaceti předměty k posbírání, po níž chodí duchové přeskakující mezi
+    plošinami a netopýři, kteří si kulis nevšímají. Posbírat všechno, doskočit k
+    obláčku — a stihnout to, než bonusové počítadlo klesne na nulu.
+
+    V nabídce je něco, co mělo málokteré osmibitové hře: „Load screens from tape".
+    Sada úrovní se měla dokupovat na kazetě, a ta vestavěná přitvrzuje, dokud se hra
+    na 32. úrovni nezastaví. BBG Software byl německý dům z Ahrensburgu u Hamburku.
+  de: |
+    Ein Plattformspiel auf einem einzigen Bildschirm. Jede Ebene ist ein Gitter aus
+    Plattformen, Leitern und Kletterstangen mit fünfzehn bis zwanzig Gegenständen,
+    dazu Geister, die von Plattform zu Plattform springen, und Fledermäuse, die sich
+    um die Kulisse nicht scheren. Alles einsammeln, die Wolke erreichen — und zwar
+    bevor der Bonuszähler bei null ist.
+
+    Das Menü bietet etwas, das nur wenige 8-Bit-Spiele hatten: „Load screens from
+    tape". Der Levelsatz sollte sich per Kassette erweitern lassen; der eingebaute
+    wird immer schwerer, bis das Spiel auf Ebene 32 aufgibt. BBG Software war ein
+    deutsches Haus aus Ahrensburg bei Hamburg.
+  ja: |
+    一画面のプラットフォームゲーム。各面は足場とはしごとポールの格子で、15〜20個のアイテムが置かれ、足場から足場へ瞬間移動する幽霊と、地形を無視して飛ぶコウモリが巡回する。すべて集めて雲まで到達する。ボーナスカウンタがゼロになる前に。
+
+    メニューには当時の8ビット機では珍しい項目がある。「Load screens from tape」。面データはカセットで追加できる設計だった。内蔵の面は難度が上がり続け、32面でゲームは動かなくなる。BBG Software はハンブルク近郊アーレンスブルクのドイツのメーカーだった。
 controls: |
   Cursor keys — move
   S — start

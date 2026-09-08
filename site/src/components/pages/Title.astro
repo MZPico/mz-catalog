@@ -14,9 +14,8 @@ const languageName = (code: string) => {
 };
 const hex4 = (n: number) => '$' + n.toString(16).toUpperCase().padStart(4, '0');
 const kb = (n: number) => (n / 1024).toFixed(1) + ' KB';
-const paragraphs = (d.description ?? '').trim().split(/\n\s*\n/).filter(Boolean);
-const isUrl = (s: string) => /^https?:\/\//.test(s);
-const repoMeta = `https://github.com/MZPico/mz-catalog/blob/main/titles/${d.slug}/meta.yaml`;
+const description = typeof d.description === 'string' ? d.description : d.description?.[lang] ?? d.description?.en;
+const paragraphs = (description ?? '').trim().split(/\n\s*\n/).filter(Boolean);
 const summary = t.title.summary(d.title, machineLabel[d.machine], d.genre.join(', '), d.year);
 
 // Social/AI preview: the 1200x630 card built by tools/og/build-og.py from the
@@ -36,7 +35,7 @@ const gameLd = {
   ...(d.year ? { datePublished: String(d.year) } : {}),
   ...(d.publisher ? { publisher: { '@type': 'Organization', name: d.publisher } } : {}),
   ...(d.language ? { inLanguage: d.language } : {}),
-  ...(d.description ? { description: d.description } : { description: summary }),
+  description: description ?? summary,
   ...(d.screenshots.length ? { image: d.screenshots.map((f) => abs(`/screenshots/${d.slug}/${f}`)) } : {}),
   downloadUrl: abs(`/files/${d.slug}/${d.files[0].path}`),
   ...(d.machine !== 'mz-1500' ? { installUrl: abs(p(`/play/${d.slug}/`)) } : {}),
@@ -122,7 +121,7 @@ const breadcrumbLd = {
 
     {paragraphs.length > 0 && (
       <section class="prose">
-        <h2>{t.about.title}</h2>
+        <h2>{t.title.aboutGame}</h2>
         {paragraphs.map((p) => <p>{p}</p>)}
       </section>
     )}
@@ -141,7 +140,7 @@ const breadcrumbLd = {
       <div class="table-wrap">
         <table class="files">
           <thead>
-            <tr><th>{t.title.th.file}</th><th>{t.title.th.kind}</th><th>{t.title.th.tapeName}</th><th>{t.title.th.type}</th><th>{t.title.th.load}</th><th>{t.title.th.exec}</th><th>{t.title.th.size}</th><th>{t.title.th.crc}</th></tr>
+            <tr><th>{t.title.th.file}</th><th>{t.title.th.kind}</th><th>{t.title.th.tapeName}</th><th>{t.title.th.type}</th><th>{t.title.th.load}</th><th>{t.title.th.exec}</th><th>{t.title.th.bodySize}</th><th>{t.title.th.fileSize}</th><th>{t.title.th.crc}</th></tr>
           </thead>
           <tbody>
             {d.files.map((f) => (
@@ -153,28 +152,17 @@ const breadcrumbLd = {
                   <td>{f.header?.attributeName}</td>
                   <td class="mono">{f.header ? hex4(f.header.loadAddress) : ''}</td>
                   <td class="mono">{f.header ? hex4(f.header.execAddress) : ''}</td>
+                  <td class="mono">{f.header ? hex4(f.header.dataSize) : ''}</td>
                   <td title={`${f.size} bytes`}>{kb(f.size)}</td>
                   <td class="mono">{f.crc32}</td>
                 </tr>
-                {f.note && <tr><td class="note" colspan="8">{f.note}</td></tr>}
+                {f.note && <tr><td class="note" colspan="9">{f.note}</td></tr>}
               </>
             ))}
           </tbody>
         </table>
       </div>
-      <p class="meta"><small>{t.title.mzfNote}</small></p>
       </details>
-    </section>
-
-
-    <section data-pagefind-ignore>
-      <h2>{t.title.provenance}</h2>
-      <dl class="facts">
-        <dt>{t.title.source}</dt>
-        <dd>{d.source ? (isUrl(d.source) ? <a href={d.source} rel="noopener">{d.source}</a> : d.source) : t.title.notRecorded}</dd>
-        <dt>{t.title.catalogEntry}</dt>
-        <dd><a href={repoMeta} rel="noopener">titles/{d.slug}/meta.yaml</a> {t.title.catalogEntryNote}</dd>
-      </dl>
     </section>
   </article>
 </Base>

@@ -84,8 +84,38 @@
       }
     },
     "description": {
-      "type": "string",
-      "maxLength": 4000
+      "description": "Free prose about the title. Either a plain string (English) or a per-language map; en is required and is the fallback for languages that are missing.",
+      "oneOf": [
+        {
+          "type": "string",
+          "maxLength": 4000
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "en"
+          ],
+          "properties": {
+            "en": {
+              "type": "string",
+              "maxLength": 4000
+            },
+            "cs": {
+              "type": "string",
+              "maxLength": 4000
+            },
+            "de": {
+              "type": "string",
+              "maxLength": 4000
+            },
+            "ja": {
+              "type": "string",
+              "maxLength": 4000
+            }
+          }
+        }
+      ]
     },
     "controls": {
       "type": "string",

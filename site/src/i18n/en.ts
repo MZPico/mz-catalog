@@ -79,9 +79,9 @@ export const en = {
     download: '⬇ Download .mzf',
     downloadShort: '⬇ .mzf',
     tapeAudio: '♪ Tape audio',
+    aboutGame: 'About the game',
     controls: 'Controls',
     files: 'Files',
-    provenance: 'Provenance',
     techDetails: 'Technical details — tape header, addresses, checksums',
     th: {
       file: 'File',
@@ -90,7 +90,8 @@ export const en = {
       type: 'Type',
       load: 'Load',
       exec: 'Exec',
-      size: 'Size',
+      bodySize: 'Body size',
+      fileSize: 'File size',
       crc: 'CRC-32',
     },
     kinds: { standard: 'Standard', turbo: 'Turbo loader', 'alt-dump': 'Alternative dump' },
@@ -98,12 +99,6 @@ export const en = {
     mode700: 'MZ-700 compatibility mode',
     modeTitle: 'MZ-800 operating mode',
     languageTitle: 'Language',
-    mzfNote:
-      'MZF = 128-byte Sharp tape header + program data. Load in an emulator, write to tape, or copy to an MZPico card.',
-    source: 'Source',
-    notRecorded: 'Not recorded',
-    catalogEntry: 'Catalog entry',
-    catalogEntryNote: '— corrections welcome via pull request.',
     screenshotAlt: (title: string, i: number) => `${title} screenshot ${i}`,
     summary: (title: string, machine: string, genres: string, year?: number) =>
       `${title} — ${machine} ${genres}${year ? ` (${year})` : ''}. Download the .mzf tape image.`,

@@ -9,6 +9,39 @@ files:
   - path: wooky.mzf
     kind: standard
     note: Single-file build of all parts; the tape header carries "SHRUNKEN BY PETR SLECHTA, 2023".
+description:
+  en: |
+    A platform game across numbered screens. Wooky runs, jumps and shoots his way
+    around girders and ladders while an energy bar drains at the top of the
+    sidebar; skull-marked barrels and drifting enemies punish a mistimed jump, and
+    the first screen has the game's own name built into the scenery.
+
+    Same house style as BBG's Moty: screen numbers, passwords and a menu that can
+    load further screens from tape. This file is a single-load build of all the
+    parts, put together in 2023.
+  cs: |
+    Plošinovka na číslovaných obrazovkách. Wooky běhá, skáče a střílí si cestu mezi
+    traverzami a žebříky, zatímco nahoře v postranním panelu ubývá energie;
+    sudy se lebkou a poletující nepřátelé trestají špatně načasovaný skok a první
+    obrazovka má jméno hry zabudované přímo do kulis.
+
+    Stejný domácí styl jako u BBG Moty: čísla obrazovek, hesla a nabídka, která umí
+    dohrát další obrazovky z kazety. Tenhle soubor je jednorázový sestavený build
+    všech dílů z roku 2023.
+  de: |
+    Ein Plattformspiel über durchnummerierte Bildschirme. Wooky rennt, springt und
+    schießt sich seinen Weg über Träger und Leitern, während oben in der Seitenleiste
+    die Energie sinkt; Fässer mit Totenkopf und umherziehende Gegner bestrafen jeden
+    schlecht getimten Sprung, und im ersten Bildschirm steckt der Name des Spiels
+    in der Kulisse.
+
+    Derselbe Hausstil wie bei BBGs Moty: Bildschirmnummern, Passwörter und ein Menü,
+    das weitere Bildschirme von Kassette nachladen kann. Diese Datei ist ein 2023
+    zusammengesetzter Ein-Datei-Build aller Teile.
+  ja: |
+    番号のついた面を進むプラットフォームゲーム。ウーキーは梁とはしごの間を走り、跳び、撃って進む。その間サイドバーのエネルギーは減り続ける。ドクロ印のドラム缶と漂う敵は跳躍のタイミングの誤りを見逃さない。最初の面は背景そのものにゲーム名が組み込まれている。
+
+    BBGの『モティ』と同じ流儀で、面番号、パスワード、そしてカセットから追加の面を読み込むメニューを備える。このファイルは全パートを一本にまとめた2023年のビルドである。
 controls: |
   Cursor keys — move
   CR — fire
