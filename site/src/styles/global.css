@@ -203,6 +203,10 @@ kbd { font-family: var(--mono); background: var(--surface-2); border: 1px solid 
 .card-play { top: 0.5rem; right: 0.5rem; }
 .card-play:hover { transform: scale(1.12); opacity: 1; color: var(--green-ink); }
 
+/* Staging deployments identify themselves */
+.staging-badge { font-family: var(--pixel); font-size: 0.6rem; letter-spacing: 0.08em; color: var(--green-ink);
+  background: var(--amber); border-radius: 5px; padding: 0.25rem 0.45rem 0.18rem; margin-left: 0.6rem; }
+
 /* Homepage hero with the MZ-800 badge */
 .hero { display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
 .hero > div { flex: 1 1 420px; min-width: 0; }

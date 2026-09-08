@@ -1,0 +1,15 @@
+// Staging deploy: `npm run deploy:staging` (builds with MZ_STAGING=1, then this).
+// Serves the same site/dist as production, but on staging.mzpico.com, marked
+// noindex and badged in the header. Production keeps deploying from `main`
+// through the git-connected build — nothing here touches it.
+{
+  "name": "mz-catalog-staging",
+  "compatibility_date": "2026-08-31",
+  "assets": {
+    "directory": "./site/dist",
+    "not_found_handling": "404-page"
+  },
+  "routes": [
+    { "pattern": "staging.mzpico.com", "custom_domain": true }
+  ]
+}

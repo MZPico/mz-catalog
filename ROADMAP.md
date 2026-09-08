@@ -66,6 +66,9 @@ manifest.json, legacy-api.json and /files/* always carry the full set.
 Re-enable a title by adding `web: true`.
 
 ## Infra notes
+- Staging: `staging.mzpico.com` = Worker `mz-catalog-staging`, deployed by
+  hand with `npm run deploy:staging` (noindex + STAGING badge). Review there
+  first, then push to `main` for production.
 - Site + files: Cloudflare Workers static assets (git-connected build),
   live at https://mzpico.com since 2026-09-01 — never hardcode
   *.workers.dev anywhere. HTTP→HTTPS redirect on for the site;

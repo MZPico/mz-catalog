@@ -164,6 +164,27 @@ series against upstream in `tools/wasm/patches/` (base commit named in
 `tools/wasm/README.md`) — the complete corresponding source for the
 shipped binaries.
 
+## Staging
+
+`https://staging.mzpico.com` is a second Workers deployment of the same
+build, for reviewing changes before they go live (and for testing on a
+phone — the browser emulator needs cross-origin isolation, so it cannot
+run from a plain local server).
+
+```
+npm run deploy:staging     # builds with MZ_STAGING=1 and deploys wrangler.staging.jsonc
+```
+
+Staging builds carry a `STAGING` badge in the header, a `noindex` meta tag
+and an `X-Robots-Tag: noindex, nofollow` response header, so they never
+reach search results. Production is untouched by this: it keeps deploying
+from `main` through the git-connected build, without `MZ_STAGING`.
+Devices are unaffected too — the api.mzpico.com shim reads from
+`https://mzpico.com`.
+
+(The `MZ_STAGING=1` prefix in `build:staging` is POSIX shell syntax; on
+Windows use `set MZ_STAGING=1` or run it from WSL.)
+
 ## manifest.json (device API)
 
 `manifest.json` at the site root is the machine-readable index consumed

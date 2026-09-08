@@ -3,7 +3,7 @@
 //           /manifest.json straight from titles/
 //  - build: copies MZF files + screenshots into dist/ and writes
 //           dist/manifest.json
-import { cp, mkdir, writeFile } from 'node:fs/promises';
+import { cp, mkdir, writeFile, readFile } from 'node:fs/promises';
 import { createReadStream, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -69,6 +69,14 @@ export default function catalog() {
         }
         for (const k of Object.keys(legacy)) legacy[k].sort((a, b) => a.name.localeCompare(b.name));
         await writeFile(path.join(out, 'legacy-api.json'), JSON.stringify(legacy) + '\n');
+
+        // Staging builds also ask crawlers to stay away at the HTTP level
+        // (the pages carry a noindex meta tag as well).
+        if (process.env.MZ_STAGING === '1') {
+          const headersPath = path.join(out, '_headers');
+          const existing = await readFile(headersPath, 'utf8').catch(() => '');
+          await writeFile(headersPath, `${existing}\n# Staging preview — keep it out of search results.\n/*\n  X-Robots-Tag: noindex, nofollow\n`);
+        }
         logger.info(`${titles.length} titles: copied ${files} MZF file(s), ${shots} screenshot(s), wrote manifest.json + legacy-api.json`);
       },
     },

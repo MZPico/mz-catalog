@@ -8,6 +8,8 @@ interface Props {
 const { title, description = 'Software catalog and preservation library for Sharp MZ-700 and MZ-800 computers.' } = Astro.props;
 const fullTitle = title ? `${title} · Sharp MZ Software Catalog` : 'Sharp MZ Software Catalog — MZ-700 / MZ-800';
 const repo = 'https://github.com/MZPico/mz-catalog';
+// Set by `npm run build:staging` — marks the preview deployment.
+const staging = process.env.MZ_STAGING === '1';
 ---
 <!doctype html>
 <html lang="en">
@@ -18,6 +20,7 @@ const repo = 'https://github.com/MZPico/mz-catalog';
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="canonical" href={Astro.url.href} />
+    {staging && <meta name="robots" content="noindex, nofollow" />}
     <link rel="preload" href="/fonts/mz800.woff2?v=6" as="font" type="font/woff2" crossorigin />
     <slot name="head" />
   </head>
@@ -25,6 +28,7 @@ const repo = 'https://github.com/MZPico/mz-catalog';
     <header class="site-header">
       <div class="wrap">
         <a class="brand" href="/">SHARP&nbsp;MZ&nbsp;<b>SOFTWARE&nbsp;CATALOG</b><span class="cursor"></span></a>
+        {staging && <span class="staging-badge" title="Preview build — not the live site">STAGING</span>}
         <nav>
           <a href="/card/">The Card</a>
           <a href="/">Titles</a>
