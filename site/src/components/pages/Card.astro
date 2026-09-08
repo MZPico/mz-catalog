@@ -9,8 +9,22 @@ const gh = 'https://github.com/MZPico';
 const steps = t.card.steps.map((s) =>
   s.replace('{releases}', `${gh}/MZPico-firmware/releases`).replace('{catalog}', localizePath(lang, '/')),
 );
+const abs = (path: string) => new URL(path, Astro.site).href;
+const productLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: 'MZPico',
+  category: 'Computer hardware',
+  url: abs(localizePath(lang, '/card/')),
+  image: abs('/card/MZPico-all.jpg'),
+  description: t.card.description,
+  brand: { '@type': 'Brand', name: 'MZPico' },
+  isRelatedTo: { '@type': 'Product', name: 'Sharp MZ-800' },
+  sameAs: 'https://github.com/MZPico',
+};
 ---
-<Base lang={lang} title={t.card.title} description={t.card.description}>
+<Base lang={lang} title={t.card.title} description={t.card.description}
+  image="/card/MZPico-all.jpg" imageAlt={t.card.photoAlt} jsonLd={productLd}>
   <div class="hero">
     <div>
       <h1>{t.card.h1}</h1>

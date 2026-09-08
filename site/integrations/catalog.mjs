@@ -16,9 +16,12 @@ const IMAGE_TYPES = {
 };
 
 export default function catalog() {
+  let config;
   return {
     name: 'mz-catalog',
     hooks: {
+      'astro:config:done': ({ config: c }) => { config = c; },
+
       'astro:server:setup': ({ server }) => {
         server.middlewares.use(async (req, res, next) => {
           const pathname = new URL(req.url, 'http://localhost').pathname;
@@ -94,7 +97,86 @@ export default function catalog() {
           const headersPath = path.join(out, '_headers');
           const existing = await readFile(headersPath, 'utf8').catch(() => '');
           await writeFile(headersPath, `${existing}\n# Staging preview — keep it out of search results.\n/*\n  X-Robots-Tag: noindex, nofollow\n`);
+          await writeFile(path.join(out, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
         }
+        const site = config.site.replace(/\/$/, '');
+        const locales = config.i18n?.locales ?? ['en'];
+        const defaultLocale = config.i18n?.defaultLocale ?? 'en';
+
+        // sitemap.xml, with every language of a page cross-linked. Built from
+        // the rendered output, so new pages and new languages need no edit.
+        const routes = [];
+        const walk = async (rel) => {
+          for (const e of await readdir(path.join(out, rel), { withFileTypes: true })) {
+            if (e.isDirectory()) {
+              if (e.name === 'pagefind' || e.name === '_astro') continue;
+              await walk(path.join(rel, e.name));
+            } else if (e.name === 'index.html') {
+              routes.push('/' + (rel ? rel.split(path.sep).join('/') + '/' : ''));
+            }
+          }
+        };
+        await walk('');
+        const localeOf = (route) => {
+          const first = route.split('/')[1];
+          return locales.includes(first) && first !== defaultLocale ? first : defaultLocale;
+        };
+        const baseOf = (route) => {
+          const lang = localeOf(route);
+          return lang === defaultLocale ? route : route.slice(lang.length + 1);
+        };
+        const groups = new Map();
+        for (const r of routes.sort()) {
+          const base = baseOf(r);
+          (groups.get(base) ?? groups.set(base, new Map()).get(base)).set(localeOf(r), r);
+        }
+        const xml = ['<?xml version="1.0" encoding="UTF-8"?>',
+          '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'];
+        for (const [base, byLang] of [...groups].sort()) {
+          const links = [...byLang]
+            .sort()
+            .map(([l, r]) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${site}${r}"/>`);
+          if (byLang.has(defaultLocale)) links.push(`    <xhtml:link rel="alternate" hreflang="x-default" href="${site}${byLang.get(defaultLocale)}"/>`);
+          for (const [, r] of [...byLang].sort()) {
+            xml.push(`  <url>`, `    <loc>${site}${r}</loc>`, ...links, `  </url>`);
+          }
+        }
+        xml.push('</urlset>', '');
+        await writeFile(path.join(out, 'sitemap.xml'), xml.join('\n'));
+
+        // llms.txt: a plain-text entry point for LLM clients and crawlers that
+        // would otherwise have to guess the shape of the catalog.
+        const web = titles.filter((t) => t.meta.web);
+        const lines = [
+          '# Sharp MZ Software Catalog',
+          '',
+          '> Preservation catalog of software for the Sharp MZ-700 and MZ-800 home computers:',
+          '> original .mzf tape images with screenshots and metadata, playable in the browser',
+          '> and loadable on real hardware through the MZPico card.',
+          '',
+          '## Curated titles',
+          '',
+          ...web.map((t) => {
+            const m = t.meta;
+            const facts = [m.year, m.publisher, m.machine?.toUpperCase()].filter(Boolean).join(', ');
+            return `- [${m.title}](${site}/titles/${t.slug}/): ${facts}`;
+          }),
+          '',
+          '## Data',
+          '',
+          `- [manifest.json](${site}/manifest.json): every archived file with path, size and CRC32 — the machine API the MZPico firmware consumes.`,
+          `- [sitemap.xml](${site}/sitemap.xml): all pages, in English, Czech, German and Japanese.`,
+          '- [Source repository](https://github.com/MZPico/mz-catalog): one folder per title with meta.yaml, the MZF file(s) and screenshots.',
+          '',
+          '## Notes',
+          '',
+          `- The catalog holds ${titles.length} archived titles; ${web.length} of them have curated pages on the site, the rest are served through the device API only.`,
+          '- Files are preserved binaries, offered for archival and emulation use.',
+          '',
+        ];
+        await writeFile(path.join(out, 'llms.txt'), lines.join('\n'));
+        logger.info(`sitemap.xml: ${routes.length} page(s) in ${groups.size} language group(s); llms.txt: ${web.length} curated title(s)`);
+
         logger.info(`${titles.length} titles: copied ${files} MZF file(s), ${shots} screenshot(s), wrote manifest.json + legacy-api.json`);
       },
     },

@@ -175,15 +175,43 @@ run from a plain local server).
 npm run deploy:staging     # builds with MZ_STAGING=1 and deploys wrangler.staging.jsonc
 ```
 
-Staging builds carry a `STAGING` badge in the header, a `noindex` meta tag
-and an `X-Robots-Tag: noindex, nofollow` response header, so they never
-reach search results. Production is untouched by this: it keeps deploying
+Staging builds carry a `STAGING` badge in the header, a `noindex` meta tag,
+an `X-Robots-Tag: noindex, nofollow` response header and a `Disallow: /`
+`robots.txt`, so they never reach search results. Production is untouched by this: it keeps deploying
 from `main` through the git-connected build, without `MZ_STAGING`.
 Devices are unaffected too — the api.mzpico.com shim reads from
 `https://mzpico.com`.
 
 (The `MZ_STAGING=1` prefix in `build:staging` is POSIX shell syntax; on
 Windows use `set MZ_STAGING=1` or run it from WSL.)
+
+## Discoverability
+
+The build emits everything crawlers and LLM clients need, from the rendered
+output — new pages and new languages need no edit here:
+
+- `sitemap.xml` — every page, with `xhtml:link` alternates cross-linking the
+  four languages, referenced from `robots.txt`.
+- `llms.txt` — a plain-text entry point: what the catalog is, the curated
+  titles, and pointers to `manifest.json` and the repository.
+- JSON-LD — `VideoGame` + `BreadcrumbList` per title, `WebSite` (with a
+  `SearchAction` that the homepage honours as `/?q=…`) and `ItemList` on the
+  homepage, `Product` on the card page.
+- Open Graph / Twitter cards — 1200x630 preview images per curated title.
+
+The preview images are generated offline, like the MZ font:
+
+```
+python3 tools/og/build-og.py     # site/public/og/<slug>.png from the 02-* screenshot
+```
+
+Re-run it after adding or replacing screenshots, and commit the result.
+`site/public/og-default.png` is the site-wide fallback card.
+
+After a production deploy, `npm run indexnow` pings IndexNow (Bing, Seznam,
+Yandex) with the URLs from the live sitemap, instead of waiting for a crawl.
+It authenticates with the key file in `site/public/` — keep that file where
+it is, or the submissions are rejected.
 
 ## manifest.json (device API)
 

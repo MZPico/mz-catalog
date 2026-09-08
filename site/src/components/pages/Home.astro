@@ -16,8 +16,35 @@ const machines = ['mz-700', 'mz-800'] as const;
 const machineLabel: Record<string, string> = { 'mz-700': 'MZ-700', 'mz-800': 'MZ-800' };
 const genres = [...new Set(titles.flatMap((e) => e.data.genre))].sort();
 const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e.data.machine === m).length]));
+
+const abs = (path: string) => new URL(path, Astro.site).href;
+const siteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: t.meta.siteName,
+  url: abs(p('/')),
+  inLanguage: lang,
+  description: t.meta.defaultDescription,
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: { '@type': 'EntryPoint', urlTemplate: `${abs(p('/'))}?q={search_term_string}` },
+    'query-input': 'required name=search_term_string',
+  },
+};
+const listLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: t.meta.siteName,
+  numberOfItems: titles.length,
+  itemListElement: titles.map((e, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: abs(p(`/titles/${e.data.slug}/`)),
+    name: e.data.title,
+  })),
+};
 ---
-<Base lang={lang}>
+<Base lang={lang} jsonLd={[siteLd, listLd]}>
   <div class="hero">
     <div>
       <h1>{t.home.h1}</h1>
@@ -100,12 +127,15 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e
     window.addEventListener('DOMContentLoaded', () => {
       // Pagefind index exists only after `npm run build`; in dev the search box is simply absent.
       if (typeof PagefindUI === 'undefined') return;
-      new PagefindUI({
+      const ui = new PagefindUI({
         element: '#search',
         showSubResults: false,
         showImages: true,
         translations: { placeholder },
       });
+      // ?q=… lets other sites (and the SearchAction in our JSON-LD) link straight to a query.
+      const q = new URLSearchParams(location.search).get('q');
+      if (q) ui.triggerSearch(q);
     });
   </script>
 </Base>

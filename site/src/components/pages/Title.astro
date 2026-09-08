@@ -18,8 +18,43 @@ const paragraphs = (d.description ?? '').trim().split(/\n\s*\n/).filter(Boolean)
 const isUrl = (s: string) => /^https?:\/\//.test(s);
 const repoMeta = `https://github.com/MZPico/mz-catalog/blob/main/titles/${d.slug}/meta.yaml`;
 const summary = t.title.summary(d.title, machineLabel[d.machine], d.genre.join(', '), d.year);
+
+// Social/AI preview: the 1200x630 card built by tools/og/build-og.py from the
+// gameplay shot. Titles without screenshots fall back to the site-wide card.
+const ogCard = d.screenshots.length ? `/og/${d.slug}.png` : undefined;
+const abs = (path: string) => new URL(path, Astro.site).href;
+const gameLd = {
+  '@context': 'https://schema.org',
+  '@type': 'VideoGame',
+  name: d.title,
+  url: abs(p(`/titles/${d.slug}/`)),
+  applicationCategory: 'Game',
+  gamePlatform: `Sharp ${machineLabel[d.machine]}`,
+  operatingSystem: `Sharp ${machineLabel[d.machine]}`,
+  isAccessibleForFree: true,
+  ...(d.genre.length ? { genre: d.genre } : {}),
+  ...(d.year ? { datePublished: String(d.year) } : {}),
+  ...(d.publisher ? { publisher: { '@type': 'Organization', name: d.publisher } } : {}),
+  ...(d.language ? { inLanguage: d.language } : {}),
+  ...(d.description ? { description: d.description } : { description: summary }),
+  ...(d.screenshots.length ? { image: d.screenshots.map((f) => abs(`/screenshots/${d.slug}/${f}`)) } : {}),
+  downloadUrl: abs(`/files/${d.slug}/${d.files[0].path}`),
+  ...(d.machine !== 'mz-1500' ? { installUrl: abs(p(`/play/${d.slug}/`)) } : {}),
+};
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: t.meta.siteName, item: abs(p('/')) },
+    { '@type': 'ListItem', position: 2, name: machineLabel[d.machine], item: abs(p(`/machines/${d.machine}/`)) },
+    { '@type': 'ListItem', position: 3, name: d.title, item: abs(p(`/titles/${d.slug}/`)) },
+  ],
+};
 ---
-<Base lang={lang} title={d.title} description={summary}>
+<Base lang={lang} title={d.title} description={summary}
+  image={ogCard}
+  imageAlt={ogCard ? `${d.title} — screenshot` : undefined}
+  jsonLd={[gameLd, breadcrumbLd]}>
   <article data-pagefind-body>
     <div class="title-head">
       <h1>{d.title}</h1>
