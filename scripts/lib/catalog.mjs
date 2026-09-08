@@ -47,6 +47,18 @@ export const MZF_ATTRIBUTES = {
   0x05: 'BASIC program (MZ-800 BASIC)',
 };
 
+// Tape names use the Sharp MZ character code: uppercase letters, digits and
+// most punctuation coincide with ASCII, but lowercase letters sit scattered
+// above 0x80. Codes not listed here (graphics, accented characters) have no
+// ASCII equivalent and are rendered as '?'.
+const SHARP_CHARS = new Map([
+  [0xa1, 'a'], [0x9a, 'b'], [0x9f, 'c'], [0x9c, 'd'], [0x92, 'e'], [0xaa, 'f'],
+  [0x97, 'g'], [0x98, 'h'], [0xa6, 'i'], [0xaf, 'j'], [0xa9, 'k'], [0xb8, 'l'],
+  [0xb3, 'm'], [0xb0, 'n'], [0xb7, 'o'], [0x9e, 'p'], [0xa0, 'q'], [0x9d, 'r'],
+  [0xa4, 's'], [0x96, 't'], [0xa5, 'u'], [0xab, 'v'], [0xa3, 'w'], [0x9b, 'x'],
+  [0xbd, 'y'], [0xa2, 'z'], [0x94, '~'],
+]);
+
 export function parseMzfHeader(buf) {
   if (buf.length < MZF_HEADER_SIZE) return null;
   const attribute = buf[0];
@@ -54,7 +66,7 @@ export function parseMzfHeader(buf) {
   for (let i = 1; i <= 17; i++) {
     const c = buf[i];
     if (c === 0x0d) break;
-    name += c >= 0x20 && c < 0x7f ? String.fromCharCode(c) : '?';
+    name += c >= 0x20 && c < 0x7f ? String.fromCharCode(c) : (SHARP_CHARS.get(c) ?? '?');
   }
   return {
     attribute,
