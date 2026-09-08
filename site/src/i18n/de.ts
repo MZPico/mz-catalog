@@ -38,6 +38,40 @@ export const de: Ui = {
     none: 'Noch keine — Beiträge willkommen.',
     overviewDescription: (name: string) => `${name} — Überblick zum Computer und Softwarekatalog.`,
   },
+  machineInfo: {
+    'mz-700': {
+      intro:
+        'Nachfolger der MZ-80K-Reihe und einer der beliebtesten Sharp-Heimcomputer in Europa. ' +
+        'Eine „saubere Maschine“: Sie startet in ein Monitor-ROM und lädt ihr BASIC (oder ein beliebiges anderes System) von Kassette. ' +
+        'Die Anzeige ist zeichenbasiert — Spiele erzeugen mit dem reichhaltigen eingebauten Zeichensatz erstaunliche Pseudografik.',
+      specs: [
+        ['Prozessor', 'Z80A @ 3,5 MHz'],
+        ['Speicher', '64 KB'],
+        ['Anzeige', '40×25 Text, 8 Farben je Zeichen (Vorder-/Hintergrund), kein Bitmap-Modus'],
+        ['Ton', 'einkanaliger Piepser, getrieben von einem 8253-Timer'],
+        ['Speichermedium', 'Kassette (1200 Baud); die Modelle MZ-721/731 haben einen eingebauten Rekorder'],
+        ['Varianten', 'MZ-711 (Basis), MZ-721 (mit Rekorder), MZ-731 (Rekorder + Farbplotter)'],
+      ] as [string, string][],
+      softwareNote: 'MZ-700-Titel laufen auch auf dem MZ-800 in dessen MZ-700-Kompatibilitätsmodus.',
+    },
+    'mz-800': {
+      intro:
+        'Der europäische Nachfolger des MZ-700 bringt echte Bitmap-Grafik und einen programmierbaren Soundgenerator ' +
+        'und behält dabei einen MZ-700-Kompatibilitätsmodus. Besonders beliebt war er in der Tschechoslowakei und in Deutschland, ' +
+        'mit einer lebendigen Szene, die ZX-Spectrum-Titel auf ihn umsetzte. Die Speicherkarte MZPico ist für diesen Rechner gedacht.',
+      specs: [
+        ['Prozessor', 'Z80A @ 3,5 MHz'],
+        ['Speicher', '64 KB'],
+        ['Bildspeicher', '16 KB, erweiterbar auf 32 KB'],
+        ['Anzeige', '320×200 in 4 Farben oder 640×200 in 2 (Palette mit 16 Farben); mit Speichererweiterung 16 / 4 Farben'],
+        ['Ton', 'PSG SN76489 — 3 Tonkanäle + Rauschen'],
+        ['Modi', 'nativer MZ-800-Modus und MZ-700-Kompatibilitätsmodus (beim Start gewählt)'],
+        ['Speichermedium', 'Kassette (beim MZ-821 eingebaut); optional Quick Disk oder Diskettencontroller'],
+      ] as [string, string][],
+      softwareNote:
+        'MZ-800-Software teilt sich in Titel im nativen Modus und im MZ-700-Modus; jeder Katalogeintrag hält fest, welchen er nutzt.',
+    },
+  },
   title: {
     play: '▶ Im Browser spielen',
     playShort: '▶ Spielen',

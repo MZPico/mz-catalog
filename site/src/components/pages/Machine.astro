@@ -8,6 +8,7 @@ interface Props { lang: Lang; machine: Machine }
 const { lang, machine } = Astro.props;
 const t = useTranslations(lang);
 const p = (path: string) => localizePath(lang, path);
+const info = t.machineInfo[machine.id as keyof typeof t.machineInfo];
 const titles = (await getCollection('titles'))
   .filter((e) => e.data.web && e.data.machine === machine.id)
   .sort((a, b) => a.data.title.localeCompare(b.data.title, 'en', { sensitivity: 'base' }));
@@ -15,13 +16,13 @@ const titles = (await getCollection('titles'))
 <Base lang={lang} title={machine.name} description={t.machines.overviewDescription(machine.name)}>
   <h1>{machine.name}</h1>
   <p class="meta">{machine.years}</p>
-  <p class="lead">{machine.intro}</p>
+  <p class="lead">{info.intro}</p>
 
   <h2>{t.machines.specs}</h2>
   <dl class="facts">
-    {machine.specs.map(([k, v]) => (<><dt>{k}</dt><dd>{v}</dd></>))}
+    {info.specs.map(([k, v]) => (<><dt>{k}</dt><dd>{v}</dd></>))}
   </dl>
-  <p class="meta"><small>{machine.softwareNote}</small></p>
+  <p class="meta"><small>{info.softwareNote}</small></p>
 
   <h2>{t.machines.inCatalog(titles.length)}</h2>
   {titles.length > 0 ? (

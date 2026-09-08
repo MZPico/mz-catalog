@@ -39,6 +39,40 @@ export const cs: Ui = {
     none: 'Zatím žádný — příspěvky vítány.',
     overviewDescription: (name: string) => `${name} — přehled počítače a katalog softwaru.`,
   },
+  machineInfo: {
+    'mz-700': {
+      intro:
+        'Nástupce řady MZ-80K a jeden z nejrozšířenějších domácích počítačů Sharp v Evropě. ' +
+        '„Čistý stroj“: nabootuje do monitoru v ROM a BASIC (nebo jakýkoli jiný systém) si nahraje z kazety. ' +
+        'Obraz je znakový — hry z bohaté vestavěné znakové sady vytvářejí pozoruhodnou pseudografiku.',
+      specs: [
+        ['Procesor', 'Z80A @ 3,5 MHz'],
+        ['Paměť', '64 kB'],
+        ['Obraz', 'text 40×25, 8 barev na znak (popředí/pozadí), bez bitmapového režimu'],
+        ['Zvuk', 'jednokanálový pípák řízený časovačem 8253'],
+        ['Záznam', 'kazeta (1200 Bd); modely MZ-721/731 mají magnetofon vestavěný'],
+        ['Varianty', 'MZ-711 (základ), MZ-721 (s magnetofonem), MZ-731 (magnetofon + barevný plotter)'],
+      ] as [string, string][],
+      softwareNote: 'Tituly pro MZ-700 běží i na MZ-800 v jeho kompatibilním režimu MZ-700.',
+    },
+    'mz-800': {
+      intro:
+        'Evropský nástupce MZ-700 přidává skutečnou bitmapovou grafiku a programovatelný zvukový generátor, ' +
+        'a přitom si ponechává kompatibilní režim MZ-700. Obzvlášť populární byl v Československu a Německu, ' +
+        'kde vznikla živá scéna převádějící na něj tituly ze ZX Spectra. Úložná karta MZPico míří právě na tento stroj.',
+      specs: [
+        ['Procesor', 'Z80A @ 3,5 MHz'],
+        ['Paměť', '64 kB'],
+        ['Videopaměť', '16 kB, rozšiřitelná na 32 kB'],
+        ['Obraz', '320×200 ve 4 barvách nebo 640×200 ve 2 (paleta 16 barev); s rozšířenou videopamětí 16 / 4 barvy'],
+        ['Zvuk', 'PSG SN76489 — 3 tónové kanály + šum'],
+        ['Režimy', 'nativní režim MZ-800 a kompatibilní režim MZ-700 (volí se při startu)'],
+        ['Záznam', 'kazeta (u MZ-821 vestavěná); volitelně Quick Disk nebo disketový řadič'],
+      ] as [string, string][],
+      softwareNote:
+        'Software pro MZ-800 se dělí na tituly v nativním režimu a v režimu MZ-700; u každého záznamu v katalogu je uvedeno, který používá.',
+    },
+  },
   title: {
     play: '▶ Hrát v prohlížeči',
     playShort: '▶ Hrát',

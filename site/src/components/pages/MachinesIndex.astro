@@ -16,7 +16,7 @@ const count = (id: string) => titles.filter((e) => e.data.machine === id).length
   {machines.map((m) => (
     <section>
       <h2><a href={localizePath(lang, `/machines/${m.id}/`)}>{m.name}</a> <span class="meta">· {m.years} · {t.machines.titlesCount(count(m.id))}</span></h2>
-      <p class="prose">{m.intro}</p>
+      <p class="prose">{t.machineInfo[m.id as keyof typeof t.machineInfo].intro}</p>
     </section>
   ))}
 </Base>
