@@ -2,7 +2,8 @@ title: "Wooky"
 web: true
 year: 1985
 publisher: "BBG Software"
-machine: mz-700
+machine: mz-800
+mode: native
 genre: [game]
 files:
   - path: wooky.mzf
@@ -16,4 +17,4 @@ touch:
   buttons:
     - { label: "FIRE", key: "Enter" }
     - { label: "JUMP", key: "Space" }
-source: Contributed from Martin's collection (2026-09-08); served from the device API folder games-700. Tape header name "Wooky ALL", loads at $1200, starts at $9E6A.
+source: Contributed from Martin's collection (2026-09-08); served from the device API folder games-800. Tape header name "Wooky ALL", loads at $1200, starts at $9E6A. Runs in native MZ-800 mode — it drives the PSG and uses user-defined characters.
