@@ -1,0 +1,111 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { useTranslations, localizePath, type Lang } from '../../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const p = (path: string) => localizePath(lang, path);
+
+// Only curated titles (web: true in meta.yaml) appear on the site; the rest stay API-only.
+const titles = (await getCollection('titles')).filter((e) => e.data.web).sort((a, b) =>
+  a.data.title.localeCompare(b.data.title, 'en', { sensitivity: 'base' }),
+);
+const machines = ['mz-700', 'mz-800'] as const;
+const machineLabel: Record<string, string> = { 'mz-700': 'MZ-700', 'mz-800': 'MZ-800' };
+const genres = [...new Set(titles.flatMap((e) => e.data.genre))].sort();
+const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e.data.machine === m).length]));
+---
+<Base lang={lang}>
+  <div class="hero">
+    <div>
+      <h1>{t.home.h1}</h1>
+      <p class="lead" set:html={t.home.introHtml(p('/card/'))} />
+    </div>
+    <img class="hero-badge" src="/mz800-badge.svg" alt="Sharp MZ-800" width="300" height="114" />
+  </div>
+
+  <div id="search" data-pagefind-ignore></div>
+
+  <div class="chips" role="group" aria-label={t.home.filterByMachine} data-filter="machine">
+    <button class="chip" type="button" aria-pressed="true" data-value="">{t.home.allMachines}</button>
+    {machines.map((m) => (
+      <button class="chip" type="button" aria-pressed="false" data-value={m}>{machineLabel[m]} <small>({counts[m]})</small></button>
+    ))}
+  </div>
+  {genres.length > 1 && (
+    <div class="chips" role="group" aria-label={t.home.filterByGenre} data-filter="genre">
+      <button class="chip" type="button" aria-pressed="true" data-value="">{t.home.allGenres}</button>
+      {genres.map((g) => <button class="chip" type="button" aria-pressed="false" data-value={g}>{g}</button>)}
+    </div>
+  )}
+
+  <ul class="grid" id="titles">
+    {titles.map(({ data: d }) => {
+      const shot = d.screenshots.find((f) => f.startsWith('02')) ?? d.screenshots[0]; // gameplay shot is more illustrative in lists
+      const href = p(`/titles/${d.slug}/`);
+      return (
+        <li class="card" data-machine={d.machine} data-genre={d.genre.join(' ')}>
+          <a class="thumb" href={href} aria-hidden="true" tabindex="-1">
+            {shot
+              ? <img src={`/screenshots/${d.slug}/${shot}`} alt="" loading="lazy" width="640" height="480" />
+              : <div class="thumb-empty">{t.home.noScreenshot}</div>}
+          </a>
+          <a class="card-play" href={p(`/play/${d.slug}/`)} title={t.home.playAria(d.title)} aria-label={t.home.playAria(d.title)}>▶</a>
+          <div class="body">
+            <h3><a href={href}>{d.title}</a></h3>
+            <div class="meta">{[d.year, d.publisher].filter(Boolean).join(' · ') || ' '}</div>
+            <div class="tags">
+              <span class:list={['badge', d.machine]}>{machineLabel[d.machine]}{d.mode === 'mz-700' ? ' · 700' : ''}</span>
+              {d.genre.map((g) => <span class="tag">{g}</span>)}
+            </div>
+          </div>
+        </li>
+      );
+    })}
+  </ul>
+  <p id="no-match" hidden>{t.home.noMatch}</p>
+
+  <script>
+    // Machine / genre chip filters — plain DOM, no framework.
+    const active: Record<string, string> = { machine: '', genre: '' };
+    const cards = [...document.querySelectorAll<HTMLElement>('#titles .card')];
+    const noMatch = document.getElementById('no-match')!;
+    const apply = () => {
+      let shown = 0;
+      for (const c of cards) {
+        const ok = (!active.machine || c.dataset.machine === active.machine)
+          && (!active.genre || (c.dataset.genre ?? '').split(' ').includes(active.genre));
+        c.hidden = !ok;
+        if (ok) shown++;
+      }
+      noMatch.hidden = shown > 0;
+    };
+    for (const group of document.querySelectorAll<HTMLElement>('.chips[data-filter]')) {
+      const key = group.dataset.filter!;
+      group.addEventListener('click', (e) => {
+        const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.chip');
+        if (!btn) return;
+        active[key] = btn.dataset.value ?? '';
+        for (const b of group.querySelectorAll('.chip')) b.setAttribute('aria-pressed', String(b === btn));
+        apply();
+      });
+    }
+  </script>
+
+  <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+  <script is:inline src="/pagefind/pagefind-ui.js" onerror="this.remove()"></script>
+  <script is:inline define:vars={{ placeholder: t.home.searchPlaceholder }}>
+    window.addEventListener('DOMContentLoaded', () => {
+      // Pagefind index exists only after `npm run build`; in dev the search box is simply absent.
+      if (typeof PagefindUI === 'undefined') return;
+      new PagefindUI({
+        element: '#search',
+        showSubResults: false,
+        showImages: true,
+        translations: { placeholder },
+      });
+    });
+  </script>
+</Base>

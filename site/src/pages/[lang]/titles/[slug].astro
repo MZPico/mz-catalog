@@ -1,0 +1,14 @@
+---
+import Title from '../../../components/pages/Title.astro';
+import { getCollection } from 'astro:content';
+import { locales, defaultLang, type Lang } from '../../../i18n';
+
+export async function getStaticPaths() {
+  const titles = (await getCollection('titles')).filter((e) => e.data.web);
+  return locales
+    .filter((l) => l !== defaultLang)
+    .flatMap((lang) => titles.map((entry) => ({ params: { lang, slug: entry.data.slug }, props: { lang, entry } })));
+}
+const { lang, entry } = Astro.props;
+---
+<Title lang={lang as Lang} entry={entry} />

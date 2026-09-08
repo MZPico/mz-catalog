@@ -1,0 +1,62 @@
+---
+import Base from '../../layouts/Base.astro';
+import { useTranslations, localizePath, type Lang } from '../../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const gh = 'https://github.com/MZPico';
+const steps = t.card.steps.map((s) =>
+  s.replace('{releases}', `${gh}/MZPico-firmware/releases`).replace('{catalog}', localizePath(lang, '/')),
+);
+---
+<Base lang={lang} title={t.card.title} description={t.card.description}>
+  <div class="hero">
+    <div>
+      <h1>{t.card.h1}</h1>
+      <p class="lead" set:html={t.card.leadHtml(localizePath(lang, '/machines/mz-800/'))} />
+    </div>
+  </div>
+
+  <figure class="card-photo">
+    <img src="/card/MZPico-all.jpg" alt={t.card.photoAlt} width="1200" height="746" loading="eager" />
+    <figcaption class="meta">{t.card.photoCaption}</figcaption>
+  </figure>
+
+  <section>
+    <h2>{t.card.whatItDoesH2}</h2>
+    <ul class="feature-list">
+      {t.card.features.map((f) => <li set:html={f} />)}
+    </ul>
+  </section>
+
+  <section>
+    <h2>{t.card.onMachineH2}</h2>
+    <div class="duo">
+      <figure><img src="/card/MZPico-menu.png" alt={t.card.menuAlt} width="671" height="428" loading="lazy" /><figcaption class="meta">{t.card.menuCaption}</figcaption></figure>
+      <figure><img src="/card/MZPico-explorer.png" alt={t.card.explorerAlt} width="700" height="434" loading="lazy" /><figcaption class="meta">{t.card.explorerCaption}</figcaption></figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>{t.card.boardsH2}</h2>
+    <div class="duo boards">
+      <figure>
+        <img src="/card/MZPico-frugal-Purple16m.jpg" alt={t.card.frugalAlt} width="950" height="1188" loading="lazy" />
+        <figcaption set:html={t.card.frugalHtml(`${gh}/MZPico-800-Frugal-Board`)} />
+      </figure>
+      <figure>
+        <img src="/card/MZPico-deluxe-inserted.jpg" alt={t.card.deluxeAlt} width="1200" height="614" loading="lazy" />
+        <figcaption set:html={t.card.deluxeHtml(`${gh}/MZPico-800-Deluxe-board`)} />
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>{t.card.startedH2}</h2>
+    <ol class="steps">
+      {steps.map((s) => <li set:html={s} />)}
+    </ol>
+    <p class="meta" set:html={t.card.docsHtml(gh)} />
+  </section>
+</Base>

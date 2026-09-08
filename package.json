@@ -17,7 +17,7 @@
     "build": "npm run validate && npm run build -w site",
     "preview": "npm run preview -w site",
     "build:staging": "MZ_STAGING=1 npm run build",
-    "deploy:staging": "npm run build:staging && wrangler deploy -c wrangler.staging.jsonc"
+    "deploy:staging": "npm run build:staging && npx wrangler deploy -c wrangler.staging.jsonc"
   },
   "devDependencies": {
     "ajv": "^8.17.1",

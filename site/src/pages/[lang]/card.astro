@@ -1,0 +1,10 @@
+---
+import Card from '../../components/pages/Card.astro';
+import { locales, defaultLang, type Lang } from '../../i18n';
+
+export async function getStaticPaths() {
+  return locales.filter((l) => l !== defaultLang).map((lang) => ({ params: { lang }, props: { lang } }));
+}
+const { lang } = Astro.props as { lang: Lang };
+---
+<Card lang={lang} />

@@ -1,0 +1,13 @@
+---
+import Machine from '../../../components/pages/Machine.astro';
+import { machines } from '../../../data/machines';
+import { locales, defaultLang, type Lang } from '../../../i18n';
+
+export async function getStaticPaths() {
+  return locales
+    .filter((l) => l !== defaultLang)
+    .flatMap((lang) => machines.map((m) => ({ params: { lang, id: m.id }, props: { lang, machine: m } })));
+}
+const { lang, machine } = Astro.props as { lang: Lang; machine: (typeof machines)[number] };
+---
+<Machine lang={lang} machine={machine} />

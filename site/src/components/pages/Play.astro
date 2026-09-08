@@ -1,0 +1,363 @@
+---
+import Base from '../../layouts/Base.astro';
+import { useTranslations, localizePath, type Lang } from '../../i18n';
+import type { CollectionEntry } from 'astro:content';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+
+// Content hash of the emulator build — cache-busts phones that would otherwise
+// keep a stale wasm for days (the file names never change).
+const emuVersion = createHash('md5')
+  .update(readFileSync(new URL('../../../public/play/emu/mz800emu.wasm', import.meta.url)))
+  .digest('hex')
+  .slice(0, 8);
+
+interface Props { lang: Lang; entry: CollectionEntry<'titles'> }
+const { lang, entry } = Astro.props;
+const t = useTranslations(lang);
+const d = entry.data;
+const files = d.files.map((f) => f.path);
+
+// Strings the client-side script needs, handed over through define:vars below.
+const ui = {
+  downloading: t.play.downloading,
+  loadingEmulator: t.play.loadingEmulator,
+  fetchFailed: t.play.fetchFailed('{file}', 0),
+  scriptFailed: t.play.scriptFailed,
+  aborted: t.play.aborted('{what}'),
+  enableSound: t.play.enableSound,
+  withoutSound: t.play.withoutSound,
+  tapToPlay: t.play.tapToPlay,
+  tapHint: t.play.tapHint,
+  mute: t.play.mute,
+  unmute: t.play.unmute,
+  pace: t.play.pace(0),
+};
+---
+<Base lang={lang} title={t.play.headline(d.title)} description={t.play.pageDescription(d.title)}>
+  <div class="play-head">
+    <h1>{t.play.headline(d.title)}</h1>
+    <a href={localizePath(lang, `/titles/${d.slug}/`)}>{t.play.back}</a>
+  </div>
+  <div class="play-frame">
+    <canvas id="canvas" tabindex="0" width="928" height="576"></canvas>
+    <div id="play-touch" class="play-touch" hidden aria-hidden="true">
+      <div class="touch-extra" id="touch-extra"></div>
+      <div class="touch-pad" id="touch-pad" aria-label="direction pad"><span class="pad-arrow up">▲</span><span class="pad-arrow down">▼</span><span class="pad-arrow left">◀</span><span class="pad-arrow right">▶</span><span class="pad-nub" id="pad-nub"></span></div>
+      <div class="touch-buttons" id="touch-buttons"></div>
+    </div>
+    <div id="play-overlay" class="play-overlay">
+      <button type="button" id="play-start" class="btn">{t.play.start(d.title)}</button>
+      <p class="meta">{t.play.startHint}</p>
+    </div>
+  </div>
+  <div class="play-controls">
+    <button type="button" id="play-fullscreen" class="btn" title={t.play.fullscreenTitle}>{t.play.fullscreen}</button>
+    <button type="button" id="play-reload" class="btn secondary" title={t.play.restartTitle}>{t.play.restart}</button>
+    <button type="button" id="play-touch-toggle" class="btn secondary" title={t.play.touchTitle}>{t.play.touch}</button>
+    <button type="button" id="play-swap" class="btn secondary" title={t.play.sidesTitle} hidden>{t.play.sides}</button>
+    <button type="button" id="play-mute" class="btn secondary" title={t.play.muteTitle}>{t.play.mute}</button>
+    <span class="play-status meta" id="play-status"></span>
+  </div>
+  <p class="play-pace" id="play-pace" hidden></p>
+  <pre id="play-debug" class="play-debug meta" hidden></pre>
+  <details class="play-help">
+    <summary>{t.play.keysTips}</summary>
+    <ul>
+      {t.play.tips.map((tip) => <li set:html={tip} />)}
+    </ul>
+  </details>
+  <p class="meta" set:html={t.play.creditHtml} />
+
+  <script define:vars={{ slug: d.slug, files, touch: d.touch ?? null, emuVersion, ui }}>
+    const params = new URLSearchParams(location.search);
+    const file = files.includes(params.get('file')) ? params.get('file') : files[0];
+    // Audio buffer size in frames (power of two, 256..16384). Larger = fewer crackles, more latency.
+    // Edge throttles the main-thread audio callback harder than Chrome, so give it more slack.
+    const defaultBuf = /Edg\//.test(navigator.userAgent) ? '2048' : '1024';
+    const buf = ['256', '512', '1024', '2048', '4096'].includes(params.get('buf')) ? params.get('buf') : defaultBuf;
+    const status = document.getElementById('play-status');
+    const overlay = document.getElementById('play-overlay');
+    const canvas = document.getElementById('canvas');
+
+    const startBtn = document.getElementById('play-start');
+    const toggleFullscreen = () => {
+      const el = document.querySelector('.play-frame');
+      if (document.fullscreenElement) { document.exitFullscreen(); return; }
+      // Phones: fullscreen + landscape gives the 16:10 screen the whole display (lock is best-effort).
+      el.requestFullscreen?.({ navigationUI: 'hide' })?.then(() => screen.orientation?.lock?.('landscape').catch(() => {})).catch(() => {});
+    };
+    // Restart in place (machine reset + re-run of the tape) so fullscreen survives; before the
+    // emulator is up, a reload is the only option.
+    let runtimeReady = false;
+    // Touch devices: the first on-page tap (Start / enable-sound overlay) also enters
+    // fullscreen + landscape — the tiny windowed canvas is never what you want on a phone.
+    // If the player explicitly leaves fullscreen, don't force it again this session.
+    const isTouch = matchMedia('(pointer: coarse)').matches;
+    let fsAutoDone = false;
+    const enterFullscreenIfTouch = () => {
+      if (!isTouch || fsAutoDone || document.fullscreenElement) return;
+      fsAutoDone = true;
+      toggleFullscreen();
+    };
+    const restart = () => {
+      if (runtimeReady && typeof window.Module?._mz_wasm_restart === 'function') { window.Module._mz_wasm_restart(); canvas.focus(); }
+      else location.reload();
+    };
+    document.getElementById('play-fullscreen').addEventListener('click', toggleFullscreen);
+    document.getElementById('play-reload').addEventListener('click', restart);
+    document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) { try { screen.orientation?.unlock?.(); } catch {} } });
+    // Emulator-style hotkeys, handled before the browser (F11 = browser fullscreen, F12 = devtools)
+    // and before SDL sees the key: F11 zoom toggle, F12 restart.
+    window.addEventListener('keydown', (e) => {
+      if (e.key !== 'F11' && e.key !== 'F12') return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      if (e.repeat) return;
+      if (e.key === 'F11') toggleFullscreen(); else restart();
+    }, { capture: true });
+    window.addEventListener('keyup', (e) => { if (e.key === 'F11' || e.key === 'F12') { e.preventDefault(); e.stopImmediatePropagation(); } }, { capture: true });
+    // ?debug=1 — on-page diagnostics for devices without devtools (phones).
+    const debug = params.has('debug');
+    const debugEl = document.getElementById('play-debug');
+    let audioStarved = 0;
+    const glInfo = () => {
+      try {
+        const gl = window.Module?.GL?.currentContext?.GLctx || window.GL?.currentContext?.GLctx;
+        if (!gl) return { renderer: 'n/a', err: '-' };
+        const d = gl.getExtension('WEBGL_debug_renderer_info');
+        const attrs = gl.getContextAttributes?.() || {};
+        return {
+          renderer: d ? gl.getParameter(d.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER),
+          version: gl.getParameter(gl.VERSION),
+          err: gl.getError(),
+          preserve: attrs.preserveDrawingBuffer, aa: attrs.antialias,
+          drawing: `${gl.drawingBufferWidth}x${gl.drawingBufferHeight}`,
+        };
+      } catch (e) { return { renderer: `err ${e.message}`, err: '-' }; }
+    };
+    const updateDebug = () => {
+      const g = glInfo();
+      const ctx = window.Module?.SDL3?.audioContext;
+      const r = canvas.getBoundingClientRect();
+      debugEl.textContent = [
+        `ua: ${navigator.userAgent.slice(0, 110)}`,
+        `cores: ${navigator.hardwareConcurrency}  mem: ${navigator.deviceMemory ?? '?'} GB  dpr: ${devicePixelRatio}  isolated: ${self.crossOriginIsolated}`,
+        `canvas attr: ${canvas.width}x${canvas.height}  css: ${Math.round(r.width)}x${Math.round(r.height)}  gl drawing: ${g.drawing ?? '?'}`,
+        `gl: ${g.renderer}  (${g.version ?? ''})  preserve: ${g.preserve}  aa: ${g.aa}  glError: ${g.err}`,
+        `audio: ${ctx ? `${ctx.state} @${ctx.sampleRate} Hz` : 'no context'}  buf: ${buf}  starved: ${audioStarved}`,
+        `t: ${(performance.now() / 1000).toFixed(0)} s  pace: ${window.__mzPace == null ? '?' : Math.round(window.__mzPace * 100) + '%'}`,
+      ].join('\n');
+    };
+    // ---- Touch controls: synthetic keyboard events into the canvas (SDL maps KeyboardEvent.code).
+    // Layout comes from the title's meta.yaml `touch:` block (see schema); ?touchspec=<json> previews one.
+    const KEYS = (() => {
+      const m = {
+        Space: ['Space', ' ', 32], Enter: ['Enter', 'Enter', 13], Up: ['ArrowUp', 'ArrowUp', 38], Down: ['ArrowDown', 'ArrowDown', 40],
+        Left: ['ArrowLeft', 'ArrowLeft', 37], Right: ['ArrowRight', 'ArrowRight', 39], Shift: ['ShiftLeft', 'Shift', 16], Ctrl: ['ControlLeft', 'Control', 17],
+        Tab: ['Tab', 'Tab', 9], Backspace: ['Backspace', 'Backspace', 8], Delete: ['Delete', 'Delete', 46], Insert: ['Insert', 'Insert', 45],
+        Home: ['Home', 'Home', 36], Escape: ['Escape', 'Escape', 27], Graph: ['CapsLock', 'CapsLock', 20], Alpha: ['Backslash', '\\', 220],
+        Minus: ['Minus', '-', 189], Equal: ['Equal', '=', 187], Comma: ['Comma', ',', 188], Period: ['Period', '.', 190], Slash: ['Slash', '/', 191],
+        Semicolon: ['Semicolon', ';', 186], Quote: ['Quote', "'", 222], BracketLeft: ['BracketLeft', '[', 219], BracketRight: ['BracketRight', ']', 221],
+      };
+      for (let i = 0; i < 26; i++) { const L = String.fromCharCode(65 + i); m[L] = ['Key' + L, L.toLowerCase(), 65 + i]; }
+      for (let d = 0; d <= 9; d++) m[String(d)] = ['Digit' + d, String(d), 48 + d];
+      for (let f = 1; f <= 10; f++) m['F' + f] = ['F' + f, 'F' + f, 111 + f];
+      return m;
+    })();
+    const touchEl = document.getElementById('play-touch');
+    const sendKey = (type, name) => {
+      const k = KEYS[name]; if (!k) return;
+      canvas.dispatchEvent(new KeyboardEvent(type, { code: k[0], key: k[1], keyCode: k[2], which: k[2], bubbles: true, cancelable: true }));
+    };
+    let spec = touch || {};
+    if (params.has('touchspec')) { try { spec = JSON.parse(params.get('touchspec')); } catch { console.warn('bad touchspec'); } }
+    const PADS = { cursor: { up: 'Up', down: 'Down', left: 'Left', right: 'Right' }, wasd: { up: 'W', down: 'S', left: 'A', right: 'D' } };
+    const padKeys = spec.pad === 'none' ? null : (typeof spec.pad === 'object' && spec.pad) ? spec.pad : (PADS[spec.pad] || PADS.cursor);
+    const pad = document.getElementById('touch-pad'); const nub = document.getElementById('pad-nub');
+    if (!padKeys) pad.hidden = true;
+    else if (spec.pad !== 'cursor' && spec.pad !== undefined) { // show the mapped keys on the pad
+      const lab = { up: '▲', down: '▼', left: '◀', right: '▶' };
+      for (const d of ['up', 'down', 'left', 'right']) pad.querySelector('.' + d).textContent = `${lab[d]}${padKeys[d].length === 1 ? padKeys[d] : ''}`;
+    }
+    const held = new Set(); // direction names currently held
+    const setHeld = (dirs) => {
+      for (const d of held) if (!dirs.has(d)) { held.delete(d); sendKey('keyup', padKeys[d]); }
+      for (const d of dirs) if (!held.has(d)) { held.add(d); sendKey('keydown', padKeys[d]); }
+    };
+    let padPointer = null;
+    const padUpdate = (e) => {
+      const r = pad.getBoundingClientRect(); const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      const dx = e.clientX - cx, dy = e.clientY - cy; const dist = Math.hypot(dx, dy); const dead = r.width * 0.12;
+      const dirs = new Set();
+      if (dist > dead) {
+        const a = Math.atan2(dy, dx); // 8 sectors of 45°, diagonals hold two keys
+        if (a > -2.75 && a < -0.39) dirs.add('up');
+        if (a > 0.39 && a < 2.75) dirs.add('down');
+        if (Math.abs(a) < 1.18) dirs.add('right');
+        if (Math.abs(a) > 1.96) dirs.add('left');
+      }
+      setHeld(dirs);
+      const k = Math.min(dist, r.width * 0.3) / (dist || 1); nub.style.transform = `translate(${dx * k}px, ${dy * k}px)`;
+    };
+    const padRelease = () => { padPointer = null; setHeld(new Set()); nub.style.transform = ''; };
+    pad.addEventListener('pointerdown', (e) => { e.preventDefault(); padPointer = e.pointerId; pad.setPointerCapture(e.pointerId); padUpdate(e); });
+    pad.addEventListener('pointermove', (e) => { if (e.pointerId === padPointer) padUpdate(e); });
+    for (const t of ['pointerup', 'pointercancel', 'lostpointercapture']) pad.addEventListener(t, (e) => { if (e.pointerId === padPointer) padRelease(); });
+    const makeButton = (b, cls) => {
+      const el = document.createElement('button'); el.type = 'button'; el.className = 'touch-btn ' + cls; el.textContent = b.label; el.title = `${b.label} = ${b.key}`;
+      if (!KEYS[b.key]) { el.disabled = true; el.title += ' (unknown key)'; }
+      const down = (e) => { e.preventDefault(); el.classList.add('down'); sendKey('keydown', b.key); };
+      const up = () => { if (!el.classList.contains('down')) return; el.classList.remove('down'); sendKey('keyup', b.key); };
+      el.addEventListener('pointerdown', down); for (const t of ['pointerup', 'pointercancel', 'pointerleave']) el.addEventListener(t, up);
+      el.addEventListener('contextmenu', (e) => e.preventDefault());
+      return el;
+    };
+    const buttons = Array.isArray(spec.buttons) && spec.buttons.length ? spec.buttons : [{ label: 'FIRE', key: 'Space' }, { label: 'RET', key: 'Enter' }];
+    const btnBox = document.getElementById('touch-buttons');
+    [...buttons].reverse().forEach((b, i) => btnBox.appendChild(makeButton(b, i === buttons.length - 1 ? 'fire' : ''))); // primary (first) ends up rightmost & largest
+    const extraBox = document.getElementById('touch-extra');
+    for (const b of (Array.isArray(spec.extra) ? spec.extra : [])) extraBox.appendChild(makeButton(b, 'extra'));
+    // Side preference (left/right-handed) is per player, remembered in this browser.
+    const swapBtn = document.getElementById('play-swap');
+    const setSwap = (on) => { touchEl.classList.toggle('swapped', on); swapBtn.classList.toggle('active', on); try { localStorage.setItem('mz-touch-swap', on ? '1' : ''); } catch {} };
+    swapBtn.addEventListener('click', () => setSwap(!touchEl.classList.contains('swapped')));
+    try { if (localStorage.getItem('mz-touch-swap')) setSwap(true); } catch {}
+    const setTouch = (on) => { touchEl.hidden = !on; touchEl.setAttribute('aria-hidden', String(!on)); swapBtn.hidden = !on; document.getElementById('play-touch-toggle').classList.toggle('active', on); if (!on) { padRelease(); } };
+    document.getElementById('play-touch-toggle').addEventListener('click', () => setTouch(touchEl.hidden));
+    if (params.has('touch') || params.has('touchspec') || matchMedia('(pointer: coarse)').matches) setTouch(true);
+
+    // Pace indicator: emulated frames (50/s) vs wall clock. Sags mean the browser or
+    // machine is throttling the emulator thread — tell the player instead of feeling "slow".
+    const paceEl = document.getElementById('play-pace');
+    let paceBase = null, slowSamples = 0;
+    window.__mzPace = null;
+    setInterval(() => {
+      const fn = window.Module?._mz_wasm_total_screens;
+      if (typeof fn !== 'function') return;
+      const s = fn() >>> 0; const t = performance.now();
+      if (paceBase && s >= paceBase.s && t > paceBase.t) {
+        const pace = ((s - paceBase.s) / 50) / ((t - paceBase.t) / 1000);
+        window.__mzPace = pace;
+        slowSamples = pace < 0.92 ? slowSamples + 1 : 0;
+        if (slowSamples >= 2) {
+          paceEl.textContent = ui.pace.replace('0', String(Math.round(pace * 100)));
+          paceEl.hidden = false;
+        } else if (pace >= 0.97) {
+          paceEl.hidden = true;
+        }
+      }
+      paceBase = { s, t };
+    }, 4000);
+
+    // Mute = zero-gain node after SDL's audio node. The emulation is paced by the audio
+    // pipeline, so the context must keep running — only the output is silenced.
+    const muteBtn = document.getElementById('play-mute');
+    let muted = false, muteGain = null;
+    const setMuted = (on) => {
+      try {
+        const sdl = window.Module?.SDL3;
+        const node = sdl?.audio_playback?.scriptProcessorNode;
+        if (!sdl || !node) return;
+        if (!muteGain) {
+          muteGain = sdl.audioContext.createGain();
+          node.disconnect();
+          node.connect(muteGain);
+          muteGain.connect(sdl.audioContext.destination);
+        }
+        muteGain.gain.value = on ? 0 : 1;
+        muted = on;
+        muteBtn.textContent = on ? ui.unmute : ui.mute;
+        muteBtn.classList.toggle('active', on);
+      } catch {}
+    };
+    muteBtn.addEventListener('click', () => setMuted(!muted));
+
+    let started = false;
+    const start = async () => {
+      if (started) return; started = true;
+      overlay.hidden = true;
+      status.textContent = ui.downloading;
+      const resp = await fetch(`/files/${slug}/${file}`);
+      if (!resp.ok) { status.textContent = ui.fetchFailed.replace('{file}', file).replace('0', String(resp.status)); return; }
+      const mzf = new Uint8Array(await resp.arrayBuffer());
+      status.textContent = ui.loadingEmulator;
+      window.Module = {
+        canvas,
+        arguments: ['--no-first-run-windows', '--no-save-ini', '--kiosk', '--run-mzf', '/tape.mzf'],
+        preRun: [() => {
+          // The emulator paces itself on the audio callback; the wasm build pulls as many
+          // frames per callback as the buffer needs, so this only trades latency vs. robustness.
+          ENV.SDL_AUDIO_DEVICE_SAMPLE_FRAMES = buf; // module-scope runtime global
+          Module.FS.writeFile('/tape.mzf', mzf);
+        }],
+        locateFile: (p) => `/play/emu/${p}?v=${emuVersion}`,
+        print: () => {},
+        printErr: (m) => {
+          if (/20ms_sync/.test(m)) audioStarved++;
+          else if (/error|fail/i.test(m)) console.warn('[mz800emu]', m);
+        },
+        setStatus: (m) => { status.textContent = m; },
+        onRuntimeInitialized: () => {
+          status.textContent = ''; canvas.focus(); runtimeReady = true;
+          // Keep the screen awake while playing — also stops aggressive tab throttling (Edge efficiency mode).
+          let lock = null;
+          const acquire = () => navigator.wakeLock?.request('screen').then((l) => { lock = l; }).catch(() => {});
+          acquire();
+          document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && (!lock || lock.released)) acquire(); });
+          if (debug) { debugEl.hidden = false; setInterval(updateDebug, 1000); }
+          // If the browser kept audio locked (no user gesture on this origin yet), ask for one
+          // click. A click ANYWHERE dismisses it, and if audio starts by other means (e.g. the
+          // browser resumes it after any interaction), the overlay hides itself.
+          setTimeout(() => {
+            const ctx = window.Module?.SDL3?.audioContext;
+            if (ctx && ctx.state !== 'running') {
+              startBtn.textContent = ui.enableSound;
+              const noSound = document.createElement('button');
+              noSound.type = 'button'; noSound.className = 'btn secondary'; noSound.textContent = ui.withoutSound;
+              startBtn.after(noSound);
+              overlay.hidden = false;
+              const dismiss = (withSound) => {
+                ctx.resume?.(); // the audio clock must run either way — it paces the emulation
+                setMuted(!withSound);
+                overlay.hidden = true; noSound.remove(); enterFullscreenIfTouch(); canvas.focus();
+              };
+              startBtn.onclick = (e) => { e.stopPropagation(); dismiss(true); };
+              noSound.onclick = (e) => { e.stopPropagation(); dismiss(false); };
+              overlay.onclick = () => dismiss(false); // clicking past the button = declining sound
+              const watch = setInterval(() => {
+                if (overlay.hidden) { clearInterval(watch); return; }
+                if (ctx.state === 'running') { clearInterval(watch); overlay.hidden = true; noSound.remove(); }
+              }, 500);
+            }
+          }, 1500);
+        },
+        onAbort: (w) => { status.textContent = ui.aborted.replace('{what}', String(w)); },
+      };
+      const s = document.createElement('script');
+      s.src = `/play/emu/mz800emu.js?v=${emuVersion}`;
+      s.onerror = () => { status.textContent = ui.scriptFailed; };
+      document.body.appendChild(s);
+    };
+    startBtn.addEventListener('click', () => { enterFullscreenIfTouch(); start(); });
+    // Fullscreen can only be entered from a gesture on THIS page (it cannot survive the
+    // navigation from the catalog), so on touch devices the game preloads and boots
+    // silently underneath one overlay, and its single tap = fullscreen + sound + focus,
+    // instantly. Desktop autostarts with no overlay, as before.
+    const fromCatalog = params.has('autostart') || document.referrer.startsWith(location.origin);
+    if (fromCatalog && isTouch) {
+      startBtn.textContent = ui.tapToPlay;
+      overlay.querySelector('.meta').textContent = ui.tapHint;
+      start().then(() => { overlay.hidden = false; }); // boot behind the overlay, keep it visible
+      const go = () => {
+        overlay.hidden = true;
+        enterFullscreenIfTouch();
+        window.Module?.SDL3?.audioContext?.resume?.();
+        canvas.focus();
+      };
+      startBtn.onclick = go;
+      overlay.onclick = go;
+    } else if (fromCatalog) {
+      start();
+    }
+  </script>
+</Base>

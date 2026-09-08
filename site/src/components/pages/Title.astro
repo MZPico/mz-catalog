@@ -1,0 +1,222 @@
+---
+import Base from '../../layouts/Base.astro';
+import { useTranslations, localizePath, type Lang } from '../../i18n';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props { lang: Lang; entry: CollectionEntry<'titles'> }
+const { lang, entry } = Astro.props;
+const t = useTranslations(lang);
+const p = (path: string) => localizePath(lang, path);
+const d = entry.data;
+const machineLabel: Record<string, string> = { 'mz-700': 'MZ-700', 'mz-800': 'MZ-800', 'mz-1500': 'MZ-1500' };
+const languageName = (code: string) => {
+  try { return new Intl.DisplayNames([lang], { type: 'language' }).of(code) ?? code; } catch { return code; }
+};
+const hex4 = (n: number) => '$' + n.toString(16).toUpperCase().padStart(4, '0');
+const kb = (n: number) => (n / 1024).toFixed(1) + ' KB';
+const paragraphs = (d.description ?? '').trim().split(/\n\s*\n/).filter(Boolean);
+const isUrl = (s: string) => /^https?:\/\//.test(s);
+const repoMeta = `https://github.com/MZPico/mz-catalog/blob/main/titles/${d.slug}/meta.yaml`;
+const summary = t.title.summary(d.title, machineLabel[d.machine], d.genre.join(', '), d.year);
+---
+<Base lang={lang} title={d.title} description={summary}>
+  <article data-pagefind-body>
+    <div class="title-head">
+      <h1>{d.title}</h1>
+      <span class="meta">{[d.year, d.publisher].filter(Boolean).join(' · ')}</span>
+    </div>
+    <div class="title-badges">
+      <a class:list={['badge', d.machine]} href={p(`/machines/${d.machine}/`)} data-pagefind-filter="machine">{machineLabel[d.machine]}</a>
+      {d.mode && <span class="tag" title={t.title.modeTitle}>{d.mode === 'native' ? t.title.modeNative : t.title.mode700}</span>}
+      {d.genre.map((g) => <span class="tag" data-pagefind-filter="genre">{g}</span>)}
+      {d.language && <span class="tag" title={t.title.languageTitle}>{languageName(d.language)}</span>}
+    </div>
+
+    <div class="actionbar" data-pagefind-ignore>
+      {d.files.length === 1 ? (
+        <>
+          {d.machine !== 'mz-1500' && <a class="btn primary" href={p(`/play/${d.slug}/?file=${d.files[0].path}`)}>{t.title.play}</a>}
+          <a class="btn" href={`/files/${d.slug}/${d.files[0].path}`} download>{t.title.download}</a>
+          <button class="btn" type="button" id="tape-toggle" aria-expanded="false" aria-controls="tape-panel">{t.title.tapeAudio}</button>
+        </>
+      ) : (
+        <div class="multi">
+          {d.files.map((f) => (
+            <div class="tape-row">
+              <span class="file-label">{f.path}</span>
+              {d.machine !== 'mz-1500' && <a class="btn primary" href={p(`/play/${d.slug}/?file=${f.path}`)}>{t.title.playShort}</a>}
+              <a class="btn" href={`/files/${d.slug}/${f.path}`} download>{t.title.downloadShort}</a>
+            </div>
+          ))}
+          <button class="btn" type="button" id="tape-toggle" aria-expanded="false" aria-controls="tape-panel">♪ Tape audio</button>
+        </div>
+      )}
+    </div>
+
+    <section data-pagefind-ignore class="tape-audio tape-panel" id="tape-panel" hidden data-machine={d.machine}
+      data-i18n={JSON.stringify({ generating: t.tape.generating, ready: t.tape.ready('{len}'), downloadFailed: t.tape.downloadFailed(0) })}>
+      <p class="hint" set:html={t.tape.hintHtml} />
+      {d.files.map((f) => (
+        <div class="tape-row" data-file={`/files/${d.slug}/${f.path}`} data-name={f.header?.name ?? f.path}>
+          <span class="mono file">{f.path}</span>
+          <label>{t.tape.layout}
+            <select class="tape-layout">
+              <option value="short" selected>{t.tape.layoutFast}</option>
+              <option value="authentic">{t.tape.layoutAuthentic}</option>
+            </select>
+          </label>
+          <label class="pol"><input type="checkbox" class="tape-invert" /> {t.tape.invert}</label>
+          <button class="btn accent tape-play" type="button">{t.tape.play}</button>
+          <button class="btn tape-download" type="button">{t.tape.downloadWav}</button>
+          <span class="tape-status meta"></span>
+          <audio class="tape-player" controls preload="none" hidden></audio>
+        </div>
+      ))}
+    </section>
+
+    {d.screenshots.length > 0 && (
+      <ul class="shots">
+        {d.screenshots.map((s, i) => (
+          <li>
+            <img src={`/screenshots/${d.slug}/${s}`} alt={t.title.screenshotAlt(d.title, i + 1)} loading={i === 0 ? 'eager' : 'lazy'}
+              {...(i === 0 ? { 'data-pagefind-meta': 'image[src]' } : {})} />
+          </li>
+        ))}
+      </ul>
+    )}
+
+    {paragraphs.length > 0 && (
+      <section class="prose">
+        <h2>{t.about.title}</h2>
+        {paragraphs.map((p) => <p>{p}</p>)}
+      </section>
+    )}
+
+    {d.controls && (
+      <section>
+        <h2>{t.title.controls}</h2>
+        <pre class="controls">{d.controls.trim()}</pre>
+      </section>
+    )}
+
+    <section data-pagefind-ignore>
+      <h2>{t.title.files}</h2>
+      <details class="tech">
+      <summary>{t.title.techDetails}</summary>
+      <div class="table-wrap">
+        <table class="files">
+          <thead>
+            <tr><th>{t.title.th.file}</th><th>{t.title.th.kind}</th><th>{t.title.th.tapeName}</th><th>{t.title.th.type}</th><th>{t.title.th.load}</th><th>{t.title.th.exec}</th><th>{t.title.th.size}</th><th>{t.title.th.crc}</th></tr>
+          </thead>
+          <tbody>
+            {d.files.map((f) => (
+              <>
+                <tr>
+                  <td class="mono">{f.path}</td>
+                  <td>{t.title.kinds[f.kind]}</td>
+                  <td class="mono">{f.header?.name}</td>
+                  <td>{f.header?.attributeName}</td>
+                  <td class="mono">{f.header ? hex4(f.header.loadAddress) : ''}</td>
+                  <td class="mono">{f.header ? hex4(f.header.execAddress) : ''}</td>
+                  <td title={`${f.size} bytes`}>{kb(f.size)}</td>
+                  <td class="mono">{f.crc32}</td>
+                </tr>
+                {f.note && <tr><td class="note" colspan="8">{f.note}</td></tr>}
+              </>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="meta"><small>{t.title.mzfNote}</small></p>
+      </details>
+    </section>
+
+
+    <section data-pagefind-ignore>
+      <h2>{t.title.provenance}</h2>
+      <dl class="facts">
+        <dt>{t.title.source}</dt>
+        <dd>{d.source ? (isUrl(d.source) ? <a href={d.source} rel="noopener">{d.source}</a> : d.source) : t.title.notRecorded}</dd>
+        <dt>{t.title.catalogEntry}</dt>
+        <dd><a href={repoMeta} rel="noopener">titles/{d.slug}/meta.yaml</a> {t.title.catalogEntryNote}</dd>
+      </dl>
+    </section>
+  </article>
+</Base>
+
+<script>
+  import { mzfToWav } from '../../lib/mzf2wav.js';
+
+  // "♪ Tape audio" reveals the tape panel.
+  const tapeToggle = document.getElementById('tape-toggle');
+  const tapePanel = document.getElementById('tape-panel');
+  if (tapeToggle && tapePanel) {
+    tapeToggle.addEventListener('click', () => {
+      const open = tapePanel.hidden;
+      tapePanel.hidden = !open;
+      tapeToggle.setAttribute('aria-expanded', String(open));
+      if (open) tapePanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  }
+
+  const section = document.querySelector('.tape-audio') as HTMLElement | null;
+  const i18n = JSON.parse(section?.dataset.i18n ?? '{}');
+  if (section) {
+    const machine = section.dataset.machine === 'mz-700' ? 'mz-700' : 'mz-800';
+
+    for (const row of section.querySelectorAll<HTMLElement>('.tape-row')) {
+      const status = row.querySelector('.tape-status') as HTMLElement;
+      const player = row.querySelector('.tape-player') as HTMLAudioElement;
+      let cached: { url: string; name: string } | null = null;
+      let mzfBytes: Uint8Array | null = null;
+
+      const invalidate = () => {
+        if (cached) { URL.revokeObjectURL(cached.url); cached = null; }
+        player.pause(); player.removeAttribute('src'); player.hidden = true;
+        status.textContent = '';
+      };
+      row.querySelector('.tape-layout')!.addEventListener('change', invalidate);
+      row.querySelector('.tape-invert')!.addEventListener('change', invalidate);
+
+      const generate = async () => {
+        if (cached) return cached;
+        status.textContent = i18n.generating;
+        if (!mzfBytes) {
+          const resp = await fetch(row.dataset.file!);
+          if (!resp.ok) throw new Error(String(i18n.downloadFailed).replace('0', String(resp.status)));
+          mzfBytes = new Uint8Array(await resp.arrayBuffer());
+        }
+        const layout = (row.querySelector('.tape-layout') as HTMLSelectElement).value as 'short' | 'authentic';
+        const invert = (row.querySelector('.tape-invert') as HTMLInputElement).checked;
+        const { wav, seconds, name } = mzfToWav(mzfBytes, { machine, layout, invert });
+        const blob = new Blob([wav.buffer as ArrayBuffer], { type: 'audio/wav' });
+        cached = { url: URL.createObjectURL(blob), name: name || 'tape' };
+        const m = Math.floor(seconds / 60), sec = Math.round(seconds % 60);
+        status.textContent = String(i18n.ready).replace('{len}', `${m}:${String(sec).padStart(2, '0')}`);
+        return cached;
+      };
+
+      row.querySelector('.tape-play')!.addEventListener('click', async () => {
+        try {
+          const { url } = await generate();
+          if (player.getAttribute('src') !== url) { player.src = url; player.hidden = false; }
+          player.play();
+        } catch (err) {
+          status.textContent = String(err);
+        }
+      });
+
+      row.querySelector('.tape-download')!.addEventListener('click', async () => {
+        try {
+          const { url, name } = await generate();
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${name.toLowerCase().replace(/[^a-z0-9-]+/g, '-')}.wav`;
+          a.click();
+        } catch (err) {
+          status.textContent = String(err);
+        }
+      });
+    }
+  }
+</script>

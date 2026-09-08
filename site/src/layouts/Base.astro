@@ -1,40 +1,65 @@
 ---
 import '../styles/global.css';
+import { locales, defaultLang, localizePath, stripLang, useTranslations, type Lang } from '../i18n';
 
 interface Props {
+  lang?: Lang;
   title?: string;
   description?: string;
 }
-const { title, description = 'Software catalog and preservation library for Sharp MZ-700 and MZ-800 computers.' } = Astro.props;
-const fullTitle = title ? `${title} · Sharp MZ Software Catalog` : 'Sharp MZ Software Catalog — MZ-700 / MZ-800';
+const { lang = defaultLang, title, description } = Astro.props;
+const t = useTranslations(lang);
+const fullTitle = title ? `${title} · ${t.meta.siteName}` : t.meta.homeTitle;
 const repo = 'https://github.com/MZPico/mz-catalog';
-// Set by `npm run build:staging` — marks the preview deployment.
 const staging = process.env.MZ_STAGING === '1';
+
+// The same page in every language, for hreflang and the language switcher.
+const basePath = stripLang(Astro.url.pathname);
+const alternates = locales.map((l) => ({
+  lang: l,
+  href: new URL(localizePath(l, basePath), Astro.site).href,
+  path: localizePath(l, basePath),
+}));
+const p = (path: string) => localizePath(lang, path);
 ---
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
-    <meta name="description" content={description} />
+    <meta name="description" content={description ?? t.meta.defaultDescription} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="canonical" href={Astro.url.href} />
+    <link rel="preload" href="/fonts/mz800.woff2?v=8" as="font" type="font/woff2" crossorigin />
+    {alternates.map((a) => <link rel="alternate" hreflang={a.lang} href={a.href} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(basePath, Astro.site).href} />
     {staging && <meta name="robots" content="noindex, nofollow" />}
-    <link rel="preload" href="/fonts/mz800.woff2?v=6" as="font" type="font/woff2" crossorigin />
     <slot name="head" />
   </head>
   <body>
     <header class="site-header">
       <div class="wrap">
-        <a class="brand" href="/">SHARP&nbsp;MZ&nbsp;<b>SOFTWARE&nbsp;CATALOG</b><span class="cursor"></span></a>
+        <a class="brand" href={p('/')}>SHARP&nbsp;MZ&nbsp;<b>SOFTWARE&nbsp;CATALOG</b><span class="cursor"></span></a>
         {staging && <span class="staging-badge" title="Preview build — not the live site">STAGING</span>}
         <nav>
-          <a href="/card/">The Card</a>
-          <a href="/">Titles</a>
-          <a href="/machines/">Machines</a>
-          <a href="/about/">About</a>
-          <a href={repo} rel="noopener">GitHub</a>
+          <a href={p('/card/')}>{t.nav.card}</a>
+          <a href={p('/')}>{t.nav.titles}</a>
+          <a href={p('/machines/')}>{t.nav.machines}</a>
+          <a href={p('/about/')}>{t.nav.about}</a>
+          <a href={repo} rel="noopener">{t.nav.github}</a>
+          <details class="lang-switch">
+            <summary title={t.langSwitchLabel} aria-label={t.langSwitchLabel}>{lang.toUpperCase()}</summary>
+            <ul>
+              {alternates.map((a) => (
+                <li>
+                  <a href={a.path} hreflang={a.lang} lang={a.lang} aria-current={a.lang === lang ? 'true' : undefined}>
+                    {t.langName[a.lang]}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </details>
         </nav>
       </div>
     </header>
@@ -43,8 +68,8 @@ const staging = process.env.MZ_STAGING === '1';
     </main>
     <footer class="site-footer">
       <div class="wrap">
-        <p>A preservation project for Sharp MZ series software. Files are offered for archival and emulation use.</p>
-        <p>Rights holder? See <a href="/about/#takedown">takedown requests</a>. Machine-readable index: <a href="/manifest.json"><code>manifest.json</code></a>.</p>
+        <p>{t.footer.blurb}</p>
+        <p set:html={t.footer.rightsHtml(p('/about/'))} />
       </div>
     </footer>
   </body>

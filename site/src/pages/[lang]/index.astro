@@ -1,0 +1,10 @@
+---
+import Home from '../../components/pages/Home.astro';
+import { locales, defaultLang, type Lang } from '../../i18n';
+
+export async function getStaticPaths() {
+  return locales.filter((l) => l !== defaultLang).map((lang) => ({ params: { lang }, props: { lang } }));
+}
+const { lang } = Astro.props as { lang: Lang };
+---
+<Home lang={lang} />
