@@ -1,9 +1,19 @@
-# TODO: verify/curate — title, year, publisher, genre, description, controls.
 title: "Wooky"
+web: true
+year: 1985
+publisher: "BBG Software"
 machine: mz-700
 genre: [game]
 files:
   - path: wooky.mzf
     kind: standard
     note: Single-file build of all parts; the tape header carries "SHRUNKEN BY PETR SLECHTA, 2023".
+controls: |
+  Cursor keys — move
+  CR — fire
+  Space — jump
+touch:
+  buttons:
+    - { label: "FIRE", key: "Enter" }
+    - { label: "JUMP", key: "Space" }
 source: Contributed from Martin's collection (2026-09-08); served from the device API folder games-700. Tape header name "Wooky ALL", loads at $1200, starts at $9E6A.
