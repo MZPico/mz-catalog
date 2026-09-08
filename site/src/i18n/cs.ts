@@ -9,7 +9,7 @@ export const cs: Ui = {
   },
   langName: { en: 'English', cs: 'Čeština', de: 'Deutsch', ja: '日本語' },
   langSwitchLabel: 'Jazyk',
-  nav: { card: 'Karta', titles: 'Hry a programy', machines: 'Počítače', about: 'O projektu', github: 'GitHub' },
+  nav: { card: 'Karta', titles: 'Software', machines: 'Počítače', about: 'O projektu', github: 'GitHub' },
   footer: {
     blurb:
       'Archivační projekt pro software řady Sharp MZ. Soubory slouží k archivaci a emulaci.',

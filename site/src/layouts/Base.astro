@@ -49,7 +49,7 @@ const p = (path: string) => localizePath(lang, path);
           <a href={p('/about/')}>{t.nav.about}</a>
           <a href={repo} rel="noopener">{t.nav.github}</a>
           <details class="lang-switch">
-            <summary title={t.langSwitchLabel} aria-label={t.langSwitchLabel}>{lang.toUpperCase()}</summary>
+            <summary title={t.langSwitchLabel} aria-label={t.langSwitchLabel}>{t.langName[lang]}<span class="caret">▾</span></summary>
             <ul>
               {alternates.map((a) => (
                 <li>
