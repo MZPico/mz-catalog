@@ -1,9 +1,24 @@
-# Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
-# TODO: verify/curate — title, year, publisher, genre, language, description.
-title: "SnakeSn"
+title: "Snake & Snake"
+web: true
+year: 1983
+publisher: "Tecno-Soft"
 machine: mz-700
 genre: [game]
 files:
   - path: snakesn.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.
+    note: Tape header name "SNAKE&SNAKE EXP1"; the in-game credit line reads "TECNO-SOFT 83/6 E1.0".
+controls: |
+  S — start the game
+  Y / N — the "DO YOU NEED EXPLANATION?" prompt
+  Cursor keys — move your snake
+  Space — spit poison
+touch:
+  pad: cursor
+  buttons:
+    - { label: "SPIT", key: "Space" }
+  extra:
+    - { label: "START", key: "S" }
+    - { label: "N", key: "N" }
+    - { label: "Y", key: "Y" }
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. Loads at $1200 and starts at $1200. Despite the name it is not a Snake clone — you hunt rival snakes, whittling them down with poison until they are shorter than you and can be eaten, while frogs in the middle make your own body longer. Tecno-Soft went on to become Technosoft, the studio behind Thunder Force; this is one of its earliest releases.
