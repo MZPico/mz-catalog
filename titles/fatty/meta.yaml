@@ -1,4 +1,4 @@
-title: "Fatty Chila"
+title: "Fatty"
 web: true
 year: 1988
 publisher: "OTO Software"
@@ -14,4 +14,4 @@ controls: |
 touch:
   buttons:
     - { label: "START", key: "Enter" }
-source: From Martin's collection, folder games-zx. Tape header name "Fatty V.1.0"; loads at $2000 and starts at $2000. The "Fatty PROFI-N1" build in circulation is the same program with DEC A at $2A08 patched to NOP (infinite lives) and is deliberately not archived here.
+source: From Martin's collection, folder games-zx. Tape header name "Fatty V.1.0". The title screen shows the name twice, the lower one rotated 180 degrees; loads at $2000 and starts at $2000. The "Fatty PROFI-N1" build in circulation is the same program with DEC A at $2A08 patched to NOP (infinite lives) and is deliberately not archived here.
