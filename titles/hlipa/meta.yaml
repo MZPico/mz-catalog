@@ -1,10 +1,33 @@
-# Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
-# TODO: verify/curate — title, year, publisher, genre, language, description.
-title: "Hlipa"
+title: "Hlípa"
+web: true
+year: 1991
+publisher: "KASUHA soft"
 machine: mz-800
 mode: native
 genre: [game]
 files:
   - path: hlipa.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-800); originally Oracle Object Storage.
+controls: |
+  H — start game, I — instructions (Czech)
+  Then set the clock: type four digits (e.g. 1200), A to confirm
+  Then define your own keys, in this order: sound on/off,
+  down-left, up-right, up-left, down-right; A to confirm,
+  N to the joystick question
+  Menu: 0 — start, 1 — redefine keys, 2 — set clock, 3/4 — alarm
+  In game: the four direction keys move Hlípa; holding the sound
+  key for more than 5 seconds kills her; SHIFT+BREAK quits
+touch:
+  pad: cursor
+  buttons:
+    - { label: "H", key: "H" }
+    - { label: "A", key: "A" }
+    - { label: "N", key: "N" }
+    - { label: "SND", key: "M" }
+  extra:
+    - { label: "0", key: "0" }
+    - { label: "1", key: "1" }
+    - { label: "2", key: "2" }
+    - { label: "3", key: "3" }
+    - { label: "4", key: "4" }
+source: From Martin's collection, folder games-zx. Tape header name "HLIPA"; loads at $1200, starts at $116C. Dating and authorship from the Czech walkthrough by Radim Dobeš (Bat software, SHARPklub Ústí nad Labem, 28.5.1991), which credits KASUHA soft. The copy previously held here was the "NESMRTELNA HLIPA" trainer (a separate, repacked build) and has been replaced by this original.
