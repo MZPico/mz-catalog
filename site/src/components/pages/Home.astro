@@ -85,6 +85,7 @@ const listLd = {
             <div class="meta">{[d.year, d.publisher].filter(Boolean).join(' · ') || ' '}</div>
             <div class="tags">
               <span class:list={['badge', d.machine]}>{machineLabel[d.machine]}{d.mode === 'mz-700' ? ' · 700' : ''}</span>
+              {d.port === 'zx-spectrum' && <span class="tag zx" title={t.title.portTitle}>{t.title.portZx}</span>}
             </div>
           </div>
         </li>
