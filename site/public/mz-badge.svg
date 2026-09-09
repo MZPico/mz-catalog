@@ -22,7 +22,8 @@
  <path d="M211,92 h90 q60,0 60,60 v269 q0,60 -60,60 h-90 q-60,0 -60,-60 v-269 q0,-60 60,-60 z M216,136 h80 q20,0 20,20 v260 q0,20 -20,20 h-80 q-20,0 -20,-20 v-260 q0,-20 20,-20 z"/>
 </g>
 <g id="n7">
- <path d="M0,0 L440,0 L245,573 L60,573 L212,126 L0,126 Z M45,45 L377,45 L213,528 L123,528 L275,81 L45,81 Z"/>
+ <!-- traced from tools/mzfont/mz-7.png with tools/mzfont/trace-glyph.py -->
+ <path d="M0,0 L255,0 L255,7 L193,136 L0,136 Z M301,2 L402,2 L428,11 L446,24 L461,48 L465,64 L461,108 L239,573 L33,573 L33,564 Z M40,40 L37,99 L169,99 L195,44 L195,40 Z M327,40 L92,533 L215,533 L255,454 L428,86 L424,57 L404,42 Z"/>
 </g>
 </defs>
 <g fill-rule="evenodd" transform="translate(6,10) scale(2.55)" style="fill:#E00000;stroke:#E00000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;">

@@ -208,6 +208,20 @@ node tools/catalog/derive-titles.mjs --write    # apply it to meta.yaml
 It only touches entries still marked `Bootstrap-imported` that are not
 curated, so a hand-written title is never overwritten.
 
+## The logotype
+
+`site/public/mz-badge.svg` stacks SHARP over MZ-700 over MZ-800. The letter
+shapes are the Sharp wordmark, drawn as outlines the way the machines' own
+badges are. The 7 was traced from a photo of the real logotype
+(`tools/mzfont/mz-7.png`) rather than drawn by eye:
+
+```
+python3 tools/mzfont/trace-glyph.py tools/mzfont/mz-7.png --height 573
+```
+
+The tracer walks the pixel contours and simplifies them, so straight edges
+stay straight; the 573-unit height matches the other glyphs in the badge.
+
 ## Play counts and ratings
 
 `workers/site/index.js` is the only server-side code the site has. Every
