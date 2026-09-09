@@ -6,4 +6,4 @@ genre: [game]
 files:
   - path: planetoi.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. The same program also circulated as "Planetoids V3.1 (games-zx copy)"; that dump was byte-identical and its duplicate entry (planetoids-v3-1) was merged into this one on 2026-09-09.

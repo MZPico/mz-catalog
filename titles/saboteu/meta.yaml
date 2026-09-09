@@ -7,4 +7,5 @@ genre: [game]
 files:
   - path: saboteu.mzf
     kind: standard
+    note: Tape name "SABOTEUR 2-N". Identical to the sabot-2 dump apart from two bytes, the usual shape of a Czechoslovak-era infinite-lives patch.
 source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage.

@@ -6,4 +6,4 @@ genre: [game]
 files:
   - path: podraz3.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. The same program also circulated as "PODRAZ 3"; that dump was byte-identical and its duplicate entry (podraz-3) was merged into this one on 2026-09-09.

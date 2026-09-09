@@ -1,6 +1,6 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
-title: "SHARP Basic 800"
+title: "SHARP Basic 800 (alt build)"
 machine: mz-800
 mode: native
 genre: [language]

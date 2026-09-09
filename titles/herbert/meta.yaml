@@ -6,4 +6,4 @@ genre: [game]
 files:
   - path: herbert.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. The same program also circulated as "Herbert (games-zx copy)"; that dump was byte-identical and its duplicate entry (herbert-zx) was merged into this one on 2026-09-09.

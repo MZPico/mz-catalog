@@ -6,4 +6,4 @@ genre: [game]
 files:
   - path: 3d-way.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. The same program also circulated as "3-d WAY OUT"; that dump was byte-identical and its duplicate entry (way-out) was merged into this one on 2026-09-09.
