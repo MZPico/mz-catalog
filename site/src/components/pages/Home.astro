@@ -86,6 +86,7 @@ const listLd = {
             <div class="tags">
               <span class:list={['badge', d.machine]}>{machineLabel[d.machine]}{d.mode === 'mz-700' ? ' · 700' : ''}</span>
               {d.port === 'zx-spectrum' && <span class="tag zx" title={t.title.portTitle}>{t.title.portZx}</span>}
+              <span class="card-stats meta" data-stats={d.slug}></span>
             </div>
           </div>
         </li>
@@ -124,6 +125,21 @@ const listLd = {
         apply();
       });
     }
+  </script>
+
+  <script is:inline define:vars={{ ratingTitle: t.title.rating, playsTitle: t.title.plays }}>
+    // What the community made of them: filled in after the page renders, and
+    // simply absent if the API is unreachable.
+    fetch('/api/stats').then((r) => (r.ok ? r.json() : null)).then((data) => {
+      for (const el of document.querySelectorAll('[data-stats]')) {
+        const s = data?.titles?.[el.dataset.stats];
+        if (!s) continue;
+        const bits = [];
+        if (s.votes) bits.push(`<span title="${ratingTitle}">★ ${s.avg.toFixed(1)}</span>`);
+        if (s.plays) bits.push(`<span title="${playsTitle}">▶ ${s.plays}</span>`);
+        el.innerHTML = bits.join(' ');
+      }
+    }).catch(() => {});
   </script>
 
   <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />

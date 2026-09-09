@@ -378,3 +378,5 @@ html[lang="ja"] h2 { font-size: 1.05rem; }
 .chip.flag[data-state="no"] { border-color: var(--mz700); color: var(--mz700); }
 .chip.flag[data-state="no"]::before { content: "−"; margin-right: 0.3rem; }
 .chip.flag[data-state="yes"]::before { content: "+"; opacity: 0.75; margin-right: 0.3rem; }
+.card-stats { font-family: var(--mono); font-size: 0.82rem; margin-left: auto; white-space: nowrap; }
+.card-stats span + span { margin-left: 0.45rem; }
