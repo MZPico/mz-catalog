@@ -8,14 +8,13 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 const titles = (await getCollection('titles')).filter((e) => e.data.web);
-const count = (id: string) => titles.filter((e) => e.data.machine === id).length;
 ---
 <Base lang={lang} title={t.machines.h1}>
   <h1>{t.machines.h1}</h1>
   <p class="lead">{t.machines.lead}</p>
   {machines.map((m) => (
     <section>
-      <h2><a href={localizePath(lang, `/machines/${m.id}/`)}>{m.name}</a> <span class="meta">· {m.years} · {t.machines.titlesCount(count(m.id))}</span></h2>
+      <h2><a href={localizePath(lang, `/machines/${m.id}/`)}>{m.name}</a> <span class="meta">· {m.years}</span></h2>
       <p class="prose">{t.machineInfo[m.id as keyof typeof t.machineInfo].intro}</p>
     </section>
   ))}

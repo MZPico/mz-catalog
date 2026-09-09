@@ -33,7 +33,7 @@ export const ja: Ui = {
     h1: 'アーカイブ全体',
     lead:
       'ここに保存されているすべての作品。名作には解説ページがあり、それ以外はカセットのヘッダが伝える情報と、手元にあるスクリーンショットを載せています。訂正や追加の情報を歓迎します。',
-    filterName: '名前・発売元で絞り込む…',
+    filterName: 'タイトル・発売元・説明を検索…',
     sort: '並び替え',
     sortName: '名前',
     sortPlays: 'よく遊ばれている順',
@@ -49,9 +49,8 @@ export const ja: Ui = {
   machines: {
     h1: '機種',
     lead: 'このカタログが対象とするシャープ MZ シリーズのホームコンピューター。',
-    titlesCount: (n: number) => `${n} 本`,
     specs: '仕様',
-    inCatalog: (n: number) => `カタログに ${n} 本`,
+    inCatalog: 'カタログから',
     none: 'まだありません — ご協力を歓迎します。',
     overviewDescription: (name: string) => `${name} — 機種の概要とソフトウェアカタログ。`,
   },

@@ -34,7 +34,7 @@ export const en = {
     h1: 'The full archive',
     lead:
       'Every title preserved here. The featured ones have written pages; the rest carry what the tape header itself says, plus screenshots where we have them. Corrections and additions are welcome.',
-    filterName: 'Filter by name, publisher…',
+    filterName: 'Search names, publishers, descriptions…',
     sort: 'Sort by',
     sortName: 'Name',
     sortPlays: 'Most played',
@@ -50,9 +50,8 @@ export const en = {
   machines: {
     h1: 'Machines',
     lead: 'The Sharp MZ series home computers this catalog covers.',
-    titlesCount: (n: number) => `${n} ${n === 1 ? 'title' : 'titles'}`,
     specs: 'Specifications',
-    inCatalog: (n: number) => `${n} ${n === 1 ? 'title' : 'titles'} in the catalog`,
+    inCatalog: 'In the catalog',
     none: 'None yet — contributions welcome.',
     overviewDescription: (name: string) => `${name} — machine overview and software catalog.`,
   },

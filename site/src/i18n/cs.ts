@@ -33,7 +33,7 @@ export const cs: Ui = {
     h1: 'Celý archiv',
     lead:
       'Všechny tituly, které tu máme uložené. Pecky mají psané stránky; u zbytku je to, co říká hlavička kazety, plus screenshoty, kde je máme. Opravy a doplnění vítáme.',
-    filterName: 'Filtrovat podle názvu, vydavatele…',
+    filterName: 'Hledat v názvech, vydavatelích, popisech…',
     sort: 'Řadit podle',
     sortName: 'Názvu',
     sortPlays: 'Nejhranější',
@@ -49,10 +49,8 @@ export const cs: Ui = {
   machines: {
     h1: 'Počítače',
     lead: 'Domácí počítače řady Sharp MZ, kterým se katalog věnuje.',
-    titlesCount: (n: number) => `${n} ${n === 1 ? 'titul' : n >= 2 && n <= 4 ? 'tituly' : 'titulů'}`,
     specs: 'Technické parametry',
-    inCatalog: (n: number) =>
-      `${n} ${n === 1 ? 'titul' : n >= 2 && n <= 4 ? 'tituly' : 'titulů'} v katalogu`,
+    inCatalog: 'V katalogu',
     none: 'Zatím žádný — příspěvky vítány.',
     overviewDescription: (name: string) => `${name} — přehled počítače a katalog softwaru.`,
   },

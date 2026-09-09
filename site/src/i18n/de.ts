@@ -33,7 +33,7 @@ export const de: Ui = {
     h1: 'Das vollständige Archiv',
     lead:
       'Alle hier bewahrten Titel. Die Perlen haben geschriebene Seiten; beim Rest steht, was der Kassettenkopf selbst sagt, dazu Screenshots, soweit vorhanden. Korrekturen und Ergänzungen sind willkommen.',
-    filterName: 'Nach Name, Herausgeber filtern…',
+    filterName: 'Namen, Herausgeber, Beschreibungen durchsuchen…',
     sort: 'Sortieren nach',
     sortName: 'Name',
     sortPlays: 'Meistgespielt',
@@ -49,9 +49,8 @@ export const de: Ui = {
   machines: {
     h1: 'Computer',
     lead: 'Die Heimcomputer der Sharp-MZ-Reihe, die dieser Katalog abdeckt.',
-    titlesCount: (n: number) => `${n} Titel`,
     specs: 'Technische Daten',
-    inCatalog: (n: number) => `${n} Titel im Katalog`,
+    inCatalog: 'Im Katalog',
     none: 'Noch keine — Beiträge willkommen.',
     overviewDescription: (name: string) => `${name} — Überblick zum Computer und Softwarekatalog.`,
   },

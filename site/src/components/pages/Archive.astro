@@ -46,7 +46,7 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e
     <span class="meta" id="count"></span>
   </div>
 
-  <ul class="rows" id="rows">
+  <ul class="rows" id="rows" data-pagefind-ignore>
     {titles.map(({ data: d }) => {
       const shot = d.screenshots.find((f) => f.startsWith('02')) ?? d.screenshots[0];
       const href = p(`/titles/${d.slug}/`);
@@ -88,14 +88,15 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e
       const countEl = document.getElementById('count');
       // Each flag is any / yes / no, so "everything that is not a ZX port" is
       // as reachable as "only the ZX ports".
-      const state = { text: '', machine: '', sort: 'name', flags: { zx: 'any' } };
+      const state = { text: '', slugs: null, machine: '', sort: 'name', flags: { zx: 'any' } };
       const has = { zx: (r) => r.dataset.port === 'zx-spectrum' };
       const stats = {};
 
       const visible = () => rows.filter((r) => !r.hidden);
       const apply = () => {
         for (const r of rows) {
-          r.hidden = (state.text && !r.dataset.name.includes(state.text)) ||
+          r.hidden = (state.slugs ? !state.slugs.has(r.dataset.slug)
+              : state.text && !r.dataset.name.includes(state.text)) ||
             (state.machine && r.dataset.machine !== state.machine) ||
             Object.entries(state.flags).some(([key, want]) =>
               want !== 'any' && has[key](r) !== (want === 'yes'));
@@ -123,10 +124,47 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e
           a.dataset.name.localeCompare(b.dataset.name)).forEach((r) => list.appendChild(r));
       };
 
-      q.addEventListener('input', () => { state.text = q.value.trim().toLowerCase(); apply(); });
+      // Full-text search comes from the Pagefind index built at deploy time, so
+      // a word from a description finds its title. The rows stay ours: the
+      // index only says which slugs match, the chips and the sort still apply.
+      let pagefind = null;
+      const loadPagefind = async () => {
+        if (pagefind !== null) return pagefind;
+        try {
+          pagefind = await import('/pagefind/pagefind.js');
+        } catch {
+          pagefind = false; // not built (dev server) — the substring match carries on
+        }
+        return pagefind;
+      };
+      const slugOf = (url) => /\/titles\/([a-z0-9-]+)\//.exec(url)?.[1] ?? null;
+
+      let latest = 0;
+      const search = async (term) => {
+        const mine = ++latest;
+        state.text = term.toLowerCase();
+        if (term.length < 2) { state.slugs = null; apply(); return; }
+        const pf = await loadPagefind();
+        if (!pf) { state.slugs = null; apply(); return; }
+        const found = await pf.search(term);
+        if (!found || mine !== latest) return; // a newer keystroke won
+        // A result knows its id; the URL lives in its fragment, one fetch each.
+        // Past a hundred matches the list is not the way to find anything, so
+        // that is where the fetching stops.
+        const data = await Promise.all(found.results.slice(0, 100).map((r) => r.data()));
+        if (mine !== latest) return;
+        state.slugs = new Set(data.map((d) => slugOf(d.url)).filter(Boolean));
+        apply();
+      };
+
+      let typing;
+      q.addEventListener('input', () => {
+        clearTimeout(typing);
+        typing = setTimeout(() => search(q.value.trim()), 180);
+      });
       // ?q=… so other sites (and our own SearchAction) can link into a search.
       const initial = new URLSearchParams(location.search).get('q');
-      if (initial) { q.value = initial; state.text = initial.trim().toLowerCase(); }
+      if (initial) { q.value = initial; search(initial.trim()); }
       for (const btn of document.querySelectorAll('.flag')) {
         btn.addEventListener('click', () => {
           const next = { any: 'yes', yes: 'no', no: 'any' }[btn.dataset.state];
