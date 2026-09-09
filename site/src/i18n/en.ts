@@ -41,8 +41,10 @@ export const en = {
     sortPlays: 'Most played',
     sortRating: 'Best rated',
     sortYear: 'Year',
-    withShots: 'With screenshot',
-    curatedOnly: 'Featured only',
+    filterFeatured: 'Featured',
+    filterZx: 'ZX port',
+    filterShots: 'Screenshot',
+    filterHint: 'Click to cycle: any → only these → without these',
     curated: 'featured',
     showing: (shown: string | number, total: string | number) => `${shown} of ${total}`,
     none: 'No titles match the filters.',
@@ -186,7 +188,7 @@ export const en = {
   },
   about: {
     title: 'About',
-    h1: 'About this catalog',
+    h1: 'About the catalog',
     introHtml:
       'This site catalogs software for the Sharp MZ-700 and MZ-800 home computers: one page per title with metadata, screenshots and the original <code>.mzf</code> tape image. The goal is preservation — keeping decades-old cassette software available for emulators and real hardware.',
     cardHtml: (cardHref: string) =>

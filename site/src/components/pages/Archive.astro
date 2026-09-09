@@ -32,8 +32,15 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e
         <button class="chip" type="button" aria-pressed="false" data-value={m}>{machineLabel[m]} <small>({counts[m]})</small></button>
       ))}
     </div>
-    <label class="toggle"><input type="checkbox" id="only-shots" /> {t.archive.withShots}</label>
-    <label class="toggle"><input type="checkbox" id="only-curated" /> {t.archive.curatedOnly}</label>
+    <div class="chips flags" role="group" aria-label={t.archive.filterHint}>
+      {[
+        { key: 'curated', label: t.archive.filterFeatured },
+        { key: 'zx', label: t.archive.filterZx },
+        { key: 'shots', label: t.archive.filterShots },
+      ].map((f) => (
+        <button class="chip flag" type="button" data-flag={f.key} data-state="any" title={t.archive.filterHint}>{f.label}</button>
+      ))}
+    </div>
     <label class="sort">{t.archive.sort}
       <select id="sort">
         <option value="name">{t.archive.sortName}</option>
@@ -84,7 +91,10 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e
       const list = document.getElementById('rows');
       const q = document.getElementById('q');
       const countEl = document.getElementById('count');
-      const state = { text: '', machine: '', shots: false, curated: false, sort: 'name' };
+      // Each flag is any / yes / no, so "everything that is not a ZX port" is
+      // as reachable as "only the ZX ports".
+      const state = { text: '', machine: '', sort: 'name', flags: { curated: 'any', zx: 'any', shots: 'any' } };
+      const has = { curated: (r) => !!r.dataset.curated, zx: (r) => r.dataset.port === 'zx-spectrum', shots: (r) => !!r.dataset.shots };
       const stats = {};
 
       const visible = () => rows.filter((r) => !r.hidden);
@@ -92,8 +102,8 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e
         for (const r of rows) {
           r.hidden = (state.text && !r.dataset.name.includes(state.text)) ||
             (state.machine && r.dataset.machine !== state.machine) ||
-            (state.shots && !r.dataset.shots) ||
-            (state.curated && !r.dataset.curated);
+            Object.entries(state.flags).some(([key, want]) =>
+              want !== 'any' && has[key](r) !== (want === 'yes'));
         }
         const shown = visible();
         document.getElementById('no-match').hidden = shown.length > 0;
@@ -119,8 +129,15 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e
       };
 
       q.addEventListener('input', () => { state.text = q.value.trim().toLowerCase(); apply(); });
-      document.getElementById('only-shots').addEventListener('change', (e) => { state.shots = e.target.checked; apply(); });
-      document.getElementById('only-curated').addEventListener('change', (e) => { state.curated = e.target.checked; apply(); });
+      for (const btn of document.querySelectorAll('.flag')) {
+        btn.addEventListener('click', () => {
+          const next = { any: 'yes', yes: 'no', no: 'any' }[btn.dataset.state];
+          btn.dataset.state = next;
+          btn.setAttribute('aria-pressed', String(next !== 'any'));
+          state.flags[btn.dataset.flag] = next;
+          apply();
+        });
+      }
       document.getElementById('sort').addEventListener('change', (e) => { state.sort = e.target.value; apply(); });
       for (const btn of document.querySelectorAll('[data-filter="machine"] .chip')) {
         btn.addEventListener('click', () => {
