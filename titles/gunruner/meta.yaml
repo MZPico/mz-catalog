@@ -3,6 +3,7 @@
 title: "Gun Runner"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: gunruner.mzf

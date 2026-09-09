@@ -3,6 +3,7 @@
 title: "Nodes of Yesod"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: nod-of-y.mzf

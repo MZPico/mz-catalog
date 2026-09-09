@@ -3,6 +3,7 @@
 title: "Green Beret Prg"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: green-p1.mzf

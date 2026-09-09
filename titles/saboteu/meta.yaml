@@ -3,6 +3,7 @@
 title: "Saboteur 2-N"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: saboteu.mzf

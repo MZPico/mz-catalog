@@ -3,6 +3,7 @@
 title: "Great Escape 32k"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: great.mzf

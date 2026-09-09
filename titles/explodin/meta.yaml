@@ -3,6 +3,7 @@
 title: "Exploding Fist"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: explodin.mzf

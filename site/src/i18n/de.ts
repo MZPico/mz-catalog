@@ -17,7 +17,7 @@ export const de: Ui = {
       `Rechteinhaber? Siehe <a href="${aboutHref}#takedown">Löschanfragen</a>. Maschinenlesbarer Index: <a href="/manifest.json"><code>manifest.json</code></a>.`,
   },
   home: {
-    h1: 'Die Perlen der Sharp-MZ-Software',
+    h1: 'Perlen für Sharp MZ',
     introHtml: (cardHref: string) =>
       `Die Titel, mit denen man auf Sharp MZ-700 und MZ-800 anfangen sollte, einzeln beschrieben — originale <code>.mzf</code>-Kassettenabbilder mit Screenshots, Steuerung und der Geschichte dahinter. Jeden davon direkt im Browser spielen, für einen Emulator herunterladen oder per WLAN mit der <a href="${cardHref}">MZPico-Karte</a> auf echte Hardware laden, einer offenen Raspberry&nbsp;Pi&nbsp;Pico-Erweiterung für den MZ-800.`,
     searchPlaceholder: 'Titel, Herausgeber, Beschreibungen durchsuchen…',
@@ -115,6 +115,8 @@ export const de: Ui = {
     modeNative: 'nativer MZ-800-Modus',
     mode700: 'MZ-700-Kompatibilitätsmodus',
     modeTitle: 'MZ-800-Betriebsmodus',
+    portZx: 'ZX-Port',
+    portTitle: 'Umsetzung der ZX-Spectrum-Fassung',
     languageTitle: 'Sprache',
     notCurated:
       'Diesen Eintrag hat noch niemand ausformuliert. Was folgt, stammt aus dem Kassettenabbild selbst; wer das Spiel, sein Jahr oder seinen Autor kennt, möge sich melden.',

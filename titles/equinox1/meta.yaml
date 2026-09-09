@@ -3,6 +3,7 @@
 title: "Equinox.b/w"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: equinox1.mzf

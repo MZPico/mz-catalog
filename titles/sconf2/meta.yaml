@@ -3,6 +3,7 @@
 title: "S.C.main (program)"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: sconf2.mzf

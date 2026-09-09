@@ -3,6 +3,7 @@
 title: "Pool 3 V16K"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: pool_3_v16k.mzf

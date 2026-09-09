@@ -3,6 +3,7 @@
 title: "Seymour 2 (code)"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: sey2-cd.mzf

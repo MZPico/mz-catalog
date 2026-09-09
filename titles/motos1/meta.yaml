@@ -3,6 +3,7 @@
 title: "Motos K.k.k."
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: motos1.mzf

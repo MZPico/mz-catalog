@@ -3,6 +3,7 @@
 title: "Le Mans (MZ-800)"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: le-mans2.mzf

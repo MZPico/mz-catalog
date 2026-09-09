@@ -3,6 +3,7 @@
 title: "Spitfire"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: spitf1.mzf

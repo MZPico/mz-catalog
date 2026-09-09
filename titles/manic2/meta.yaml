@@ -3,6 +3,7 @@
 title: "Manic Two !"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: manic2.mzf

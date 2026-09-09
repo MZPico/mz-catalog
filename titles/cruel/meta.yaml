@@ -3,6 +3,7 @@
 title: "Cruel"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: cruel.mzf

@@ -3,6 +3,7 @@
 title: "Batman"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: batman1.mzf

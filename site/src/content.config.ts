@@ -56,6 +56,7 @@ const titles = defineCollection({
     genre: z.array(z.string()),
     machine: z.enum(['mz-700', 'mz-800', 'mz-1500']),
     mode: z.enum(['native', 'mz-700']).optional(),
+    port: z.enum(['zx-spectrum', 'msx', 'c64', 'atari', 'arcade']).optional(),
     language: z.string().optional(),
     files: z.array(file).min(1),
     // Either English prose or a per-language map (en required, the fallback).

@@ -3,6 +3,7 @@
 title: "Chequered Flag"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: chequere.mzf

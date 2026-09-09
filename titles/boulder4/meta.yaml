@@ -3,6 +3,7 @@
 title: "Boulder Dash (Hecht)"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: boulder4.mzf

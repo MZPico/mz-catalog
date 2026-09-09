@@ -3,6 +3,7 @@
 title: "Worm in Paradise"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: wormin.mzf

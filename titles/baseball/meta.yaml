@@ -3,6 +3,7 @@
 title: "Baseball (32k)"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: baseball.mzf

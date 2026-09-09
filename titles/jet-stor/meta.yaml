@@ -3,6 +3,7 @@
 title: "Jet-story 32K"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: jet-stor.mzf

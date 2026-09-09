@@ -3,6 +3,7 @@
 title: "Alien 8 (prog)"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: alien-8.mzf

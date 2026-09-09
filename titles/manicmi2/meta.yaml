@@ -3,6 +3,7 @@
 title: "Manic Miner 2"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: manicmi2.mzf

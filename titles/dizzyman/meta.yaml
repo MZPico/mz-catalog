@@ -3,6 +3,7 @@
 title: "Dizzy Manual"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: dizzyman.mzf

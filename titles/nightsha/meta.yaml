@@ -3,6 +3,7 @@
 title: "Night Shade"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: nightsha.mzf

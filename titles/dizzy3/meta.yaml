@@ -3,6 +3,7 @@
 title: "Dizzy III"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: dizzy3.mzf

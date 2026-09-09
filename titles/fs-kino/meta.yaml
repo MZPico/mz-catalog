@@ -3,6 +3,7 @@
 title: "FS Kino 1.0"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: fs-kino.mzf

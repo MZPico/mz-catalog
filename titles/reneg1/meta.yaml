@@ -3,6 +3,7 @@
 title: "Renegade"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: reneg1.mzf

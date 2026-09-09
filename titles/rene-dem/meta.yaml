@@ -3,6 +3,7 @@
 title: "Renegade 3 .demo"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: rene-dem.mzf

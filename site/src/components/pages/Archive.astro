@@ -51,7 +51,7 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e
       const href = p(`/titles/${d.slug}/`);
       return (
         <li class="row" data-slug={d.slug} data-machine={d.machine} data-year={d.year ?? ''}
-          data-shots={d.screenshots.length ? '1' : ''} data-curated={d.web ? '1' : ''}
+          data-shots={d.screenshots.length ? '1' : ''} data-curated={d.web ? '1' : ''} data-port={d.port ?? ''}
           data-name={[d.title, d.publisher, d.files[0]?.header?.name].filter(Boolean).join(' ').toLowerCase()}>
           <a class="row-thumb" href={href} tabindex="-1" aria-hidden="true">
             {shot
@@ -63,6 +63,7 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e
             <div class="meta">
               <span class:list={['badge', d.machine]}>{machineLabel[d.machine]}</span>
               {d.web && <span class="tag curated">{t.archive.curated}</span>}
+              {d.port === 'zx-spectrum' && <span class="tag zx" title={t.title.portTitle}>{t.title.portZx}</span>}
               {[d.year, d.publisher].filter(Boolean).join(' · ')}
             </div>
           </div>

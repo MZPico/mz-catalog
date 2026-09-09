@@ -6,4 +6,4 @@ genre: [game]
 files:
   - path: tv-game.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. A second dump of the identical program was catalogued as tv-tenis (tape name "TV GAME TENNIS"); the two differ only in the junk past the declared data size, and the entries were merged on 2026-09-09.

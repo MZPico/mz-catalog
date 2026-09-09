@@ -371,3 +371,4 @@ html[lang="ja"] h2 { font-size: 1.05rem; }
   margin: 1.4rem 0; padding: 0.9rem 1.1rem; color: var(--muted);
   border: 1px dashed var(--line); border-radius: var(--radius); background: var(--surface);
 }
+.tag.zx { border-color: #c084fc; color: #c084fc; }

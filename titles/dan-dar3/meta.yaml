@@ -3,6 +3,7 @@
 title: "Dan Dare III"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: dan-dar3.mzf

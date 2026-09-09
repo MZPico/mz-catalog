@@ -3,6 +3,7 @@
 title: "Equinox.prg"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: equinox4.mzf

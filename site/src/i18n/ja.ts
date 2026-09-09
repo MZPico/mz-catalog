@@ -115,6 +115,8 @@ export const ja: Ui = {
     modeNative: 'MZ-800 ネイティブモード',
     mode700: 'MZ-700 互換モード',
     modeTitle: 'MZ-800 の動作モード',
+    portZx: 'ZX 移植',
+    portTitle: 'ZX Spectrum 版からの移植',
     languageTitle: '言語',
     notCurated:
       'この項目はまだ誰も書き起こしていません。以下はカセットイメージそのものから読み取った情報です。作品や制作年、作者をご存じでしたらお知らせください。',

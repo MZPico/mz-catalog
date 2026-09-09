@@ -3,6 +3,7 @@
 title: "Antiriad (cs)"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: antir-cs.mzf

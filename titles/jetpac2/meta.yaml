@@ -3,6 +3,7 @@
 title: "Jetpac.V32K"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: jetpac2.mzf

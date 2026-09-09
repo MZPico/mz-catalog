@@ -3,6 +3,7 @@
 title: "Ping~pong SMV1"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: pingpong.mzf

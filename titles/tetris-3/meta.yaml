@@ -3,6 +3,7 @@
 title: "Tetris 3D"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: tetris-3.mzf

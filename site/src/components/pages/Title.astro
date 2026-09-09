@@ -62,6 +62,7 @@ const breadcrumbLd = {
     <div class="title-badges">
       <a class:list={['badge', d.machine]} href={p(`/machines/${d.machine}/`)} data-pagefind-filter="machine">{machineLabel[d.machine]}</a>
       {d.mode && <span class="tag" title={t.title.modeTitle}>{d.mode === 'native' ? t.title.modeNative : t.title.mode700}</span>}
+      {d.port === 'zx-spectrum' && <span class="tag zx" title={t.title.portTitle}>{t.title.portZx}</span>}
       {d.genre.map((g) => <span class="tag" data-pagefind-filter="genre">{g}</span>)}
       {d.language && <span class="tag" title={t.title.languageTitle}>{languageName(d.language)}</span>}
     </div>

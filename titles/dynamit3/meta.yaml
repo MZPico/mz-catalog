@@ -3,6 +3,7 @@
 title: "Dynamite Dan I"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: dynamit3.mzf

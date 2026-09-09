@@ -3,6 +3,7 @@
 title: "Anti-riad MZ"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: antir1-cs.mzf

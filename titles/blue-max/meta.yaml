@@ -3,6 +3,7 @@
 title: "Blue Max 16 KB"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: blue-max.mzf

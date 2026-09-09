@@ -3,6 +3,7 @@
 title: "Mercenary"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: merc.mzf

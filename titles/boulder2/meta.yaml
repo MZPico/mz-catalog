@@ -3,6 +3,7 @@ year: 1984
 publisher: "First Star Software Inc."
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: boulder2.mzf

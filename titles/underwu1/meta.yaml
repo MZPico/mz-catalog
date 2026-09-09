@@ -3,6 +3,7 @@
 title: "Under 16K"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: underwu1.mzf

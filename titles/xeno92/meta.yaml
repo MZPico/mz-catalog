@@ -3,6 +3,7 @@
 title: "Xeno 1992"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: xeno92.mzf

@@ -3,6 +3,7 @@
 title: "Rex 2.1"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: rex-2-1.mzf

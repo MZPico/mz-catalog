@@ -3,6 +3,7 @@
 title: "ROBIN screen$"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: robin2.mzf

@@ -3,6 +3,7 @@
 title: "Dynamite Dan 32k"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: dynamit1.mzf

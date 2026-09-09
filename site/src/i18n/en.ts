@@ -18,7 +18,7 @@ export const en = {
       `Rights holder? See <a href="${aboutHref}#takedown">takedown requests</a>. Machine-readable index: <a href="/manifest.json"><code>manifest.json</code></a>.`,
   },
   home: {
-    h1: 'The pick of Sharp MZ software',
+    h1: 'The best of Sharp MZ',
     introHtml: (cardHref: string) =>
       `The titles worth starting with on the Sharp MZ-700 and MZ-800, written up one by one — original <code>.mzf</code> tape images with screenshots, controls and the story behind them. Play any of them right in your browser, download for an emulator, or load over WiFi on a real machine with the <a href="${cardHref}">MZPico card</a>, an open Raspberry&nbsp;Pi&nbsp;Pico expansion for the MZ-800.`,
     searchPlaceholder: 'Search titles, publishers, descriptions…',
@@ -116,6 +116,8 @@ export const en = {
     modeNative: 'MZ-800 native mode',
     mode700: 'MZ-700 compatibility mode',
     modeTitle: 'MZ-800 operating mode',
+    portZx: 'ZX port',
+    portTitle: 'Converted from the ZX Spectrum version',
     languageTitle: 'Language',
     notCurated:
       'Nobody has written this entry up yet. What follows comes from the tape image itself; if you know the game, its year or its author, corrections are welcome.',

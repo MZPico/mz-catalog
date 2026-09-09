@@ -116,6 +116,8 @@ export const cs: Ui = {
     modeNative: 'nativní režim MZ-800',
     mode700: 'kompatibilní režim MZ-700',
     modeTitle: 'Provozní režim MZ-800',
+    portZx: 'port ze ZX',
+    portTitle: 'Konverze ze ZX Spectra',
     languageTitle: 'Jazyk',
     notCurated:
       'Tenhle záznam zatím nikdo nesepsal. Co je níž, pochází přímo z obrazu kazety; jestli tu hru znáš, víš rok nebo autora, ozvi se.',

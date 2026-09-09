@@ -3,6 +3,7 @@
 title: "Slap Fight New!"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: slap-fig.mzf

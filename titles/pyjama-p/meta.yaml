@@ -3,6 +3,7 @@
 title: "Pyjamarama (prog)"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: pyjama-p.mzf

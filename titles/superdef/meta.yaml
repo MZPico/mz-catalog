@@ -1,9 +1,9 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
-title: "Super Defender (alt build)"
+title: "Super Defender"
 machine: mz-700
 genre: [game]
 files:
   - path: superdef.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. A second dump of the identical program was catalogued as defende2 (tape name "SUPER DEFENDER"); the two differ only in the junk past the declared data size, and the entries were merged on 2026-09-09.

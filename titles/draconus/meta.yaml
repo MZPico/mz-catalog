@@ -3,6 +3,7 @@
 title: "B.y.c.s:draconus"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: draconus.mzf

@@ -71,6 +71,16 @@
       ],
       "description": "MZ-800 only: runs in native MZ-800 mode or in MZ-700 compatibility mode."
     },
+    "port": {
+      "description": "Machine this title was converted from, when it is not an MZ original. Derived for the bootstrap import from the legacy games-zx folder; correct it when a title turns out to be an original.",
+      "enum": [
+        "zx-spectrum",
+        "msx",
+        "c64",
+        "atari",
+        "arcade"
+      ]
+    },
     "language": {
       "type": "string",
       "pattern": "^[a-z]{2,3}$",

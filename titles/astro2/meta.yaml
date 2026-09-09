@@ -3,6 +3,7 @@
 title: "Astro M.corps 2"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: astro2.mzf

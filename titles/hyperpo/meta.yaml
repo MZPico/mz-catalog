@@ -3,6 +3,7 @@
 title: "Hyper Poke 1.3"
 machine: mz-800
 mode: native
+port: zx-spectrum
 genre: [game]
 files:
   - path: hyperpo.mzf
