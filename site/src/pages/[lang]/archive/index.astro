@@ -1,0 +1,10 @@
+---
+import Archive from '../../../components/pages/Archive.astro';
+import { locales, defaultLang, type Lang } from '../../../i18n';
+
+export function getStaticPaths() {
+  return locales.filter((l) => l !== defaultLang).map((lang) => ({ params: { lang } }));
+}
+const lang = Astro.params.lang as Lang;
+---
+<Archive lang={lang} />

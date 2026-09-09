@@ -5,7 +5,6 @@ import { getCollection } from 'astro:content';
 export async function getStaticPaths() {
   const titles = await getCollection('titles');
   return titles
-    .filter((e) => e.data.web)
     .map((entry) => ({ params: { slug: entry.data.slug }, props: { entry } }));
 }
 const { entry } = Astro.props;

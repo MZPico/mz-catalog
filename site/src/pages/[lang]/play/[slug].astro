@@ -4,7 +4,7 @@ import { getCollection } from 'astro:content';
 import { locales, defaultLang, type Lang } from '../../../i18n';
 
 export async function getStaticPaths() {
-  const titles = (await getCollection('titles')).filter((e) => e.data.web && e.data.machine !== 'mz-1500');
+  const titles = (await getCollection('titles')).filter((e) => e.data.machine !== 'mz-1500');
   return locales
     .filter((l) => l !== defaultLang)
     .flatMap((lang) => titles.map((entry) => ({ params: { lang, slug: entry.data.slug }, props: { lang, entry } })));

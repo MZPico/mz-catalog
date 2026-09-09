@@ -9,7 +9,7 @@ export const ja: Ui = {
   },
   langName: { en: 'English', cs: 'Čeština', de: 'Deutsch', ja: '日本語' },
   langSwitchLabel: '言語',
-  nav: { card: 'カード', titles: 'ソフト一覧', machines: '機種', about: 'このサイトについて', github: 'GitHub' },
+  nav: { card: 'カード', archive: 'アーカイブ', titles: 'ソフト一覧', machines: '機種', about: 'このサイトについて', github: 'GitHub' },
   footer: {
     blurb:
       'シャープ MZ シリーズのソフトウェアを保存するプロジェクトです。ファイルは保存とエミュレーションのために公開しています。',
@@ -28,6 +28,24 @@ export const ja: Ui = {
     noMatch: '条件に合うタイトルはありません。',
     noScreenshot: 'スクリーンショットなし',
     playAria: (title: string) => `${title} をブラウザーで遊ぶ`,
+    archiveTeaser: (n: number) => `さらに ${n} 本がアーカイブ全体にあります。整備の有無にかかわらず、保存したすべてです。`,
+  },
+  archive: {
+    h1: 'アーカイブ全体',
+    lead: (n: number) =>
+      `ここに保存されている全${n}本。整備済みのものもそうでないものも含みます。特集した作品には解説ページがあり、それ以外はカセットのヘッダが伝える情報と、手元にあるスクリーンショットを載せています。訂正や追加の情報を歓迎します。`,
+    filterName: '名前・発売元で絞り込む…',
+    sort: '並び替え',
+    sortName: '名前',
+    sortPlays: 'よく遊ばれている順',
+    sortRating: '評価の高い順',
+    sortYear: '年',
+    withShots: 'スクリーンショットあり',
+    curatedOnly: '整備済みのみ',
+    curated: '整備済み',
+    showing: (shown: string | number, total: string | number) => `${total} 本中 ${shown} 本`,
+    none: '条件に合う作品はありません。',
+    unknown: '—',
   },
   machines: {
     h1: '機種',
@@ -98,6 +116,15 @@ export const ja: Ui = {
     mode700: 'MZ-700 互換モード',
     modeTitle: 'MZ-800 の動作モード',
     languageTitle: '言語',
+    notCurated:
+      'この項目はまだ誰も書き起こしていません。以下はカセットイメージそのものから読み取った情報です。作品や制作年、作者をご存じでしたらお知らせください。',
+    plays: 'プレイ回数',
+    rating: '評価',
+    rate: '評価する',
+    votes: (n: number) => `${n} 票`,
+    unrated: 'まだ評価がありません',
+    rateThanks: 'ありがとうございます',
+    starLabel: (n: number) => `5 段階中 ${n}`,
     screenshotAlt: (title: string, i: number) => `${title} のスクリーンショット ${i}`,
     summary: (title: string, machine: string, genres: string, year?: number) =>
       `${title} — ${machine} ${genres}${year ? `（${year}年）` : ''}。.mzf テープイメージをダウンロードできます。`,

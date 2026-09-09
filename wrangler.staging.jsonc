@@ -2,13 +2,25 @@
 // Serves the same site/dist as production, but on staging.mzpico.com, marked
 // noindex and badged in the header. Production keeps deploying from `main`
 // through the git-connected build — nothing here touches it.
+//
+// The /api/* Worker is the same script, pointed at a separate D1 database so
+// test votes and play counts never land in the real numbers.
 {
   "name": "mz-catalog-staging",
+  "main": "workers/site/index.js",
   "compatibility_date": "2026-08-31",
   "assets": {
     "directory": "./site/dist",
+    "binding": "ASSETS",
     "not_found_handling": "404-page"
   },
+  "d1_databases": [
+    {
+      "binding": "STATS",
+      "database_name": "mz-catalog-stats-staging",
+      "database_id": "8816a69d-2fd1-49ce-b8d3-e980b8f57e28"
+    }
+  ],
   "routes": [
     { "pattern": "staging.mzpico.com", "custom_domain": true }
   ]

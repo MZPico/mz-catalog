@@ -119,12 +119,28 @@ const breadcrumbLd = {
       </ul>
     )}
 
-    {paragraphs.length > 0 && (
+    {paragraphs.length > 0 ? (
       <section class="prose">
         <h2>{t.title.aboutGame}</h2>
         {paragraphs.map((p) => <p>{p}</p>)}
       </section>
+    ) : (
+      <p class="not-curated">{t.title.notCurated}</p>
     )}
+
+    <section class="community" data-pagefind-ignore data-slug={d.slug}
+      data-i18n={JSON.stringify({ votes: [t.title.votes(1), t.title.votes(2), t.title.votes(5)], unrated: t.title.unrated, thanks: t.title.rateThanks })}>
+      <div class="rating">
+        <span class="label">{t.title.rate}</span>
+        <div class="stars" role="radiogroup" aria-label={t.title.rate}>
+          {[1, 2, 3, 4, 5].map((n) => (
+            <button type="button" class="star" role="radio" aria-checked="false" data-value={n} aria-label={t.title.starLabel(n)}>★</button>
+          ))}
+        </div>
+        <span class="rating-summary meta">{t.title.unrated}</span>
+      </div>
+      <div class="plays meta"><span class="label">{t.title.plays}</span> <span class="plays-count">—</span></div>
+    </section>
 
     {d.controls && (
       <section>
@@ -240,6 +256,63 @@ const breadcrumbLd = {
           status.textContent = String(err);
         }
       });
+    }
+  }
+</script>
+
+<script>
+  // Community numbers: play counts and ratings, served by the site Worker.
+  // The page itself stays static — these arrive after it renders.
+  {
+    const section = document.querySelector<HTMLElement>('.community');
+    if (section) {
+      const slug = section.dataset.slug!;
+      const ui = JSON.parse(section.dataset.i18n!) as { votes: string[]; unrated: string; thanks: string };
+      const summary = section.querySelector<HTMLElement>('.rating-summary')!;
+      const playsCount = section.querySelector<HTMLElement>('.plays-count')!;
+      const stars = [...section.querySelectorAll<HTMLButtonElement>('.star')];
+
+      // A random id in localStorage is what keeps one visitor from stuffing the
+      // ballot; there is no account and no cookie behind it.
+      let voter = localStorage.getItem('mz-voter');
+      if (!voter) {
+        voter = crypto.randomUUID();
+        try { localStorage.setItem('mz-voter', voter); } catch { /* private mode */ }
+      }
+
+      const plural = (n: number) => (n === 1 ? ui.votes[0] : n < 5 ? ui.votes[1] : ui.votes[2]).replace(/\d+/, String(n));
+      const paint = (s: { plays?: number; votes?: number; avg?: number; mine?: number }) => {
+        summary.textContent = s.votes ? `★ ${s.avg!.toFixed(1)} · ${plural(s.votes)}` : ui.unrated;
+        playsCount.textContent = String(s.plays ?? 0);
+        for (const star of stars) {
+          const on = s.mine ? Number(star.dataset.value) <= s.mine : false;
+          star.classList.toggle('on', on);
+          star.setAttribute('aria-checked', String(Number(star.dataset.value) === s.mine));
+        }
+      };
+
+      const load = async () => {
+        const res = await fetch(`/api/stats?slug=${encodeURIComponent(slug)}&voter=${voter}`);
+        if (res.ok) paint(await res.json());
+      };
+      load().catch(() => {});
+
+      for (const star of stars) {
+        star.addEventListener('click', async () => {
+          const value = Number(star.dataset.value);
+          paint({ mine: value });
+          const res = await fetch('/api/rate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug, value, voter }),
+          }).catch(() => null);
+          if (res?.ok) {
+            paint(await res.json());
+            summary.insertAdjacentHTML('afterend', `<span class="thanks meta">${ui.thanks}</span>`);
+            setTimeout(() => section.querySelector('.thanks')?.remove(), 2000);
+          }
+        });
+      }
     }
   }
 </script>

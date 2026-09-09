@@ -10,7 +10,7 @@ export const en = {
   },
   langName: { en: 'English', cs: 'Čeština', de: 'Deutsch', ja: '日本語' },
   langSwitchLabel: 'Language',
-  nav: { card: 'The Card', titles: 'Titles', machines: 'Machines', about: 'About', github: 'GitHub' },
+  nav: { card: 'The Card', archive: 'Archive', titles: 'Titles', machines: 'Machines', about: 'About', github: 'GitHub' },
   footer: {
     blurb:
       'A preservation project for Sharp MZ series software. Files are offered for archival and emulation use.',
@@ -29,6 +29,24 @@ export const en = {
     noMatch: 'No titles match the selected filters.',
     noScreenshot: 'no screenshot',
     playAria: (title: string) => `Play ${title} in the browser`,
+    archiveTeaser: (n: number) => `Plus ${n} more titles in the full archive — everything preserved, curated or not.`,
+  },
+  archive: {
+    h1: 'The full archive',
+    lead: (n: number) =>
+      `Every one of the ${n} titles preserved here, curated or not. The featured ones have written pages; the rest carry what the tape header itself says, plus screenshots where we have them. Corrections and additions are welcome.`,
+    filterName: 'Filter by name, publisher…',
+    sort: 'Sort by',
+    sortName: 'Name',
+    sortPlays: 'Most played',
+    sortRating: 'Best rated',
+    sortYear: 'Year',
+    withShots: 'With screenshot',
+    curatedOnly: 'Curated only',
+    curated: 'curated',
+    showing: (shown: string | number, total: string | number) => `${shown} of ${total}`,
+    none: 'No titles match the filters.',
+    unknown: '—',
   },
   machines: {
     h1: 'Machines',
@@ -99,6 +117,15 @@ export const en = {
     mode700: 'MZ-700 compatibility mode',
     modeTitle: 'MZ-800 operating mode',
     languageTitle: 'Language',
+    notCurated:
+      'Nobody has written this entry up yet. What follows comes from the tape image itself; if you know the game, its year or its author, corrections are welcome.',
+    plays: 'Plays',
+    rating: 'Rating',
+    rate: 'Rate this title',
+    votes: (n: number) => `${n} ${n === 1 ? 'vote' : 'votes'}`,
+    unrated: 'Not rated yet',
+    rateThanks: 'Thanks!',
+    starLabel: (n: number) => `${n} of 5`,
     screenshotAlt: (title: string, i: number) => `${title} screenshot ${i}`,
     summary: (title: string, machine: string, genres: string, year?: number) =>
       `${title} — ${machine} ${genres}${year ? ` (${year})` : ''}. Download the .mzf tape image.`,

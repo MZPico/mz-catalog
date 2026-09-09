@@ -9,7 +9,7 @@ export const cs: Ui = {
   },
   langName: { en: 'English', cs: 'Čeština', de: 'Deutsch', ja: '日本語' },
   langSwitchLabel: 'Jazyk',
-  nav: { card: 'Karta', titles: 'Software', machines: 'Počítače', about: 'O projektu', github: 'GitHub' },
+  nav: { card: 'Karta', archive: 'Archiv', titles: 'Software', machines: 'Počítače', about: 'O projektu', github: 'GitHub' },
   footer: {
     blurb:
       'Archivační projekt pro software řady Sharp MZ. Soubory slouží k archivaci a emulaci.',
@@ -28,6 +28,24 @@ export const cs: Ui = {
     noMatch: 'Zvolenému filtru neodpovídá žádný titul.',
     noScreenshot: 'bez snímku',
     playAria: (title: string) => `Spustit ${title} v prohlížeči`,
+    archiveTeaser: (n: number) => `A dalších ${n} titulů v celém archivu — všechno, co máme uložené, zkuratované i ne.`,
+  },
+  archive: {
+    h1: 'Celý archiv',
+    lead: (n: number) =>
+      `Všech ${n} titulů, které tu máme uložené, zkuratované i nezkuratované. Ty vybrané mají psané stránky; u zbytku je to, co říká hlavička kazety, plus screenshoty, kde je máme. Opravy a doplnění vítáme.`,
+    filterName: 'Filtrovat podle názvu, vydavatele…',
+    sort: 'Řadit podle',
+    sortName: 'Názvu',
+    sortPlays: 'Nejhranější',
+    sortRating: 'Nejlépe hodnocené',
+    sortYear: 'Roku',
+    withShots: 'Se screenshotem',
+    curatedOnly: 'Jen zkuratované',
+    curated: 'zkuratováno',
+    showing: (shown: string | number, total: string | number) => `${shown} z ${total}`,
+    none: 'Filtrům neodpovídá žádný titul.',
+    unknown: '—',
   },
   machines: {
     h1: 'Počítače',
@@ -99,6 +117,15 @@ export const cs: Ui = {
     mode700: 'kompatibilní režim MZ-700',
     modeTitle: 'Provozní režim MZ-800',
     languageTitle: 'Jazyk',
+    notCurated:
+      'Tenhle záznam zatím nikdo nesepsal. Co je níž, pochází přímo z obrazu kazety; jestli tu hru znáš, víš rok nebo autora, ozvi se.',
+    plays: 'Spuštění',
+    rating: 'Hodnocení',
+    rate: 'Ohodnotit',
+    votes: (n: number) => `${n} ${n === 1 ? 'hlas' : n < 5 ? 'hlasy' : 'hlasů'}`,
+    unrated: 'Zatím bez hodnocení',
+    rateThanks: 'Díky!',
+    starLabel: (n: number) => `${n} z 5`,
     screenshotAlt: (title: string, i: number) => `${title} — snímek obrazovky ${i}`,
     summary: (title: string, machine: string, genres: string, year?: number) =>
       `${title} — ${machine} ${genres}${year ? ` (${year})` : ''}. Ke stažení jako páskový obraz .mzf.`,

@@ -306,3 +306,68 @@ ol.steps li { margin: 0.4rem 0; }
    for headings — mixing a pixel face with fallback glyphs looks broken. */
 html[lang="ja"] h1, html[lang="ja"] h2 { font-family: var(--sans); font-weight: 700; letter-spacing: 0.01em; }
 html[lang="ja"] h2 { font-size: 1.05rem; }
+
+/* ---- Archive: the long tail, listed densely so 380 rows stay scannable ---- */
+.archive-controls {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem;
+  margin: 1.4rem 0 0.4rem; padding-bottom: 1rem; border-bottom: 1px solid var(--line);
+}
+.archive-controls input[type="search"] {
+  flex: 1 1 16rem; min-width: 12rem; padding: 0.5rem 0.7rem; border-radius: var(--radius);
+  border: 1px solid var(--line); background: var(--surface); color: var(--text); font: inherit;
+}
+.archive-controls .toggle, .archive-controls .sort { display: flex; align-items: center; gap: 0.4rem; color: var(--muted); font-size: 0.9rem; }
+.archive-controls select {
+  padding: 0.35rem 0.5rem; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--text); font: inherit;
+}
+.rows { list-style: none; padding: 0; margin: 0.6rem 0 0; display: flex; flex-direction: column; }
+.row {
+  display: grid; grid-template-columns: 96px minmax(0, 1fr) auto auto;
+  align-items: center; gap: 0.9rem; padding: 0.5rem 0.4rem;
+  border-bottom: 1px solid var(--line);
+}
+.row[hidden] { display: none; }
+.row:hover { background: var(--surface); }
+.row-thumb { display: block; width: 96px; aspect-ratio: 704 / 464; background: #000; border-radius: 6px; overflow: hidden; }
+.row-thumb img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; display: block; }
+.row-thumb .thumb-empty { display: flex; align-items: center; justify-content: center; height: 100%; color: #55607a; }
+.row-main { min-width: 0; }
+.row-title { display: block; color: var(--text); text-decoration: none; font-weight: 600; }
+.row-title:hover { color: var(--accent); }
+.row-main .meta { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-size: 0.85rem; }
+.row-stats { font-family: var(--mono); font-size: 0.85rem; white-space: nowrap; }
+.row-actions { display: flex; gap: 0.35rem; }
+.btn.small { padding: 0.3rem 0.6rem; font-size: 0.9rem; }
+.tag.curated { border-color: var(--green); color: var(--green); }
+.archive-teaser { display: flex; align-items: center; gap: 0.9rem; flex-wrap: wrap; margin-top: 2rem; }
+@media (max-width: 560px) {
+  .row { grid-template-columns: 64px minmax(0, 1fr) auto; }
+  .row-thumb { width: 64px; }
+  .row-stats { grid-column: 2 / -1; }
+}
+
+/* ---- Community: play counts and ratings, filled in after the page loads ---- */
+.community {
+  display: flex; align-items: center; gap: 1.4rem 2rem; flex-wrap: wrap;
+  margin: 1.6rem 0; padding: 0.9rem 1.1rem;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+}
+.community .label { color: var(--muted); font-size: 0.9rem; margin-right: 0.4rem; }
+.rating { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.stars { display: flex; }
+.star {
+  background: none; border: 0; padding: 0 0.1rem; cursor: pointer; line-height: 1;
+  font-size: 1.5rem; color: #3a4560; transition: color 0.12s ease, transform 0.12s ease;
+}
+.star:hover, .star.on { color: var(--amber); }
+.stars:hover .star { color: var(--amber); }
+.stars .star:hover ~ .star { color: #3a4560; }
+.star:active { transform: scale(0.9); }
+.plays { display: flex; align-items: baseline; }
+.plays-count { font-family: var(--mono); }
+.thanks { color: var(--green); margin-left: 0.5rem; }
+.not-curated {
+  margin: 1.4rem 0; padding: 0.9rem 1.1rem; color: var(--muted);
+  border: 1px dashed var(--line); border-radius: var(--radius); background: var(--surface);
+}

@@ -1,0 +1,150 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { useTranslations, localizePath, type Lang } from '../../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const p = (path: string) => localizePath(lang, path);
+
+// Everything, curated or not — this is the long tail the front page keeps out.
+const titles = (await getCollection('titles')).sort((a, b) =>
+  a.data.title.localeCompare(b.data.title, 'en', { sensitivity: 'base' }),
+);
+const machines = ['mz-700', 'mz-800'] as const;
+const machineLabel: Record<string, string> = { 'mz-700': 'MZ-700', 'mz-800': 'MZ-800', 'mz-1500': 'MZ-1500' };
+const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e.data.machine === m).length]));
+---
+<Base lang={lang} title={t.archive.h1} description={t.archive.lead(titles.length)}>
+  <div class="hero">
+    <div>
+      <h1>{t.archive.h1}</h1>
+      <p class="lead">{t.archive.lead(titles.length)}</p>
+    </div>
+  </div>
+
+  <div class="archive-controls" data-pagefind-ignore>
+    <input type="search" id="q" placeholder={t.archive.filterName} aria-label={t.archive.filterName} />
+    <div class="chips" role="group" aria-label={t.home.filterByMachine} data-filter="machine">
+      <button class="chip" type="button" aria-pressed="true" data-value="">{t.home.allMachines}</button>
+      {machines.map((m) => (
+        <button class="chip" type="button" aria-pressed="false" data-value={m}>{machineLabel[m]} <small>({counts[m]})</small></button>
+      ))}
+    </div>
+    <label class="toggle"><input type="checkbox" id="only-shots" /> {t.archive.withShots}</label>
+    <label class="toggle"><input type="checkbox" id="only-curated" /> {t.archive.curatedOnly}</label>
+    <label class="sort">{t.archive.sort}
+      <select id="sort">
+        <option value="name">{t.archive.sortName}</option>
+        <option value="plays">{t.archive.sortPlays}</option>
+        <option value="rating">{t.archive.sortRating}</option>
+        <option value="year">{t.archive.sortYear}</option>
+      </select>
+    </label>
+    <span class="meta" id="count"></span>
+  </div>
+
+  <ul class="rows" id="rows">
+    {titles.map(({ data: d }) => {
+      const shot = d.screenshots.find((f) => f.startsWith('02')) ?? d.screenshots[0];
+      const href = p(`/titles/${d.slug}/`);
+      return (
+        <li class="row" data-slug={d.slug} data-machine={d.machine} data-year={d.year ?? ''}
+          data-shots={d.screenshots.length ? '1' : ''} data-curated={d.web ? '1' : ''}
+          data-name={[d.title, d.publisher, d.files[0]?.header?.name].filter(Boolean).join(' ').toLowerCase()}>
+          <a class="row-thumb" href={href} tabindex="-1" aria-hidden="true">
+            {shot
+              ? <img src={`/screenshots/${d.slug}/${shot}`} alt="" loading="lazy" width="160" height="105" />
+              : <span class="thumb-empty">—</span>}
+          </a>
+          <div class="row-main">
+            <a class="row-title" href={href}>{d.title}</a>
+            <div class="meta">
+              <span class:list={['badge', d.machine]}>{machineLabel[d.machine]}</span>
+              {d.web && <span class="tag curated">{t.archive.curated}</span>}
+              {[d.year, d.publisher].filter(Boolean).join(' · ')}
+            </div>
+          </div>
+          <div class="row-stats meta" data-stats={d.slug}></div>
+          <div class="row-actions">
+            {d.machine !== 'mz-1500' && <a class="btn small" href={p(`/play/${d.slug}/`)}>▶</a>}
+            <a class="btn small" href={`/files/${d.slug}/${d.files[0].path}`} download>⬇</a>
+          </div>
+        </li>
+      );
+    })}
+  </ul>
+  <p id="no-match" hidden>{t.archive.none}</p>
+
+  <script is:inline define:vars={{ showingTemplate: t.archive.showing('{shown}', '{total}') }}>
+    (() => {
+      const rows = [...document.querySelectorAll('#rows .row')];
+      const list = document.getElementById('rows');
+      const q = document.getElementById('q');
+      const countEl = document.getElementById('count');
+      const state = { text: '', machine: '', shots: false, curated: false, sort: 'name' };
+      const stats = {};
+
+      const visible = () => rows.filter((r) => !r.hidden);
+      const apply = () => {
+        for (const r of rows) {
+          r.hidden = (state.text && !r.dataset.name.includes(state.text)) ||
+            (state.machine && r.dataset.machine !== state.machine) ||
+            (state.shots && !r.dataset.shots) ||
+            (state.curated && !r.dataset.curated);
+        }
+        const shown = visible();
+        document.getElementById('no-match').hidden = shown.length > 0;
+        countEl.textContent = showingTemplate
+          .replace('{shown}', String(shown.length))
+          .replace('{total}', String(rows.length));
+        sort();
+      };
+      const key = (r) => {
+        const s = stats[r.dataset.slug] ?? {};
+        if (state.sort === 'plays') return -(s.plays ?? 0);
+        if (state.sort === 'rating') return -((s.votes ?? 0) ? s.avg : 0);
+        if (state.sort === 'year') return r.dataset.year ? -Number(r.dataset.year) : 1e9;
+        return 0;
+      };
+      const sort = () => {
+        if (state.sort === 'name') {
+          rows.forEach((r) => list.appendChild(r)); // original order is alphabetical
+          return;
+        }
+        [...rows].sort((a, b) => key(a) - key(b) ||
+          a.dataset.name.localeCompare(b.dataset.name)).forEach((r) => list.appendChild(r));
+      };
+
+      q.addEventListener('input', () => { state.text = q.value.trim().toLowerCase(); apply(); });
+      document.getElementById('only-shots').addEventListener('change', (e) => { state.shots = e.target.checked; apply(); });
+      document.getElementById('only-curated').addEventListener('change', (e) => { state.curated = e.target.checked; apply(); });
+      document.getElementById('sort').addEventListener('change', (e) => { state.sort = e.target.value; apply(); });
+      for (const btn of document.querySelectorAll('[data-filter="machine"] .chip')) {
+        btn.addEventListener('click', () => {
+          state.machine = btn.dataset.value ?? '';
+          for (const b of btn.parentElement.querySelectorAll('.chip')) b.setAttribute('aria-pressed', String(b === btn));
+          apply();
+        });
+      }
+      apply();
+
+      // Community numbers are live, so they arrive after the page does.
+      fetch('/api/stats').then((r) => (r.ok ? r.json() : null)).then((data) => {
+        if (!data) return;
+        Object.assign(stats, data.titles ?? {});
+        for (const r of rows) {
+          const s = stats[r.dataset.slug];
+          const el = r.querySelector('[data-stats]');
+          if (!s || !el) continue;
+          const bits = [];
+          if (s.votes) bits.push(`★ ${s.avg.toFixed(1)}`);
+          if (s.plays) bits.push(`▶ ${s.plays}`);
+          el.textContent = bits.join('  ');
+        }
+        if (state.sort !== 'name') sort();
+      }).catch(() => {});
+    })();
+  </script>
+</Base>

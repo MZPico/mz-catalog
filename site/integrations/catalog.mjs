@@ -112,7 +112,10 @@ export default function catalog() {
               if (e.name === 'pagefind' || e.name === '_astro') continue;
               await walk(path.join(rel, e.name));
             } else if (e.name === 'index.html') {
-              routes.push('/' + (rel ? rel.split(path.sep).join('/') + '/' : ''));
+              const route = '/' + (rel ? rel.split(path.sep).join('/') + '/' : '');
+              // The emulator pages are the app, not content: one per title per
+              // language would be 1500 near-identical URLs in the sitemap.
+              if (!/(^|\/)play\//.test(route)) routes.push(route);
             }
           }
         };
@@ -165,6 +168,7 @@ export default function catalog() {
           '## Data',
           '',
           `- [manifest.json](${site}/manifest.json): every archived file with path, size and CRC32 — the machine API the MZPico firmware consumes.`,
+          `- [Full archive](${site}/archive/): all ${titles.length} preserved titles, curated or not, in one filterable list.`,
           `- [sitemap.xml](${site}/sitemap.xml): all pages, in English, Czech, German and Japanese.`,
           '- [Source repository](https://github.com/MZPico/mz-catalog): one folder per title with meta.yaml, the MZF file(s) and screenshots.',
           '',

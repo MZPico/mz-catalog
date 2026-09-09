@@ -9,7 +9,7 @@ export const de: Ui = {
   },
   langName: { en: 'English', cs: 'Čeština', de: 'Deutsch', ja: '日本語' },
   langSwitchLabel: 'Sprache',
-  nav: { card: 'Die Karte', titles: 'Titel', machines: 'Computer', about: 'Über', github: 'GitHub' },
+  nav: { card: 'Die Karte', archive: 'Archiv', titles: 'Titel', machines: 'Computer', about: 'Über', github: 'GitHub' },
   footer: {
     blurb:
       'Ein Archivprojekt für Software der Sharp-MZ-Reihe. Die Dateien dienen der Archivierung und Emulation.',
@@ -28,6 +28,24 @@ export const de: Ui = {
     noMatch: 'Keine Titel passen zu den gewählten Filtern.',
     noScreenshot: 'kein Screenshot',
     playAria: (title: string) => `${title} im Browser spielen`,
+    archiveTeaser: (n: number) => `Dazu ${n} weitere Titel im vollständigen Archiv — alles Bewahrte, kuratiert oder nicht.`,
+  },
+  archive: {
+    h1: 'Das vollständige Archiv',
+    lead: (n: number) =>
+      `Alle ${n} hier bewahrten Titel, kuratiert oder nicht. Die vorgestellten haben geschriebene Seiten; beim Rest steht, was der Kassettenkopf selbst sagt, dazu Screenshots, soweit vorhanden. Korrekturen und Ergänzungen sind willkommen.`,
+    filterName: 'Nach Name, Herausgeber filtern…',
+    sort: 'Sortieren nach',
+    sortName: 'Name',
+    sortPlays: 'Meistgespielt',
+    sortRating: 'Bestbewertet',
+    sortYear: 'Jahr',
+    withShots: 'Mit Screenshot',
+    curatedOnly: 'Nur kuratierte',
+    curated: 'kuratiert',
+    showing: (shown: string | number, total: string | number) => `${shown} von ${total}`,
+    none: 'Kein Titel passt zu den Filtern.',
+    unknown: '—',
   },
   machines: {
     h1: 'Computer',
@@ -98,6 +116,15 @@ export const de: Ui = {
     mode700: 'MZ-700-Kompatibilitätsmodus',
     modeTitle: 'MZ-800-Betriebsmodus',
     languageTitle: 'Sprache',
+    notCurated:
+      'Diesen Eintrag hat noch niemand ausformuliert. Was folgt, stammt aus dem Kassettenabbild selbst; wer das Spiel, sein Jahr oder seinen Autor kennt, möge sich melden.',
+    plays: 'Starts',
+    rating: 'Bewertung',
+    rate: 'Bewerten',
+    votes: (n: number) => `${n} ${n === 1 ? 'Stimme' : 'Stimmen'}`,
+    unrated: 'Noch nicht bewertet',
+    rateThanks: 'Danke!',
+    starLabel: (n: number) => `${n} von 5`,
     screenshotAlt: (title: string, i: number) => `${title} — Screenshot ${i}`,
     summary: (title: string, machine: string, genres: string, year?: number) =>
       `${title} — ${machine} ${genres}${year ? ` (${year})` : ''}. Das .mzf-Kassettenabbild herunterladen.`,

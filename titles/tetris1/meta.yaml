@@ -1,6 +1,6 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
-title: "Tetris1"
+title: "Tetris Game V1.1"
 machine: mz-700
 genre: [game]
 files:

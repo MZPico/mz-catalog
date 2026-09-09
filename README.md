@@ -188,6 +188,50 @@ Devices are unaffected too — the api.mzpico.com shim reads from
 (The `MZ_STAGING=1` prefix in `build:staging` is POSIX shell syntax; on
 Windows use `set MZ_STAGING=1` or run it from WSL.)
 
+## Site structure
+
+The front page is the curated pick — the titles carrying `web: true`, with
+written pages in four languages. Everything else is published too, in
+`/archive/`: one filterable list of every title in `titles/`, each with its
+own page showing the screenshot, the tape header facts, play and download.
+Promoting an entry from archive to front page is `web: true` plus prose.
+
+Display names for entries nobody has written up come from the tape header,
+which is almost always better than the eight-character file name the legacy
+catalog was keyed by:
+
+```
+node tools/catalog/derive-titles.mjs            # print the proposal
+node tools/catalog/derive-titles.mjs --write    # apply it to meta.yaml
+```
+
+It only touches entries still marked `Bootstrap-imported` that are not
+curated, so a hand-written title is never overwritten.
+
+## Play counts and ratings
+
+`workers/site/index.js` is the only server-side code the site has. Every
+request except `/api/*` goes straight to the static assets; the API keeps two
+community numbers in D1 (`workers/site/schema.sql`):
+
+- `POST /api/play` — one play per visitor per title per day.
+- `POST /api/rate` — one 1..5 rating per visitor per title, changeable.
+- `GET /api/stats` — aggregate for the archive list; `?slug=` for one title,
+  `&voter=` to get that visitor's own rating back.
+
+There are no accounts and no cookies: a visitor is a random id in their own
+`localStorage`. The Worker salts it together with the request IP and stores
+only the hash, so neither the id nor the address is in the database. The salt
+is a Worker secret (`STATS_SALT`), set per environment.
+
+Staging writes to its own database, so test votes never reach the real
+numbers. Schema changes go to both:
+
+```
+npx wrangler d1 execute mz-catalog-stats-staging --remote --file=workers/site/schema.sql -c wrangler.staging.jsonc
+npx wrangler d1 execute mz-catalog-stats --remote --file=workers/site/schema.sql -c wrangler.jsonc
+```
+
 ## Discoverability
 
 The build emits everything crawlers and LLM clients need, from the rendered

@@ -69,6 +69,23 @@ const ui = {
   </details>
   <p class="meta" set:html={t.play.creditHtml} />
 
+  <script is:inline define:vars={{ playSlug: d.slug }}>
+    // One play per visitor per title per day; the Worker does the counting.
+    (() => {
+      let voter = localStorage.getItem('mz-voter');
+      if (!voter) {
+        voter = crypto.randomUUID();
+        try { localStorage.setItem('mz-voter', voter); } catch { /* private mode */ }
+      }
+      fetch('/api/play', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug: playSlug, voter }),
+        keepalive: true,
+      }).catch(() => {});
+    })();
+  </script>
+
   <script define:vars={{ slug: d.slug, files, touch: d.touch ?? null, emuVersion, ui }}>
     const params = new URLSearchParams(location.search);
     const file = files.includes(params.get('file')) ? params.get('file') : files[0];

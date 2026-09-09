@@ -9,8 +9,11 @@ const { lang, machine } = Astro.props;
 const t = useTranslations(lang);
 const p = (path: string) => localizePath(lang, path);
 const info = t.machineInfo[machine.id as keyof typeof t.machineInfo];
-const titles = (await getCollection('titles'))
-  .filter((e) => e.data.web && e.data.machine === machine.id)
+const all = (await getCollection('titles')).filter((e) => e.data.machine === machine.id);
+// The grid stays the curated pick; the rest of this machine's software is one
+// click away in the archive, which can filter by machine.
+const titles = all
+  .filter((e) => e.data.web)
   .sort((a, b) => a.data.title.localeCompare(b.data.title, 'en', { sensitivity: 'base' }));
 ---
 <Base lang={lang} title={machine.name} description={t.machines.overviewDescription(machine.name)}>
@@ -24,7 +27,7 @@ const titles = (await getCollection('titles'))
   </dl>
   <p class="meta"><small>{info.softwareNote}</small></p>
 
-  <h2>{t.machines.inCatalog(titles.length)}</h2>
+  <h2>{t.machines.inCatalog(all.length)}</h2>
   {titles.length > 0 ? (
     <ul class="grid">
       {titles.map(({ data: d }) => {
@@ -48,4 +51,9 @@ const titles = (await getCollection('titles'))
   ) : (
     <p>{t.machines.none}</p>
   )}
+
+  <p class="archive-teaser">
+    <a class="btn" href={p('/archive/')}>{t.nav.archive} →</a>
+    <span class="meta">{t.home.archiveTeaser(all.length - titles.length)}</span>
+  </p>
 </Base>

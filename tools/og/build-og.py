@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build site/public/og/<slug>.png — the 1200x630 social/AI preview cards.
 
-One card per curated title (web: true), composed from its gameplay screenshot:
+One card per title that has a screenshot, composed from the gameplay shot:
 a darkened, blurred copy of the shot as backdrop, the crisp pixels on top and
 the title in the MZ-800 font underneath. Offline tool, like tools/mzfont —
 run it after adding or replacing screenshots:
@@ -85,8 +85,6 @@ def main():
     made = 0
     for meta_path in sorted(glob.glob('titles/*/meta.yaml')):
         meta = open(meta_path, encoding='utf-8').read()
-        if not re.search(r'^web:\s*true$', meta, re.M):
-            continue
         slug = os.path.basename(os.path.dirname(meta_path))
         shots = sorted(glob.glob(f'titles/{slug}/screenshots/*.png'))
         if not shots:
