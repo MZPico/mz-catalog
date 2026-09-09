@@ -1,7 +1,8 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Penguin"
-machine: mz-700
+machine: mz-800
+mode: native
 genre: [game]
 files:
   - path: penguin1.mzf

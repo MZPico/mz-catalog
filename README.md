@@ -293,18 +293,17 @@ Format 1:
   "fileCount": 1,
   "titles": [
     {
-      "slug": "mzpico800",
-      "title": "MZPico 800 Manager",
-      "machine": "mz-800",
-      "mode": "native",
-      "year": 2025,
+      "slug": "snakesn",
+      "title": "Snake & Snake",
+      "machine": "mz-700",
+      "year": 1983,
       "files": [
         {
-          "path": "/files/mzpico800/mzpico800.mzf",
-          "name": "MZPICO800",
+          "path": "/files/snakesn/snakesn.mzf",
+          "name": "SNAKE&SNAKE EXP1",
           "kind": "standard",
-          "size": 40986,
-          "crc32": "1a2b3c4d"
+          "size": 29056,
+          "crc32": "e1d7fc1a"
         }
       ]
     }
