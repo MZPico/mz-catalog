@@ -6,4 +6,4 @@ genre: [game]
 files:
   - path: ufo3.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. A shorter dump of the same program was catalogued as ufo2 (tape name "UFO"); the two share their first 8 KB almost byte for byte and the entries were merged on 2026-09-10.
