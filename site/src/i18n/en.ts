@@ -10,7 +10,7 @@ export const en = {
   },
   langName: { en: 'English', cs: 'Čeština', de: 'Deutsch', ja: '日本語' },
   langSwitchLabel: 'Language',
-  nav: { card: 'The Card', archive: 'Archive', titles: 'Titles', machines: 'Machines', about: 'About', github: 'GitHub' },
+  nav: { card: 'The Card', archive: 'Archive', titles: 'Featured', machines: 'Machines', about: 'About', github: 'GitHub' },
   footer: {
     blurb:
       'A preservation project for Sharp MZ series software. Files are offered for archival and emulation use.',
@@ -29,12 +29,12 @@ export const en = {
     noMatch: 'No titles match the selected filters.',
     noScreenshot: 'no screenshot',
     playAria: (title: string) => `Play ${title} in the browser`,
-    archiveTeaser: (n: number) => `Plus ${n} more titles in the full archive — everything preserved, curated or not.`,
+    archiveTeaser: (n: number) => `Plus ${n} more titles in the full archive — everything preserved here, written up or not.`,
   },
   archive: {
     h1: 'The full archive',
-    lead: (n: number) =>
-      `Every one of the ${n} titles preserved here, curated or not. The featured ones have written pages; the rest carry what the tape header itself says, plus screenshots where we have them. Corrections and additions are welcome.`,
+    lead:
+      'Every title preserved here. The featured ones have written pages; the rest carry what the tape header itself says, plus screenshots where we have them. Corrections and additions are welcome.',
     filterName: 'Filter by name, publisher…',
     sort: 'Sort by',
     sortName: 'Name',
@@ -42,8 +42,8 @@ export const en = {
     sortRating: 'Best rated',
     sortYear: 'Year',
     withShots: 'With screenshot',
-    curatedOnly: 'Curated only',
-    curated: 'curated',
+    curatedOnly: 'Featured only',
+    curated: 'featured',
     showing: (shown: string | number, total: string | number) => `${shown} of ${total}`,
     none: 'No titles match the filters.',
     unknown: '—',

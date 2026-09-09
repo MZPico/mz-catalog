@@ -16,11 +16,11 @@ const machines = ['mz-700', 'mz-800'] as const;
 const machineLabel: Record<string, string> = { 'mz-700': 'MZ-700', 'mz-800': 'MZ-800', 'mz-1500': 'MZ-1500' };
 const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e.data.machine === m).length]));
 ---
-<Base lang={lang} title={t.archive.h1} description={t.archive.lead(titles.length)}>
+<Base lang={lang} title={t.archive.h1} description={t.archive.lead}>
   <div class="hero">
     <div>
       <h1>{t.archive.h1}</h1>
-      <p class="lead">{t.archive.lead(titles.length)}</p>
+      <p class="lead">{t.archive.lead}</p>
     </div>
   </div>
 

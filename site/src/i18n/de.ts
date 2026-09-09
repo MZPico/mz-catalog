@@ -9,7 +9,7 @@ export const de: Ui = {
   },
   langName: { en: 'English', cs: 'Čeština', de: 'Deutsch', ja: '日本語' },
   langSwitchLabel: 'Sprache',
-  nav: { card: 'Die Karte', archive: 'Archiv', titles: 'Titel', machines: 'Computer', about: 'Über', github: 'GitHub' },
+  nav: { card: 'Die Karte', archive: 'Archiv', titles: 'Perlen', machines: 'Computer', about: 'Über', github: 'GitHub' },
   footer: {
     blurb:
       'Ein Archivprojekt für Software der Sharp-MZ-Reihe. Die Dateien dienen der Archivierung und Emulation.',
@@ -28,12 +28,12 @@ export const de: Ui = {
     noMatch: 'Keine Titel passen zu den gewählten Filtern.',
     noScreenshot: 'kein Screenshot',
     playAria: (title: string) => `${title} im Browser spielen`,
-    archiveTeaser: (n: number) => `Dazu ${n} weitere Titel im vollständigen Archiv — alles Bewahrte, kuratiert oder nicht.`,
+    archiveTeaser: (n: number) => `Dazu ${n} weitere Titel im vollständigen Archiv — alles Bewahrte, beschrieben oder nicht.`,
   },
   archive: {
     h1: 'Das vollständige Archiv',
-    lead: (n: number) =>
-      `Alle ${n} hier bewahrten Titel, kuratiert oder nicht. Die vorgestellten haben geschriebene Seiten; beim Rest steht, was der Kassettenkopf selbst sagt, dazu Screenshots, soweit vorhanden. Korrekturen und Ergänzungen sind willkommen.`,
+    lead:
+      'Alle hier bewahrten Titel. Die Perlen haben geschriebene Seiten; beim Rest steht, was der Kassettenkopf selbst sagt, dazu Screenshots, soweit vorhanden. Korrekturen und Ergänzungen sind willkommen.',
     filterName: 'Nach Name, Herausgeber filtern…',
     sort: 'Sortieren nach',
     sortName: 'Name',
@@ -41,8 +41,8 @@ export const de: Ui = {
     sortRating: 'Bestbewertet',
     sortYear: 'Jahr',
     withShots: 'Mit Screenshot',
-    curatedOnly: 'Nur kuratierte',
-    curated: 'kuratiert',
+    curatedOnly: 'Nur Perlen',
+    curated: 'Perle',
     showing: (shown: string | number, total: string | number) => `${shown} von ${total}`,
     none: 'Kein Titel passt zu den Filtern.',
     unknown: '—',

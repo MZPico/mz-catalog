@@ -9,7 +9,7 @@ export const ja: Ui = {
   },
   langName: { en: 'English', cs: 'Čeština', de: 'Deutsch', ja: '日本語' },
   langSwitchLabel: '言語',
-  nav: { card: 'カード', archive: 'アーカイブ', titles: 'ソフト一覧', machines: '機種', about: 'このサイトについて', github: 'GitHub' },
+  nav: { card: 'カード', archive: 'アーカイブ', titles: '名作', machines: '機種', about: 'このサイトについて', github: 'GitHub' },
   footer: {
     blurb:
       'シャープ MZ シリーズのソフトウェアを保存するプロジェクトです。ファイルは保存とエミュレーションのために公開しています。',
@@ -28,12 +28,12 @@ export const ja: Ui = {
     noMatch: '条件に合うタイトルはありません。',
     noScreenshot: 'スクリーンショットなし',
     playAria: (title: string) => `${title} をブラウザーで遊ぶ`,
-    archiveTeaser: (n: number) => `さらに ${n} 本がアーカイブ全体にあります。整備の有無にかかわらず、保存したすべてです。`,
+    archiveTeaser: (n: number) => `さらに ${n} 本がアーカイブ全体にあります。解説の有無にかかわらず、保存したすべてです。`,
   },
   archive: {
     h1: 'アーカイブ全体',
-    lead: (n: number) =>
-      `ここに保存されている全${n}本。整備済みのものもそうでないものも含みます。特集した作品には解説ページがあり、それ以外はカセットのヘッダが伝える情報と、手元にあるスクリーンショットを載せています。訂正や追加の情報を歓迎します。`,
+    lead:
+      'ここに保存されているすべての作品。名作には解説ページがあり、それ以外はカセットのヘッダが伝える情報と、手元にあるスクリーンショットを載せています。訂正や追加の情報を歓迎します。',
     filterName: '名前・発売元で絞り込む…',
     sort: '並び替え',
     sortName: '名前',
@@ -41,8 +41,8 @@ export const ja: Ui = {
     sortRating: '評価の高い順',
     sortYear: '年',
     withShots: 'スクリーンショットあり',
-    curatedOnly: '整備済みのみ',
-    curated: '整備済み',
+    curatedOnly: '名作のみ',
+    curated: '名作',
     showing: (shown: string | number, total: string | number) => `${total} 本中 ${shown} 本`,
     none: '条件に合う作品はありません。',
     unknown: '—',

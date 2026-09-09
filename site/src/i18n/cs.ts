@@ -9,7 +9,7 @@ export const cs: Ui = {
   },
   langName: { en: 'English', cs: 'Čeština', de: 'Deutsch', ja: '日本語' },
   langSwitchLabel: 'Jazyk',
-  nav: { card: 'Karta', archive: 'Archiv', titles: 'Software', machines: 'Počítače', about: 'O projektu', github: 'GitHub' },
+  nav: { card: 'Karta', archive: 'Archiv', titles: 'Pecky', machines: 'Počítače', about: 'O projektu', github: 'GitHub' },
   footer: {
     blurb:
       'Archivační projekt pro software řady Sharp MZ. Soubory slouží k archivaci a emulaci.',
@@ -28,12 +28,12 @@ export const cs: Ui = {
     noMatch: 'Zvolenému filtru neodpovídá žádný titul.',
     noScreenshot: 'bez snímku',
     playAria: (title: string) => `Spustit ${title} v prohlížeči`,
-    archiveTeaser: (n: number) => `A dalších ${n} titulů v celém archivu — všechno, co máme uložené, zkuratované i ne.`,
+    archiveTeaser: (n: number) => `A dalších ${n} titulů v celém archivu — všechno, co máme uložené, sepsané i nesepsané.`,
   },
   archive: {
     h1: 'Celý archiv',
-    lead: (n: number) =>
-      `Všech ${n} titulů, které tu máme uložené, zkuratované i nezkuratované. Ty vybrané mají psané stránky; u zbytku je to, co říká hlavička kazety, plus screenshoty, kde je máme. Opravy a doplnění vítáme.`,
+    lead:
+      'Všechny tituly, které tu máme uložené. Pecky mají psané stránky; u zbytku je to, co říká hlavička kazety, plus screenshoty, kde je máme. Opravy a doplnění vítáme.',
     filterName: 'Filtrovat podle názvu, vydavatele…',
     sort: 'Řadit podle',
     sortName: 'Názvu',
@@ -41,8 +41,8 @@ export const cs: Ui = {
     sortRating: 'Nejlépe hodnocené',
     sortYear: 'Roku',
     withShots: 'Se screenshotem',
-    curatedOnly: 'Jen zkuratované',
-    curated: 'zkuratováno',
+    curatedOnly: 'Jen pecky',
+    curated: 'pecka',
     showing: (shown: string | number, total: string | number) => `${shown} z ${total}`,
     none: 'Filtrům neodpovídá žádný titul.',
     unknown: '—',
