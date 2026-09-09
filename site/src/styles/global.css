@@ -380,3 +380,35 @@ html[lang="ja"] h2 { font-size: 1.05rem; }
 .chip.flag[data-state="yes"]::before { content: "+"; opacity: 0.75; margin-right: 0.3rem; }
 .card-stats { font-family: var(--mono); font-size: 0.82rem; margin-left: auto; white-space: nowrap; }
 .card-stats span + span { margin-left: 0.45rem; }
+
+/* iPhone has no element fullscreen at all, so the play page covers the viewport
+   itself. These mirror the :fullscreen rules above; they are kept as their own
+   rules on purpose — a browser that does not parse :fullscreen would drop the
+   whole rule if the two selectors shared one. Nothing here applies unless the
+   script adds .pseudo-fs, which it only does when requestFullscreen is missing. */
+body.pseudo-fs-on { overflow: hidden; }
+.play-frame.pseudo-fs {
+  position: fixed; inset: 0; z-index: 1000;
+  width: 100vw; height: 100dvh; max-width: none; aspect-ratio: auto;
+  border: 0; border-radius: 0; background: #000;
+  display: flex; align-items: center; justify-content: center;
+}
+.play-frame.pseudo-fs canvas {
+  width: min(100vw, calc(100dvh * 928 / 576)); height: auto;
+  max-height: 100dvh; aspect-ratio: 928 / 576;
+}
+.play-frame.pseudo-fs .touch-pad { left: max(env(safe-area-inset-left, 0px), 10px); bottom: 12px; opacity: 0.75; }
+.play-frame.pseudo-fs .touch-buttons { right: max(env(safe-area-inset-right, 0px), 10px); bottom: 12px; opacity: 0.75; }
+.play-frame.pseudo-fs .touch-extra { left: max(env(safe-area-inset-left, 0px), 10px); top: 10px; opacity: 0.75; }
+.play-frame.pseudo-fs .play-touch.swapped .touch-pad { left: auto; right: max(env(safe-area-inset-right, 0px), 10px); }
+.play-frame.pseudo-fs .play-touch.swapped .touch-buttons { right: auto; left: max(env(safe-area-inset-left, 0px), 10px); }
+.play-frame.pseudo-fs .play-touch.swapped .touch-extra { left: auto; right: max(env(safe-area-inset-right, 0px), 10px); }
+/* The Fullscreen button lives outside the frame, so the fallback needs its own way out. */
+.play-exit-fs {
+  position: absolute; z-index: 2;
+  top: max(env(safe-area-inset-top, 0px), 8px); right: max(env(safe-area-inset-right, 0px), 8px);
+  width: 2.2rem; height: 2.2rem; padding: 0; line-height: 1;
+  border: 1px solid rgba(255, 255, 255, 0.35); border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45); color: #fff; font: inherit; cursor: pointer;
+}
+.play-exit-fs[hidden] { display: none; }

@@ -46,6 +46,7 @@ const ui = {
       <div class="touch-pad" id="touch-pad" aria-label="direction pad"><span class="pad-arrow up">▲</span><span class="pad-arrow down">▼</span><span class="pad-arrow left">◀</span><span class="pad-arrow right">▶</span><span class="pad-nub" id="pad-nub"></span></div>
       <div class="touch-buttons" id="touch-buttons"></div>
     </div>
+    <button type="button" id="play-exit-fs" class="play-exit-fs" hidden aria-label={t.play.fullscreenTitle}>✕</button>
     <div id="play-overlay" class="play-overlay">
       <button type="button" id="play-start" class="btn">{t.play.start(d.title)}</button>
       <p class="meta">{t.play.startHint}</p>
@@ -92,11 +93,26 @@ const ui = {
     const canvas = document.getElementById('canvas');
 
     const startBtn = document.getElementById('play-start');
+    const frame = document.querySelector('.play-frame');
+    const exitFsBtn = document.getElementById('play-exit-fs');
+    // Safari on the iPad only has the prefixed calls; Safari on the iPhone has no
+    // element fullscreen at all, so there we cover the viewport ourselves.
+    const rawRequest = frame.requestFullscreen ?? frame.webkitRequestFullscreen;
+    const rawExit = document.exitFullscreen ?? document.webkitExitFullscreen;
+    const fsElement = () => document.fullscreenElement ?? document.webkitFullscreenElement ?? null;
+    const pseudoOnly = !rawRequest;
+    let pseudoFs = false;
+    const setPseudoFs = (on) => {
+      pseudoFs = on;
+      frame.classList.toggle('pseudo-fs', on);
+      document.body.classList.toggle('pseudo-fs-on', on);
+      exitFsBtn.hidden = !on;
+    };
     const toggleFullscreen = () => {
-      const el = document.querySelector('.play-frame');
-      if (document.fullscreenElement) { document.exitFullscreen(); return; }
+      if (pseudoOnly) { setPseudoFs(!pseudoFs); canvas.focus(); return; }
+      if (fsElement()) { rawExit?.call(document); return; }
       // Phones: fullscreen + landscape gives the 16:10 screen the whole display (lock is best-effort).
-      el.requestFullscreen?.({ navigationUI: 'hide' })?.then(() => screen.orientation?.lock?.('landscape').catch(() => {})).catch(() => {});
+      rawRequest.call(frame, { navigationUI: 'hide' })?.then?.(() => screen.orientation?.lock?.('landscape').catch(() => {}))?.catch?.(() => {});
     };
     // Restart in place (machine reset + re-run of the tape) so fullscreen survives; before the
     // emulator is up, a reload is the only option.
@@ -107,7 +123,7 @@ const ui = {
     const isTouch = matchMedia('(pointer: coarse)').matches;
     let fsAutoDone = false;
     const enterFullscreenIfTouch = () => {
-      if (!isTouch || fsAutoDone || document.fullscreenElement) return;
+      if (!isTouch || fsAutoDone || fsElement() || pseudoFs) return;
       fsAutoDone = true;
       toggleFullscreen();
     };
@@ -117,10 +133,14 @@ const ui = {
     };
     document.getElementById('play-fullscreen').addEventListener('click', toggleFullscreen);
     document.getElementById('play-reload').addEventListener('click', restart);
-    document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) { try { screen.orientation?.unlock?.(); } catch {} } });
+    const onFsChange = () => { if (!fsElement()) { try { screen.orientation?.unlock?.(); } catch {} } };
+    document.addEventListener('fullscreenchange', onFsChange);
+    document.addEventListener('webkitfullscreenchange', onFsChange);
+    exitFsBtn.addEventListener('click', () => setPseudoFs(false));
     // Emulator-style hotkeys, handled before the browser (F11 = browser fullscreen, F12 = devtools)
     // and before SDL sees the key: F11 zoom toggle, F12 restart.
     window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && pseudoFs) { setPseudoFs(false); return; }
       if (e.key !== 'F11' && e.key !== 'F12') return;
       e.preventDefault(); e.stopImmediatePropagation();
       if (e.repeat) return;
