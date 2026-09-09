@@ -18,9 +18,9 @@ export const en = {
       `Rights holder? See <a href="${aboutHref}#takedown">takedown requests</a>. Machine-readable index: <a href="/manifest.json"><code>manifest.json</code></a>.`,
   },
   home: {
-    h1: 'Sharp MZ software catalog',
+    h1: 'The pick of Sharp MZ software',
     introHtml: (cardHref: string) =>
-      `Preserved software for the Sharp MZ-700 and MZ-800 — original <code>.mzf</code> tape images with screenshots and metadata. Play any title right in your browser, download it for an emulator, or load it over WiFi on a real machine with the <a href="${cardHref}">MZPico card</a>, an open Raspberry&nbsp;Pi&nbsp;Pico expansion for the MZ-800.`,
+      `The titles worth starting with on the Sharp MZ-700 and MZ-800, written up one by one — original <code>.mzf</code> tape images with screenshots, controls and the story behind them. Play any of them right in your browser, download for an emulator, or load over WiFi on a real machine with the <a href="${cardHref}">MZPico card</a>, an open Raspberry&nbsp;Pi&nbsp;Pico expansion for the MZ-800.`,
     searchPlaceholder: 'Search titles, publishers, descriptions…',
     allMachines: 'All machines',
     allGenres: 'All genres',
@@ -29,7 +29,7 @@ export const en = {
     noMatch: 'No titles match the selected filters.',
     noScreenshot: 'no screenshot',
     playAria: (title: string) => `Play ${title} in the browser`,
-    archiveTeaser: (n: number) => `Plus ${n} more titles in the full archive — everything preserved here, written up or not.`,
+    archiveTeaser: 'Everything else preserved here is in the full archive — written up or not.',
   },
   archive: {
     h1: 'The full archive',

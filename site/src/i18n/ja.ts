@@ -17,9 +17,9 @@ export const ja: Ui = {
       `権利をお持ちの方は<a href="${aboutHref}#takedown">削除のご依頼</a>をご覧ください。機械可読インデックス: <a href="/manifest.json"><code>manifest.json</code></a>`,
   },
   home: {
-    h1: 'シャープ MZ ソフトウェアカタログ',
+    h1: 'シャープ MZ の名作',
     introHtml: (cardHref: string) =>
-      `シャープ MZ-700 / MZ-800 用に保存されたソフトウェア — オリジナルの <code>.mzf</code> テープイメージに、スクリーンショットと書誌情報を添えて公開しています。ブラウザーでそのまま遊ぶことも、エミュレーター用にダウンロードすることも、MZ-800 用のオープンな Raspberry&nbsp;Pi&nbsp;Pico 拡張カード <a href="${cardHref}">MZPico</a> を使って Wi-Fi 経由で実機に読み込ませることもできます。`,
+      `シャープ MZ-700 / MZ-800 でまず遊ぶべき作品を、一本ずつ解説を添えて紹介しています — オリジナルの <code>.mzf</code> テープイメージに、スクリーンショット、操作方法、そして背景となる来歴を添えて。ブラウザーでそのまま遊ぶことも、エミュレーター用にダウンロードすることも、MZ-800 用のオープンな Raspberry&nbsp;Pi&nbsp;Pico 拡張カード <a href="${cardHref}">MZPico</a> を使って Wi-Fi 経由で実機に読み込ませることもできます。`,
     searchPlaceholder: 'タイトル・発売元・説明を検索…',
     allMachines: 'すべての機種',
     allGenres: 'すべてのジャンル',
@@ -28,7 +28,7 @@ export const ja: Ui = {
     noMatch: '条件に合うタイトルはありません。',
     noScreenshot: 'スクリーンショットなし',
     playAria: (title: string) => `${title} をブラウザーで遊ぶ`,
-    archiveTeaser: (n: number) => `さらに ${n} 本がアーカイブ全体にあります。解説の有無にかかわらず、保存したすべてです。`,
+    archiveTeaser: 'ここに保存されているそれ以外のすべては、アーカイブ全体にあります。解説の有無は問いません。',
   },
   archive: {
     h1: 'アーカイブ全体',

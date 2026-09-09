@@ -16,7 +16,6 @@ const machines = ['mz-700', 'mz-800'] as const;
 const machineLabel: Record<string, string> = { 'mz-700': 'MZ-700', 'mz-800': 'MZ-800' };
 const genres = [...new Set(titles.flatMap((e) => e.data.genre))].sort();
 const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e.data.machine === m).length]));
-const archiveCount = (await getCollection('titles')).length - titles.length;
 
 const abs = (path: string) => new URL(path, Astro.site).href;
 const siteLd = {
@@ -97,7 +96,7 @@ const listLd = {
 
   <p class="archive-teaser">
     <a class="btn" href={p('/archive/')}>{t.nav.archive} →</a>
-    <span class="meta">{t.home.archiveTeaser(archiveCount)}</span>
+    <span class="meta">{t.home.archiveTeaser}</span>
   </p>
 
   <script>

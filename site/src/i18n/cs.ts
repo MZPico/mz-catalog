@@ -17,9 +17,9 @@ export const cs: Ui = {
       `Držíte k něčemu práva? Podívejte se na <a href="${aboutHref}#takedown">žádosti o stažení</a>. Strojově čitelný index: <a href="/manifest.json"><code>manifest.json</code></a>.`,
   },
   home: {
-    h1: 'Katalog softwaru pro Sharp MZ',
+    h1: 'Pecky pro Sharp MZ',
     introHtml: (cardHref: string) =>
-      `Zachovaný software pro Sharp MZ-700 a MZ-800 — původní páskové obrazy <code>.mzf</code> se snímky obrazovky a popisem. Každý titul si můžete zahrát rovnou v prohlížeči, stáhnout do emulátoru, nebo ho přes WiFi nahrát do skutečného počítače pomocí <a href="${cardHref}">karty MZPico</a>, otevřeného rozšíření pro MZ-800 postaveného na Raspberry&nbsp;Pi&nbsp;Pico.`,
+      `Tituly, kterými má smysl na Sharpu MZ-700 a MZ-800 začít, sepsané jeden po druhém — původní páskové obrazy <code>.mzf</code> se snímky obrazovky, ovládáním a příběhem, který k nim patří. Každý si můžete zahrát rovnou v prohlížeči, stáhnout do emulátoru, nebo ho přes WiFi nahrát do skutečného počítače pomocí <a href="${cardHref}">karty MZPico</a>, otevřeného rozšíření pro MZ-800 postaveného na Raspberry&nbsp;Pi&nbsp;Pico.`,
     searchPlaceholder: 'Hledat v názvech, vydavatelích, popisech…',
     allMachines: 'Všechny počítače',
     allGenres: 'Všechny žánry',
@@ -28,7 +28,7 @@ export const cs: Ui = {
     noMatch: 'Zvolenému filtru neodpovídá žádný titul.',
     noScreenshot: 'bez snímku',
     playAria: (title: string) => `Spustit ${title} v prohlížeči`,
-    archiveTeaser: (n: number) => `A dalších ${n} titulů v celém archivu — všechno, co máme uložené, sepsané i nesepsané.`,
+    archiveTeaser: 'Všechno ostatní, co tu máme uložené, je v archivu — sepsané i nesepsané.',
   },
   archive: {
     h1: 'Celý archiv',

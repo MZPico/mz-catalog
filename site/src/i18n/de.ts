@@ -17,9 +17,9 @@ export const de: Ui = {
       `Rechteinhaber? Siehe <a href="${aboutHref}#takedown">Löschanfragen</a>. Maschinenlesbarer Index: <a href="/manifest.json"><code>manifest.json</code></a>.`,
   },
   home: {
-    h1: 'Sharp-MZ-Softwarekatalog',
+    h1: 'Die Perlen der Sharp-MZ-Software',
     introHtml: (cardHref: string) =>
-      `Bewahrte Software für Sharp MZ-700 und MZ-800 — originale <code>.mzf</code>-Kassettenabbilder mit Screenshots und Metadaten. Jeden Titel direkt im Browser spielen, für einen Emulator herunterladen oder per WLAN mit der <a href="${cardHref}">MZPico-Karte</a> auf echte Hardware laden, einer offenen Raspberry&nbsp;Pi&nbsp;Pico-Erweiterung für den MZ-800.`,
+      `Die Titel, mit denen man auf Sharp MZ-700 und MZ-800 anfangen sollte, einzeln beschrieben — originale <code>.mzf</code>-Kassettenabbilder mit Screenshots, Steuerung und der Geschichte dahinter. Jeden davon direkt im Browser spielen, für einen Emulator herunterladen oder per WLAN mit der <a href="${cardHref}">MZPico-Karte</a> auf echte Hardware laden, einer offenen Raspberry&nbsp;Pi&nbsp;Pico-Erweiterung für den MZ-800.`,
     searchPlaceholder: 'Titel, Herausgeber, Beschreibungen durchsuchen…',
     allMachines: 'Alle Computer',
     allGenres: 'Alle Genres',
@@ -28,7 +28,7 @@ export const de: Ui = {
     noMatch: 'Keine Titel passen zu den gewählten Filtern.',
     noScreenshot: 'kein Screenshot',
     playAria: (title: string) => `${title} im Browser spielen`,
-    archiveTeaser: (n: number) => `Dazu ${n} weitere Titel im vollständigen Archiv — alles Bewahrte, beschrieben oder nicht.`,
+    archiveTeaser: 'Alles Weitere, was hier bewahrt wird, steht im vollständigen Archiv — beschrieben oder nicht.',
   },
   archive: {
     h1: 'Das vollständige Archiv',
