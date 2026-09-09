@@ -20,7 +20,6 @@ export const ja: Ui = {
     h1: 'シャープ MZ の名作',
     introHtml: (cardHref: string) =>
       `シャープ MZ-700 / MZ-800 でまず遊ぶべき作品を、一本ずつ解説を添えて紹介しています — オリジナルの <code>.mzf</code> テープイメージに、スクリーンショット、操作方法、そして背景となる来歴を添えて。ブラウザーでそのまま遊ぶことも、エミュレーター用にダウンロードすることも、MZ-800 用のオープンな Raspberry&nbsp;Pi&nbsp;Pico 拡張カード <a href="${cardHref}">MZPico</a> を使って Wi-Fi 経由で実機に読み込ませることもできます。`,
-    searchPlaceholder: 'タイトル・発売元・説明を検索…',
     allMachines: 'すべての機種',
     allGenres: 'すべてのジャンル',
     filterByMachine: '機種で絞り込む',

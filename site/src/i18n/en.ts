@@ -21,7 +21,6 @@ export const en = {
     h1: 'The best of Sharp MZ',
     introHtml: (cardHref: string) =>
       `The titles worth starting with on the Sharp MZ-700 and MZ-800, written up one by one — original <code>.mzf</code> tape images with screenshots, controls and the story behind them. Play any of them right in your browser, download for an emulator, or load over WiFi on a real machine with the <a href="${cardHref}">MZPico card</a>, an open Raspberry&nbsp;Pi&nbsp;Pico expansion for the MZ-800.`,
-    searchPlaceholder: 'Search titles, publishers, descriptions…',
     allMachines: 'All machines',
     allGenres: 'All genres',
     filterByMachine: 'Filter by machine',

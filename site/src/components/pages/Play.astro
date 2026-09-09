@@ -70,20 +70,14 @@ const ui = {
   <p class="meta" set:html={t.play.creditHtml} />
 
   <script is:inline define:vars={{ playSlug: d.slug }}>
-    // One play per visitor per title per day; the Worker does the counting.
-    (() => {
-      let voter = localStorage.getItem('mz-voter');
-      if (!voter) {
-        voter = crypto.randomUUID();
-        try { localStorage.setItem('mz-voter', voter); } catch { /* private mode */ }
-      }
-      fetch('/api/play', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug: playSlug, voter }),
-        keepalive: true,
-      }).catch(() => {});
-    })();
+    // One play per network per title per day; the Worker counts it and decides
+    // whether it counts at all.
+    fetch('/api/play', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slug: playSlug }),
+      keepalive: true,
+    }).catch(() => {});
   </script>
 
   <script define:vars={{ slug: d.slug, files, touch: d.touch ?? null, emuVersion, ui }}>

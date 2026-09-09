@@ -20,7 +20,6 @@ export const cs: Ui = {
     h1: 'Pecky pro Sharp MZ',
     introHtml: (cardHref: string) =>
       `Tituly, kterými má smysl na Sharpu MZ-700 a MZ-800 začít, sepsané jeden po druhém — původní páskové obrazy <code>.mzf</code> se snímky obrazovky, ovládáním a příběhem, který k nim patří. Každý si můžete zahrát rovnou v prohlížeči, stáhnout do emulátoru, nebo ho přes WiFi nahrát do skutečného počítače pomocí <a href="${cardHref}">karty MZPico</a>, otevřeného rozšíření pro MZ-800 postaveného na Raspberry&nbsp;Pi&nbsp;Pico.`,
-    searchPlaceholder: 'Hledat v názvech, vydavatelích, popisech…',
     allMachines: 'Všechny počítače',
     allGenres: 'Všechny žánry',
     filterByMachine: 'Filtrovat podle počítače',

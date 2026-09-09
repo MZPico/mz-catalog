@@ -1,23 +1,36 @@
--- Community numbers behind the catalog. No personal data: `voter` is a salted
--- hash of the visitor's own random id plus their address, computed in the Worker.
+-- Community numbers behind the catalog. No personal data: `voter` and `ip` are
+-- salted hashes computed in the Worker — of the visitor's own random id and of
+-- the address the request came from. Neither can be turned back into either.
 CREATE TABLE IF NOT EXISTS plays (
   slug TEXT PRIMARY KEY,
   n    INTEGER NOT NULL DEFAULT 0
 );
 
+-- One play per title per network per day. Keyed on the address rather than on
+-- the browser's id, which the client could simply make up again.
 CREATE TABLE IF NOT EXISTS play_log (
-  slug  TEXT NOT NULL,
-  voter TEXT NOT NULL,
-  day   TEXT NOT NULL,
-  PRIMARY KEY (slug, voter, day)
+  slug TEXT NOT NULL,
+  ip   TEXT NOT NULL,
+  day  TEXT NOT NULL,
+  PRIMARY KEY (slug, ip, day)
 );
 
 CREATE TABLE IF NOT EXISTS votes (
   slug  TEXT    NOT NULL,
   voter TEXT    NOT NULL,
+  ip    TEXT    NOT NULL DEFAULT '',
   value INTEGER NOT NULL CHECK (value BETWEEN 1 AND 5),
   ts    INTEGER NOT NULL,
   PRIMARY KEY (slug, voter)
 );
 
 CREATE INDEX IF NOT EXISTS votes_by_slug ON votes (slug);
+-- Supports the per-network cap: a household can vote, a script cannot.
+CREATE INDEX IF NOT EXISTS votes_by_ip ON votes (slug, ip);
+
+CREATE TABLE IF NOT EXISTS throttle (
+  ip   TEXT    NOT NULL,
+  hour INTEGER NOT NULL,
+  n    INTEGER NOT NULL,
+  PRIMARY KEY (ip, hour)
+);

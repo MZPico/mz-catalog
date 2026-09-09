@@ -124,6 +124,9 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e
       };
 
       q.addEventListener('input', () => { state.text = q.value.trim().toLowerCase(); apply(); });
+      // ?q=… so other sites (and our own SearchAction) can link into a search.
+      const initial = new URLSearchParams(location.search).get('q');
+      if (initial) { q.value = initial; state.text = initial.trim().toLowerCase(); }
       for (const btn of document.querySelectorAll('.flag')) {
         btn.addEventListener('click', () => {
           const next = { any: 'yes', yes: 'no', no: 'any' }[btn.dataset.state];

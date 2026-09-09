@@ -311,6 +311,8 @@ const breadcrumbLd = {
             paint(await res.json());
             summary.insertAdjacentHTML('afterend', `<span class="thanks meta">${ui.thanks}</span>`);
             setTimeout(() => section.querySelector('.thanks')?.remove(), 2000);
+          } else {
+            load().catch(() => {}); // refused (capped or throttled): show the truth again
           }
         });
       }

@@ -27,7 +27,7 @@ const siteLd = {
   description: t.meta.defaultDescription,
   potentialAction: {
     '@type': 'SearchAction',
-    target: { '@type': 'EntryPoint', urlTemplate: `${abs(p('/'))}?q={search_term_string}` },
+    target: { '@type': 'EntryPoint', urlTemplate: `${abs(p('/archive/'))}?q={search_term_string}` },
     'query-input': 'required name=search_term_string',
   },
 };
@@ -52,8 +52,6 @@ const listLd = {
     </div>
     <img class="hero-badge" src="/mz-badge.svg" alt="Sharp MZ-700 and MZ-800" width="300" height="168" />
   </div>
-
-  <div id="search" data-pagefind-ignore></div>
 
   <div class="chips" role="group" aria-label={t.home.filterByMachine} data-filter="machine">
     <button class="chip" type="button" aria-pressed="true" data-value="">{t.home.allMachines}</button>
@@ -142,21 +140,4 @@ const listLd = {
     }).catch(() => {});
   </script>
 
-  <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
-  <script is:inline src="/pagefind/pagefind-ui.js" onerror="this.remove()"></script>
-  <script is:inline define:vars={{ placeholder: t.home.searchPlaceholder }}>
-    window.addEventListener('DOMContentLoaded', () => {
-      // Pagefind index exists only after `npm run build`; in dev the search box is simply absent.
-      if (typeof PagefindUI === 'undefined') return;
-      const ui = new PagefindUI({
-        element: '#search',
-        showSubResults: false,
-        showImages: true,
-        translations: { placeholder },
-      });
-      // ?q=… lets other sites (and the SearchAction in our JSON-LD) link straight to a query.
-      const q = new URLSearchParams(location.search).get('q');
-      if (q) ui.triggerSearch(q);
-    });
-  </script>
 </Base>
