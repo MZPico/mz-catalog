@@ -1,9 +1,9 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
-title: "3D Noughts&cross"
+title: "3D Noughts & Crosses"
 machine: mz-700
 genre: [game]
 files:
   - path: ox-3d-2.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. The same program was also catalogued as ox-3d-1 (tape name "3D O's and X's"); merged on 2026-09-09. The same program was also catalogued as 3dsn (tape name "3D S & N"); merged on 2026-09-09.

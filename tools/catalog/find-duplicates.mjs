@@ -32,6 +32,8 @@ function body(buf, header) {
     while (last > 128 && buf[last - 1] === pad) last--;
   }
   return buf.subarray(128, Math.max(last + 1, 129));
+  // NB: a re-dump one byte longer still hashes differently; the byte-level
+  // comparison below is what catches those.
 }
 
 /** Chunk boundaries chosen by content, so an edit does not reshuffle the rest. */
@@ -72,6 +74,7 @@ for (const t of await readCatalog()) {
       bytes: prog.length,
       sha: createHash('sha1').update(prog).digest('hex'),
       chunks: chunkHashes(prog),
+      prog,
       folder: /folder ([a-z0-9-]+)/.exec(t.meta.source ?? '')?.[1] ?? '-',
     });
   }
@@ -103,11 +106,25 @@ for (let i = 0; i < items.length; i++) {
     if (s >= MIN) near.push({ a, b, s });
   }
 }
-near.sort((x, y) => y.s - x.s);
+// Chunk similarity drops off a cliff when a single byte lands in a big chunk,
+// so anything that passed the sieve gets counted byte by byte as well.
+for (const pair of near) {
+  const a = pair.a.prog;
+  const b = pair.b.prog;
+  const n = Math.min(a.length, b.length);
+  let d = 0;
+  for (let i = 0; i < n; i++) if (a[i] !== b[i]) d++;
+  pair.diff = d;
+  pair.over = n;
+  pair.tail = Math.abs(a.length - b.length);
+}
+near.sort((x, y) => x.diff / x.over - y.diff / y.over);
 console.log(`\n== near-identical (>= ${(MIN * 100).toFixed(0)}% of content chunks shared): ${near.length} pair(s)`);
 for (const { a, b, s } of near) {
   const flag = seen.has(a.slug) || seen.has(b.slug) ? ' (also in an exact group)' : '';
-  console.log(`  ${(s * 100).toFixed(0)}%${flag}`);
+  const { diff, over, tail } = near.find((p) => p.a === a && p.b === b);
+  console.log(`  ${(s * 100).toFixed(0)}% chunks · ${diff} of ${over} bytes differ (${(100 * diff / over).toFixed(2)}%)` +
+    (tail ? `, ${tail} bytes of tail` : '') + flag);
   console.log('      ' + label(a));
   console.log('      ' + label(b));
 }

@@ -6,4 +6,4 @@ genre: [game]
 files:
   - path: circus1.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. The same program was also catalogued as circus2 (tape name "CIRCUS STAR PRG."); merged on 2026-09-09.

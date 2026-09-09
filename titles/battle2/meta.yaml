@@ -1,9 +1,9 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
-title: "Battle Game Prg."
+title: "Battle Game"
 machine: mz-700
 genre: [game]
 files:
   - path: battle2.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. The same program was also catalogued as battle1 (tape name "BATLE GAME"); merged on 2026-09-09.
