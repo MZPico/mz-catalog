@@ -85,7 +85,6 @@ const listLd = {
             <div class="meta">{[d.year, d.publisher].filter(Boolean).join(' · ') || ' '}</div>
             <div class="tags">
               <span class:list={['badge', d.machine]}>{machineLabel[d.machine]}{d.mode === 'mz-700' ? ' · 700' : ''}</span>
-              {d.genre.map((g) => <span class="tag">{g}</span>)}
             </div>
           </div>
         </li>

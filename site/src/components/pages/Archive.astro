@@ -33,13 +33,7 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e
       ))}
     </div>
     <div class="chips flags" role="group" aria-label={t.archive.filterHint}>
-      {[
-        { key: 'curated', label: t.archive.filterFeatured },
-        { key: 'zx', label: t.archive.filterZx },
-        { key: 'shots', label: t.archive.filterShots },
-      ].map((f) => (
-        <button class="chip flag" type="button" data-flag={f.key} data-state="any" title={t.archive.filterHint}>{f.label}</button>
-      ))}
+      <button class="chip flag" type="button" data-flag="zx" data-state="any" title={t.archive.filterHint}>{t.archive.filterZx}</button>
     </div>
     <label class="sort">{t.archive.sort}
       <select id="sort">
@@ -71,6 +65,7 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e
               <span class:list={['badge', d.machine]}>{machineLabel[d.machine]}</span>
               {d.web && <span class="tag curated">{t.archive.curated}</span>}
               {d.port === 'zx-spectrum' && <span class="tag zx" title={t.title.portTitle}>{t.title.portZx}</span>}
+              {d.genre.map((g) => <span class="tag">{g}</span>)}
               {[d.year, d.publisher].filter(Boolean).join(' · ')}
             </div>
           </div>
@@ -93,8 +88,8 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e
       const countEl = document.getElementById('count');
       // Each flag is any / yes / no, so "everything that is not a ZX port" is
       // as reachable as "only the ZX ports".
-      const state = { text: '', machine: '', sort: 'name', flags: { curated: 'any', zx: 'any', shots: 'any' } };
-      const has = { curated: (r) => !!r.dataset.curated, zx: (r) => r.dataset.port === 'zx-spectrum', shots: (r) => !!r.dataset.shots };
+      const state = { text: '', machine: '', sort: 'name', flags: { zx: 'any' } };
+      const has = { zx: (r) => r.dataset.port === 'zx-spectrum' };
       const stats = {};
 
       const visible = () => rows.filter((r) => !r.hidden);
