@@ -208,6 +208,44 @@ node tools/catalog/derive-titles.mjs --write    # apply it to meta.yaml
 It only touches entries still marked `Bootstrap-imported` that are not
 curated, so a hand-written title is never overwritten.
 
+## Screenshots
+
+`titles/<slug>/screenshots/01-auto.png` is the title screen, `02-auto.png` a
+moment of play; lists and preview cards use 02 when there is one. Missing ones
+are captured with the native emulator, headless:
+
+```
+python3 tools/screenshots/auto-capture.py --missing --workers 4 --out /tmp/shots
+python3 tools/screenshots/install-shots.py --from /tmp/shots            # dry run
+python3 tools/screenshots/install-shots.py --from /tmp/shots --apply
+python3 tools/og/build-og.py                                          # cards for them
+```
+
+`--missing` takes every title without a gameplay shot. The headless build runs
+about 18x real time, so frames are grabbed in bursts — through the attract
+loop, then after each of the usual start keys — and chosen afterwards: the
+first stable screen as the title, the richest different one as play, text
+pages ranked last. Add `--relaxed` for games that draw in two colours or show
+a nearly empty screen (BASIC banners); it also lets flat colour fields
+through, so look at what it picks.
+
+Nothing lands in `titles/` until `install-shots.py` copies it, and that only
+fills empty slots. It also drops any picture that turns up for three or more
+different titles — a boot screen, a monitor prompt or a shared loader is not
+a game. Look at the candidates before `--apply`; a handful of titles always
+come out as a colour field or loading noise.
+
+The emulator is started in an empty working directory on purpose: it reads
+`mz800emu.ini` from there, and a local ini with a disk in the drive makes a
+crashing game boot that disk instead.
+
+While it runs, the capture also reads the MZ-700 screen straight out of VRAM
+and scans the program for copyright and credit lines, into
+`<out>/<slug>/hints.json`. `tools/screenshots/metadata-hints.py <out>` turns
+those into year / publisher suggestions with the evidence beside them — for a
+human to confirm, since the year on a title screen may be the port's rather
+than the original's.
+
 ## The logotype
 
 `site/public/mz-badge.svg` stacks SHARP over MZ-700 over MZ-800. The letter
