@@ -9,6 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readCatalog, TITLES_DIR, SLUG_RE } from '../../scripts/lib/catalog.mjs';
 import { buildManifest, serializeManifest } from '../../scripts/build-manifest.mjs';
+import { buildDeviceTree, checkDeviceTree } from '../../scripts/lib/device-tree.mjs';
 
 const IMAGE_TYPES = {
   '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
@@ -62,16 +63,16 @@ export default function catalog() {
           }
         }
         await writeFile(path.join(out, 'manifest.json'), serializeManifest(buildManifest(titles)));
-        // Transitional support file for the api.mzpico.com Worker shim (legacy
-        // /list + /download emulation). Not part of the manifest contract.
-        const legacy = {};
-        for (const t of titles) {
-          const folder = /folder ([a-z0-9-]+)/.exec(t.meta.source ?? '')?.[1] ?? 'programs';
-          legacy[folder] ??= [];
-          for (const f of t.files) legacy[folder].push({ name: f.path, size: f.size, path: `/files/${t.slug}/${f.path}` });
-        }
-        for (const k of Object.keys(legacy)) legacy[k].sort((a, b) => a.name.localeCompare(b.name));
-        await writeFile(path.join(out, 'legacy-api.json'), JSON.stringify(legacy) + '\n');
+        // The tree the MZPico card browses as cloud:/, served by the
+        // api.mzpico.com shim. Folders come from the metadata; the build stops
+        // rather than ship a listing the firmware cannot read. Not part of the
+        // manifest contract.
+        const { tree, skipped } = buildDeviceTree(titles);
+        const problems = checkDeviceTree(tree);
+        if (problems.length) throw new Error(`device tree would break the card:\n  ${problems.join('\n  ')}`);
+        for (const s of skipped) logger.warn(`device tree: skipped ${s}`);
+        await writeFile(path.join(out, 'legacy-api.json'), JSON.stringify(tree) + '\n');
+        logger.info(`device tree: ${Object.entries(tree).map(([f, l]) => `${f} ${l.length}`).join(', ')}`);
 
         // Cross-origin isolation has to cover the localized play pages too
         // (/cs/play/..., /de/play/...): without COOP/COEP there is no

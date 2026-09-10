@@ -321,13 +321,43 @@ Format 1:
 - Served with `Access-Control-Allow-Origin: *` and a 5-minute cache.
 
 The legacy Pico API (`GET /list?path=…`, `GET /download?path=…`) is to
-be replaced by this file plus static GETs. During the transition,
+be replaced by this file plus static GETs. Until then,
 `workers/api-shim/` (a small Cloudflare Worker on `api.mzpico.com`)
-answers the old endpoints from `legacy-api.json` — a build-generated
-folder map that is deliberately *not* part of the manifest contract.
-Deploy: `npx wrangler deploy -c workers/api-shim/wrangler.jsonc`;
-cutover = flip the `api` DNS record from the Oracle VM to proxied,
-rollback = flip it back.
+answers it from `legacy-api.json`, the build-generated tree the card
+browses as `cloud:/` — deliberately *not* part of the manifest contract.
+
+The tree is built by `scripts/lib/device-tree.mjs` from the metadata, not
+from the legacy `folder …` note in `source`:
+
+| folder | what goes there |
+|---|---|
+| `featured/` | `web: true` — the same picks as the front page (also listed in their machine folder) |
+| `mz-800/` | MZ-800 titles without `port` |
+| `mz-800-zx/` | MZ-800 titles with `port: zx-spectrum` |
+| `mz-700/` | MZ-700 titles |
+| `languages/` | `genre` includes `language` |
+| `tools/` | only non-game genres (`utility`, `system`, …) |
+
+File names are the titles, made safe for the card: `Alien_Highway.mzf`,
+`3D_Noughts_and_Crosses.mzf`, `Hlipa.mzf`. The firmware sets hard limits
+and the build fails rather than ship a tree that crosses one:
+
+- the path goes into the request URL unescaped — names use only
+  `A–Z a–z 0–9 . _ -`
+- a name of 32 characters or more is silently dropped
+- a folder holds at most 256 entries, `..` included
+- a listing's JSON must fit a 16 KB buffer
+- a file over 49 024 bytes never finishes loading (such files are left out
+  of the tree, with a warning)
+
+The card sorts listings itself (folders first, then case-insensitive), so
+the order in the JSON does not matter.
+
+The shim only serves what the tree holds, so layout changes need a site
+deploy and nothing else. If the shim itself changes, deploy it with
+`npx wrangler deploy -c workers/api-shim/wrangler.jsonc` (it reads the tree
+from production) and try it locally against staging first:
+`npx wrangler dev -c workers/api-shim/wrangler.jsonc --var CATALOG_ORIGIN:https://staging.mzpico.com`.
 
 ## Deployment
 

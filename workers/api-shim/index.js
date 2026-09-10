@@ -5,10 +5,14 @@
 // Wire format (byte-compatible with the old nginx service; the firmware
 // parses it with strstr, so key order matters and responses must stay
 // well under its 16 KB buffer):
-//   GET /list?path=/            -> {"path":"","folders":["games-700",...],"files":[]}
-//   GET /list?path=/games-700   -> {"path":"games-700/","folders":[],"files":[{"name":"x.mzf","size":123},...]}
-//   GET /list?path=/unknown     -> {"path":"unknown/","folders":[],"files":[]}
-//   GET /download?path=/games-700/x.mzf -> MZF bytes in HTTP chunked framing (see below)
+//   GET /list?path=/          -> {"path":"","folders":["featured","mz-700",...],"files":[]}
+//   GET /list?path=/mz-700    -> {"path":"mz-700/","folders":[],"files":[{"name":"Alien_Highway.mzf","size":123},...]}
+//   GET /list?path=/unknown   -> {"path":"unknown/","folders":[],"files":[]}
+//   GET /download?path=/mz-700/Alien_Highway.mzf -> MZF bytes in HTTP chunked framing (see below)
+//
+// The folders and names are built from the catalog metadata by
+// scripts/lib/device-tree.mjs; this Worker just serves whatever tree
+// legacy-api.json holds.
 const DEFAULT_ORIGIN = 'https://mzpico.com';
 
 async function legacyMap(origin) {
