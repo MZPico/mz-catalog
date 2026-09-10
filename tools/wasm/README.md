@@ -11,8 +11,10 @@ Offline, one-time recipe (not part of the site build). Requires Emscripten
 2. Compile the stub archives once into the sysroot:
    `emcc -pthread -O2 -c stubs/resolv_stub.c && emar rcs $SYS/lib/libresolv.a resolv_stub.o`
    (same for `spawn_stub.c` → `libmzwasmstubs.a`).
-3. `./build-wasm-deps.sh` — zlib, SDL3, SDL3_image, minizip-ng, glib, json-glib
-   (libffi first: `emconfigure ./configure --host=wasm32-unknown-emscripten`).
+3. Apply `deps-patches/glib-2.82.5-wasm-callback-types.patch` to the glib
+   tree (see below), then `./build-wasm-deps.sh` — zlib, SDL3, SDL3_image,
+   minizip-ng, glib, json-glib (libffi first:
+   `emconfigure ./configure --host=wasm32-unknown-emscripten`).
 4. `./build-mz800emu-wasm.sh` — emits `mz800emu.{js,wasm,data}`; copy them to
    `site/public/play/emu/`.
 
@@ -21,7 +23,26 @@ pthread build needs; drive a headful Chromium (`--remote-debugging-port=9222
 --autoplay-policy=no-user-gesture-required`) with `cdp-play.mjs` /
 `cdp-probe.mjs`. Headless Chromium does not deliver animation frames to the
 emulator — it only looks hung. `cdp-worker-profile.mjs` CPU-profiles the
-pthread workers (build with `--profiling-funcs` for symbol names).
+pthread workers (build with `--profiling-funcs` for symbol names). Snap-packaged
+Chromium: add `--ignore-gpu-blocklist --enable-unsafe-swiftshader` (WSLg's GPU
+is blocklisted for WebGL2 and the emulator would never draw), and keep files
+you hand to it (e.g. a `.mzs` for the import test) under `~`, not `/tmp` —
+the snap has its own `/tmp`.
+
+## glib patch (`deps-patches/`)
+
+WebAssembly checks the type of every indirect call, and glib 2.82 calls some
+callbacks through a wider function type than they have: `g_slist_free_full`,
+`g_list_free_full` and `g_queue_free_full` call a one-argument
+`GDestroyNotify` as a two-argument `GFunc`, and `g_array_sort`,
+`g_ptr_array_sort`, `g_list_sort`, `g_slist_sort`, the `*_insert_sorted`
+calls and `g_tree_new` call a two-argument `GCompareFunc` as a three-argument
+`GCompareDataFunc`. Natively that is harmless; in the browser it traps
+("unreachable" / "function signature mismatch"). It first bit the snapshot
+loader (XML parsing, then the checksum's sorted entry list).
+`glib-2.82.5-wasm-callback-types.patch` calls the destroy notifiers directly
+and routes the comparators through a small adapter that carries them in
+`user_data`. glib is LGPL; this patch is the complete change to it.
 
 ## Emulator patch series (`patches/`)
 

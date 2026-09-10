@@ -58,9 +58,26 @@ const ui = {
     <button type="button" id="play-touch-toggle" class="btn secondary" title={t.play.touchTitle}>{t.play.touch}</button>
     <button type="button" id="play-swap" class="btn secondary" title={t.play.sidesTitle} hidden>{t.play.sides}</button>
     <button type="button" id="play-mute" class="btn secondary" title={t.play.muteTitle}>{t.play.mute}</button>
+    <button type="button" id="save-now" class="btn secondary" title={t.play.saves.saveTitle} disabled>{t.play.saves.save}</button>
+    <button type="button" id="save-load" class="btn secondary" title={t.play.saves.loadTitle} disabled>{t.play.saves.load}</button>
     <span class="play-status meta" id="play-status"></span>
   </div>
   <p class="play-pace" id="play-pace" hidden></p>
+  <section class="play-saves" id="play-saves" data-slug={d.slug} data-lang={lang} data-files={JSON.stringify(files)}
+    data-emu={emuVersion} data-ui={JSON.stringify(t.play.saves)}>
+    <img id="save-thumb" alt="" hidden />
+    <div class="save-body">
+      <p class="save-head"><b>{t.play.saves.panel}</b> <span id="save-info" class="meta">{t.play.saves.none}</span></p>
+      <label class="save-auto"><input type="checkbox" id="save-auto" /> {t.play.saves.auto}</label>
+      <p class="save-actions">
+        <button type="button" id="save-export" class="btn secondary" disabled>{t.play.saves.export}</button>
+        <button type="button" id="save-import" class="btn secondary" disabled>{t.play.saves.import}</button>
+        <button type="button" id="save-remove" class="btn secondary" disabled>{t.play.saves.remove}</button>
+        <input type="file" id="save-file" accept=".mzs,application/zip" hidden />
+      </p>
+      <p class="meta save-note">{t.play.saves.note}</p>
+    </div>
+  </section>
   <pre id="play-debug" class="play-debug meta" hidden></pre>
   <details class="play-help">
     <summary>{t.play.keysTips}</summary>
@@ -311,6 +328,7 @@ const ui = {
       const resp = await fetch(`/files/${slug}/${file}`);
       if (!resp.ok) { status.textContent = ui.fetchFailed.replace('{file}', file).replace('0', String(resp.status)); return; }
       const mzf = new Uint8Array(await resp.arrayBuffer());
+      window.__mzTape = { file, bytes: mzf }; // for the saved-position module below
       status.textContent = ui.loadingEmulator;
       window.Module = {
         canvas,
@@ -326,10 +344,12 @@ const ui = {
         printErr: (m) => {
           if (/20ms_sync/.test(m)) audioStarved++;
           else if (/error|fail/i.test(m)) console.warn('[mz800emu]', m);
+          else if (debug) console.log('[mz800emu]', m);
         },
         setStatus: (m) => { status.textContent = m; },
         onRuntimeInitialized: () => {
           status.textContent = ''; canvas.focus(); runtimeReady = true;
+          document.dispatchEvent(new CustomEvent('mz:ready'));
           // Keep the screen awake while playing — also stops aggressive tab throttling (Edge efficiency mode).
           let lock = null;
           const acquire = () => navigator.wakeLock?.request('screen').then((l) => { lock = l; }).catch(() => {});
@@ -390,5 +410,157 @@ const ui = {
     } else if (fromCatalog) {
       start();
     }
+  </script>
+
+  <script>
+    import { getSave, putSave, deleteSave, saveKey, tapeFingerprint, thumbFromMzs, ago, type SaveRecord } from '../../lib/saves';
+
+    // Saved positions: the emulator snapshots the whole machine between two
+    // instructions (mz_wasm_snapshot_* in the wasm build); the .mzs goes to
+    // IndexedDB in this browser. Storing happens only on the player's say-so:
+    // the Save button, the automatic-saving checkbox, or opening a file.
+    type Emu = { _mz_wasm_snapshot_request?: (op: number) => number; _mz_wasm_snapshot_status: () => number; FS: { readFile(p: string): Uint8Array; writeFile(p: string, d: Uint8Array): void } };
+    const root = document.getElementById('play-saves')!;
+    const ui = JSON.parse(root.dataset.ui!) as Record<string, string>;
+    const slug = root.dataset.slug!, lang = root.dataset.lang!, emuBuild = root.dataset.emu!;
+    const files = JSON.parse(root.dataset.files!) as string[];
+    const params = new URLSearchParams(location.search);
+    const file = files.includes(params.get('file') ?? '') ? params.get('file')! : files[0];
+    const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+    const saveBtn = $<HTMLButtonElement>('save-now'), loadBtn = $<HTMLButtonElement>('save-load');
+    const exportBtn = $<HTMLButtonElement>('save-export'), importBtn = $<HTMLButtonElement>('save-import');
+    const removeBtn = $<HTMLButtonElement>('save-remove'), fileInput = $<HTMLInputElement>('save-file');
+    const autoBox = $<HTMLInputElement>('save-auto'), info = $('save-info'), thumb = $<HTMLImageElement>('save-thumb');
+    const statusEl = $('play-status'), canvas = $('canvas');
+    const emu = () => (window as unknown as { Module?: Emu }).Module;
+
+    let current: SaveRecord | null = null;
+    let ready = false, busy = false, tape = '';
+
+    const say = (m: string) => {
+      statusEl.textContent = m;
+      setTimeout(() => { if (statusEl.textContent === m) statusEl.textContent = ''; }, 4000);
+    };
+    const render = () => {
+      info.textContent = current ? ui.savedAt.replace('{ago}', ago(current.ts, lang)) : ui.none;
+      thumb.hidden = !current?.thumb;
+      if (current?.thumb) thumb.src = current.thumb;
+      loadBtn.disabled = !ready || !current;
+      exportBtn.disabled = removeBtn.disabled = !current;
+    };
+
+    type EmuFull = Emu & { _mz_wasm_total_screens?: () => number; SDL3?: { audioContext?: AudioContext } };
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    /** The emulator is paced by the audio clock: until sound runs (a tap on a
+     * phone, the sound prompt on desktop) no frame passes and no request would
+     * be served. Wait for the machine to be running first. */
+    async function running(): Promise<void> {
+      const m = emu() as EmuFull | undefined;
+      const frames = () => m?._mz_wasm_total_screens?.() ?? 0;
+      const start = frames();
+      while (frames() < start + 2) await sleep(50);
+    }
+
+    /** One request to the emulation thread; resolves to its status (2 = done). */
+    async function request(op: 1 | 2): Promise<number> {
+      const m = emu();
+      if (!m?._mz_wasm_snapshot_request) return -100;
+      await running();
+      if (m._mz_wasm_snapshot_request(op) !== 0) return -101;
+      const t0 = performance.now();
+      while (performance.now() - t0 < 4000) {
+        const st = m._mz_wasm_snapshot_status();
+        if (st !== 1) return st;
+        await sleep(15);
+      }
+      return -102;
+    }
+    // A click on Save/Load is a user gesture: let it start the sound clock too.
+    const wake = () => { (emu() as EmuFull | undefined)?.SDL3?.audioContext?.resume?.().catch(() => {}); };
+
+    async function save(quiet = false) {
+      if (!ready || busy) return;
+      busy = true;
+      if (!quiet) say(ui.saving);
+      try {
+        if ((await request(1)) !== 2) throw new Error('snapshot');
+        const mzs = new Uint8Array(emu()!.FS.readFile('/mzwasm-save.mzs'));
+        const rec: SaveRecord = { key: saveKey(slug, file), slug, file, ts: Date.now(), emu: emuBuild, tape, mzs, thumb: await thumbFromMzs(mzs) };
+        await putSave(rec);
+        current = rec;
+        render();
+        if (!quiet) say(ui.saved);
+      } catch {
+        if (!quiet) say(ui.failed);
+      } finally {
+        busy = false;
+      }
+    }
+
+    async function restore(mzs: Uint8Array): Promise<boolean> {
+      if (!ready || busy) return false;
+      busy = true;
+      try {
+        emu()!.FS.writeFile('/mzwasm-load.mzs', mzs);
+        const ok = (await request(2)) === 2;
+        say(ok ? ui.loaded : ui.loadFailed);
+        canvas.focus();
+        return ok;
+      } finally {
+        busy = false;
+      }
+    }
+
+    // Automatic saving is a preference the player switches on; off by default.
+    const autoOn = () => { try { return localStorage.getItem('mz-autosave') === '1'; } catch { return false; } };
+    autoBox.checked = autoOn();
+    autoBox.addEventListener('change', () => {
+      try { localStorage.setItem('mz-autosave', autoBox.checked ? '1' : ''); } catch { /* private mode */ }
+      if (autoBox.checked) save(true);
+    });
+    setInterval(() => { if (autoOn() && document.visibilityState === 'visible') save(true); }, 120000);
+    document.addEventListener('visibilitychange', () => { if (autoOn() && document.visibilityState === 'hidden') save(true); });
+    addEventListener('pagehide', () => { if (autoOn()) save(true); });
+
+    saveBtn.addEventListener('click', () => { wake(); save(); });
+    loadBtn.addEventListener('click', () => { wake(); if (current) restore(current.mzs); });
+    removeBtn.addEventListener('click', async () => { await deleteSave(slug, file); current = null; render(); });
+    exportBtn.addEventListener('click', () => {
+      if (!current) return;
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([current.mzs], { type: 'application/zip' }));
+      a.download = files.length > 1 ? `${slug}-${file.replace(/\.mzf$/i, '')}.mzs` : `${slug}.mzs`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    });
+    importBtn.addEventListener('click', () => { wake(); fileInput.click(); });
+    fileInput.addEventListener('change', async () => {
+      const f = fileInput.files?.[0];
+      fileInput.value = '';
+      if (!f) return;
+      const mzs = new Uint8Array(await f.arrayBuffer());
+      if (!(await restore(mzs))) return;
+      // Kept only once it has proven to load.
+      current = { key: saveKey(slug, file), slug, file, ts: Date.now(), emu: emuBuild, tape, mzs, thumb: await thumbFromMzs(mzs) };
+      await putSave(current);
+      render();
+    });
+
+    getSave(slug, file).then((rec) => { current = rec; render(); });
+    setInterval(render, 30000); // keep "saved … ago" current
+
+    document.addEventListener('mz:ready', async () => {
+      const t = (window as unknown as { __mzTape?: { bytes: Uint8Array } }).__mzTape;
+      if (t) tape = await tapeFingerprint(t.bytes);
+      ready = true;
+      saveBtn.disabled = importBtn.disabled = false;
+      render();
+      // From the title page's Continue button: once the tape has started (and,
+      // on a phone, the player has tapped in), put the saved machine in its place.
+      if (params.has('resume')) {
+        const rec = current ?? (await getSave(slug, file));
+        if (rec) { await running(); await sleep(300); restore(rec.mzs); }
+      }
+    });
   </script>
 </Base>

@@ -1,0 +1,191 @@
+--- a/glib/garray.c
++++ b/glib/garray.c
+@@ -915,6 +915,16 @@
+  *
+  * This is guaranteed to be a stable sort since version 2.32.
+  */
++
++/* WebAssembly checks the type of every indirect call, so a two-argument
++ * GCompareFunc must not be called through GCompareDataFunc. This adapter
++ * carries it in user_data and calls it with its own signature. */
++static gint
++compare_func_trampoline (gconstpointer a, gconstpointer b, gpointer user_data)
++{
++  return ((GCompareFunc) user_data) (a, b);
++}
++
+ void
+ g_array_sort (GArray       *farray,
+               GCompareFunc  compare_func)
+@@ -928,8 +938,8 @@
+     g_sort_array (array->data,
+                   array->len,
+                   array->elt_size,
+-                  (GCompareDataFunc) compare_func,
+-                  NULL);
++                  compare_func_trampoline,
++                  (gpointer) compare_func);
+ }
+ 
+ /**
+@@ -2416,8 +2426,8 @@
+     g_sort_array (array->pdata,
+                   array->len,
+                   sizeof (gpointer),
+-                  (GCompareDataFunc) compare_func,
+-                  NULL);
++                  compare_func_trampoline,
++                  (gpointer) compare_func);
+ }
+ 
+ /* Please keep this doc-comment in sync with
+--- a/glib/glist.c
++++ b/glib/glist.c
+@@ -159,7 +159,10 @@
+ g_list_free_full (GList          *list,
+                   GDestroyNotify  free_func)
+ {
+-  g_list_foreach (list, (GFunc) free_func, NULL);
++  /* Call the destroy notifier with its own signature: casting it to GFunc
++   * (two arguments) traps in WebAssembly, which checks indirect-call types. */
++  for (GList *l = list; l != NULL; l = l->next)
++    free_func (l->data);
+   g_list_free (list);
+ }
+ 
+@@ -1010,6 +1013,16 @@
+     }
+ }
+ 
++/* WebAssembly checks the type of every indirect call, so a two-argument
++ * GCompareFunc must not be called through GCompareDataFunc. This adapter
++ * carries it in user_data and calls it with its own signature. */
++static gint
++compare_func_trampoline (gconstpointer a, gconstpointer b, gpointer user_data)
++{
++  return ((GCompareFunc) user_data) (a, b);
++}
++
++
+ static GList*
+ g_list_insert_sorted_real (GList    *list,
+                            gpointer  data,
+@@ -1086,7 +1099,7 @@
+                       gpointer      data,
+                       GCompareFunc  func)
+ {
+-  return g_list_insert_sorted_real (list, data, (GFunc) func, NULL);
++  return g_list_insert_sorted_real (list, data, (GFunc) compare_func_trampoline, (gpointer) func);
+ }
+ 
+ /**
+@@ -1217,7 +1230,7 @@
+ g_list_sort (GList        *list,
+              GCompareFunc  compare_func)
+ {
+-  return g_list_sort_real (list, (GFunc) compare_func, NULL);
++  return g_list_sort_real (list, (GFunc) compare_func_trampoline, (gpointer) compare_func);
+ }
+ 
+ /**
+--- a/glib/gqueue.c
++++ b/glib/gqueue.c
+@@ -81,7 +81,10 @@
+ g_queue_free_full (GQueue        *queue,
+                   GDestroyNotify  free_func)
+ {
+-  g_queue_foreach (queue, (GFunc) free_func, NULL);
++  /* Call the destroy notifier with its own signature: casting it to GFunc
++   * (two arguments) traps in WebAssembly, which checks indirect-call types. */
++  for (GList *l = queue->head; l != NULL; l = l->next)
++    free_func (l->data);
+   g_queue_free (queue);
+ }
+ 
+@@ -140,7 +143,8 @@
+   g_return_if_fail (queue != NULL);
+ 
+   if (free_func != NULL)
+-    g_queue_foreach (queue, (GFunc) free_func, NULL);
++    for (GList *l = queue->head; l != NULL; l = l->next)
++      free_func (l->data);
+ 
+   g_queue_clear (queue);
+ }
+--- a/glib/gslist.c
++++ b/glib/gslist.c
+@@ -146,7 +146,10 @@
+ g_slist_free_full (GSList         *list,
+ 		   GDestroyNotify  free_func)
+ {
+-  g_slist_foreach (list, (GFunc) free_func, NULL);
++  /* Call the destroy notifier with its own signature: casting it to GFunc
++   * (two arguments) traps in WebAssembly, which checks indirect-call types. */
++  for (GSList *l = list; l != NULL; l = l->next)
++    free_func (l->data);
+   g_slist_free (list);
+ }
+ 
+@@ -838,6 +841,16 @@
+     }
+ }
+ 
++/* WebAssembly checks the type of every indirect call, so a two-argument
++ * GCompareFunc must not be called through GCompareDataFunc. This adapter
++ * carries it in user_data and calls it with its own signature. */
++static gint
++compare_func_trampoline (gconstpointer a, gconstpointer b, gpointer user_data)
++{
++  return ((GCompareFunc) user_data) (a, b);
++}
++
++
+ static GSList*
+ g_slist_insert_sorted_real (GSList   *list,
+                             gpointer  data,
+@@ -910,7 +923,7 @@
+                        gpointer      data,
+                        GCompareFunc  func)
+ {
+-  return g_slist_insert_sorted_real (list, data, (GFunc) func, NULL);
++  return g_slist_insert_sorted_real (list, data, (GFunc) compare_func_trampoline, (gpointer) func);
+ }
+ 
+ /**
+@@ -1017,7 +1030,7 @@
+ g_slist_sort (GSList       *list,
+               GCompareFunc  compare_func)
+ {
+-  return g_slist_sort_real (list, (GFunc) compare_func, NULL);
++  return g_slist_sort_real (list, (GFunc) compare_func_trampoline, (gpointer) compare_func);
+ }
+ 
+ /**
+--- a/glib/gtree.c
++++ b/glib/gtree.c
+@@ -119,6 +119,16 @@
+   return node;
+ }
+ 
++/* WebAssembly checks the type of every indirect call, so a two-argument
++ * GCompareFunc must not be called through GCompareDataFunc. This adapter
++ * carries it in user_data and calls it with its own signature. */
++static gint
++compare_func_trampoline (gconstpointer a, gconstpointer b, gpointer user_data)
++{
++  return ((GCompareFunc) user_data) (a, b);
++}
++
++
+ /**
+  * g_tree_new: (constructor)
+  * @key_compare_func: the function used to order the nodes in the #GTree.
+@@ -136,7 +146,7 @@
+ {
+   g_return_val_if_fail (key_compare_func != NULL, NULL);
+ 
+-  return g_tree_new_full ((GCompareDataFunc) key_compare_func, NULL,
++  return g_tree_new_full (compare_func_trampoline, (gpointer) key_compare_func,
+                           NULL, NULL);
+ }
+ 

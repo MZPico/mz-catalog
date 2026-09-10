@@ -92,6 +92,8 @@ export const en = {
   },
   title: {
     play: '▶ Play in browser',
+    continue: '▶ Continue',
+    continueSaved: 'saved {ago}',
     playShort: '▶ Play',
     download: '⬇ Download .mzf',
     downloadShort: '⬇ .mzf',
@@ -168,6 +170,25 @@ export const en = {
     unmute: '🔊 Unmute',
     muteTitle: 'Mute / unmute the emulator',
     keysTips: 'Keys & tips',
+    saves: {
+      save: '💾 Save',
+      saveTitle: 'Save your position in this browser',
+      load: '⤴ Load',
+      loadTitle: 'Go back to the saved position',
+      panel: 'Saved position',
+      none: 'No saved position for this game yet.',
+      savedAt: 'Saved {ago}.',
+      saving: 'saving…',
+      saved: 'position saved',
+      loaded: 'position restored',
+      failed: 'could not save the position',
+      loadFailed: 'that saved position does not fit this version of the emulator or tape — playing from the start',
+      auto: 'Save automatically while I play (every 2 minutes and when I leave the page)',
+      export: '⬇ Download .mzs',
+      import: '⬆ Open .mzs…',
+      remove: '✕ Delete',
+      note: 'Saved positions stay in this browser on this device — nothing is uploaded. Safari may clear them after a week without a visit, so download the .mzs to keep one for good. The same file opens in the desktop mz800emu.',
+    },
     tips: [
       'Click the screen to give it keyboard focus. Sharp specials: GRAPH = Caps Lock, ALPHA = <code>\\</code>, INST = Insert, DEL = Backspace.',
       'The emulator runs in kiosk mode: every key goes to the MZ except <kbd>F11</kbd> (zoom: fullscreen on/off, Esc also leaves it) and <kbd>F12</kbd> (restart the game) — same as the ⛶ Fullscreen and ↻ Restart buttons.',
@@ -214,7 +235,7 @@ export const en = {
       },
       {
         h2: 'Stored in your browser',
-        html: `<ul><li><b>Touch layout</b> (<code>mz-touch-swap</code>) — only if you swap the on-screen controls on a phone.</li><li><b>Rating id</b> (<code>mz-voter</code>) — a random number created the first time you rate a title, so you can change your rating later and so one person counts once. It says nothing about you.</li></ul>This data stays on your device; clearing the site data in your browser removes it.`,
+        html: `<ul><li><b>Touch layout</b> (<code>mz-touch-swap</code>) — only if you swap the on-screen controls on a phone.</li><li><b>Rating id</b> (<code>mz-voter</code>) — a random number created the first time you rate a title, so you can change your rating later and so one person counts once. It says nothing about you.</li><li><b>Saved positions</b> (IndexedDB <code>mzpico</code>) — only when you press Save, turn on automatic saving or open a .mzs file: a snapshot of the emulated machine with a picture of its screen. Delete them on the game's page. The automatic-saving choice itself is kept as <code>mz-autosave</code>.</li></ul>This data stays on your device; clearing the site data in your browser removes it.`,
       },
       {
         h2: 'Stored on our server',

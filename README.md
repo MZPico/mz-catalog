@@ -271,12 +271,15 @@ community numbers in D1 (`workers/site/schema.sql`):
 - `POST /api/play` — one play per visitor per title per day.
 - `POST /api/rate` — one 1..5 rating per visitor per title, changeable.
 - `GET /api/stats` — aggregate for the archive list; `?slug=` for one title,
-  `&voter=` to get that visitor's own rating back.
+  plus an `X-MZ-Voter` header to get that visitor's own rating back.
 
-There are no accounts and no cookies: a visitor is a random id in their own
-`localStorage`. The Worker salts it together with the request IP and stores
+There are no accounts and no cookies: a visitor who rates is a random id in
+their own `localStorage`, created on the first vote (not on page view — see
+Privacy below). The Worker salts it together with the request IP and stores
 only the hash, so neither the id nor the address is in the database. The salt
-is a Worker secret (`STATS_SALT`), set per environment.
+is a Worker secret (`STATS_SALT`), set per environment. A daily cron
+(`17 3 * * *`, `scheduled()` in the Worker) deletes `play_log` rows from
+earlier days and `throttle` rows from past hours.
 
 Staging writes to its own database, so test votes never reach the real
 numbers. Schema changes go to both:
@@ -285,6 +288,31 @@ numbers. Schema changes go to both:
 npx wrangler d1 execute mz-catalog-stats-staging --remote --file=workers/site/schema.sql -c wrangler.staging.jsonc
 npx wrangler d1 execute mz-catalog-stats --remote --file=workers/site/schema.sql -c wrangler.jsonc
 ```
+
+## Saved positions
+
+The play page can save the whole emulated machine and resume it later
+("continue where I left off"). The wasm build exports
+`mz_wasm_snapshot_request(1 = save, 2 = load)` / `mz_wasm_snapshot_status()`;
+the emulation thread serves the request between two instructions and passes
+the `.mzs` (mz800emu's own snapshot format, a ZIP) through MEMFS. The page
+(`site/src/lib/saves.ts`) keeps one slot per title and tape file in
+IndexedDB (`mzpico` / `saves`), with the screen picture from inside the
+`.mzs` as thumbnail; the title page shows a Continue button when a slot
+exists. Saving happens only on the player's action — Save, the
+automatic-saving checkbox (every 2 minutes and on leaving the page), or
+opening a `.mzs` — which keeps it inside ePrivacy's "strictly necessary for a
+service the user asked for". `.mzs` files move both ways between the browser
+and the desktop mz800emu.
+
+## Privacy
+
+`/privacy/` (EN/CS/DE/JA, `site/src/i18n/*.ts` → `privacy`) lists everything
+the site stores: in the browser `mz-touch-swap`, `mz-voter`, `mz-autosave` and
+the saved positions; on the server the hashed ballots, the one-day play log
+and the one-hour throttle. Anything new that is stored in the browser or on
+the server needs a line there (and must be something the visitor asked for,
+or it needs consent). Contact: privacy@mzpico.com.
 
 ## Discoverability
 

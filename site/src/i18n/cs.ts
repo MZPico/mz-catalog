@@ -91,6 +91,8 @@ export const cs: Ui = {
   },
   title: {
     play: '▶ Hrát v prohlížeči',
+    continue: '▶ Pokračovat',
+    continueSaved: 'uloženo {ago}',
     playShort: '▶ Hrát',
     download: '⬇ Stáhnout .mzf',
     downloadShort: '⬇ .mzf',
@@ -167,6 +169,25 @@ export const cs: Ui = {
     unmute: '🔊 Zapnout zvuk',
     muteTitle: 'Ztlumit / zapnout zvuk emulátoru',
     keysTips: 'Klávesy a tipy',
+    saves: {
+      save: '💾 Uložit',
+      saveTitle: 'Uložit pozici v tomto prohlížeči',
+      load: '⤴ Načíst',
+      loadTitle: 'Vrátit se na uloženou pozici',
+      panel: 'Uložená pozice',
+      none: 'U této hry zatím nemáte uloženou pozici.',
+      savedAt: 'Uloženo {ago}.',
+      saving: 'ukládám…',
+      saved: 'pozice uložena',
+      loaded: 'pozice obnovena',
+      failed: 'pozici se nepodařilo uložit',
+      loadFailed: 'uložená pozice nesedí na tuto verzi emulátoru nebo pásky — hra běží od začátku',
+      auto: 'Ukládat automaticky během hraní (každé 2 minuty a při odchodu ze stránky)',
+      export: '⬇ Stáhnout .mzs',
+      import: '⬆ Otevřít .mzs…',
+      remove: '✕ Smazat',
+      note: 'Uložené pozice zůstávají v tomto prohlížeči na tomto zařízení — nic se nikam neposílá. Safari je může po týdnu bez návštěvy smazat, proto si pozici, o kterou nechcete přijít, stáhněte jako .mzs. Stejný soubor otevře i desktopový mz800emu.',
+    },
     tips: [
       'Kliknutím na obrazovku jí předáte klávesnici. Speciální klávesy Sharpu: GRAPH = Caps Lock, ALPHA = <code>\\</code>, INST = Insert, DEL = Backspace.',
       'Emulátor běží v režimu kiosku: všechny klávesy jdou do MZ kromě <kbd>F11</kbd> (zvětšení: celá obrazovka, Esc ji také opustí) a <kbd>F12</kbd> (restart hry) — totéž dělají tlačítka ⛶ Celá obrazovka a ↻ Restart.',
@@ -213,7 +234,7 @@ export const cs: Ui = {
       },
       {
         h2: 'Ve vašem prohlížeči',
-        html: `<ul><li><b>Rozložení dotykového ovládání</b> (<code>mz-touch-swap</code>) — jen pokud si na telefonu prohodíte ovládací prvky.</li><li><b>Identifikátor hodnocení</b> (<code>mz-voter</code>) — náhodné číslo, které vznikne, když poprvé ohodnotíte titul, abyste mohli hodnocení později změnit a aby se jeden člověk počítal jednou. Nic o vás neříká.</li></ul>Tato data zůstávají ve vašem zařízení; smazáním dat webu v prohlížeči zmizí.`,
+        html: `<ul><li><b>Rozložení dotykového ovládání</b> (<code>mz-touch-swap</code>) — jen pokud si na telefonu prohodíte ovládací prvky.</li><li><b>Identifikátor hodnocení</b> (<code>mz-voter</code>) — náhodné číslo, které vznikne, když poprvé ohodnotíte titul, abyste mohli hodnocení později změnit a aby se jeden člověk počítal jednou. Nic o vás neříká.</li><li><b>Uložené pozice</b> (IndexedDB <code>mzpico</code>) — jen když stisknete Uložit, zapnete automatické ukládání nebo otevřete soubor .mzs: snímek stavu emulovaného počítače s obrázkem obrazovky. Smažete je na stránce hry. Samotná volba automatického ukládání se pamatuje jako <code>mz-autosave</code>.</li></ul>Tato data zůstávají ve vašem zařízení; smazáním dat webu v prohlížeči zmizí.`,
       },
       {
         h2: 'Na našem serveru',

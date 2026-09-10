@@ -9,7 +9,10 @@ Built with Emscripten from upstream mz800emu plus a small patch series
 fixes). Source: the `wasm` branch at https://github.com/MZPico/mz800emu
 (also mirrored as `tools/wasm/patches/` in github.com/MZPico/mz-catalog,
 with the build recipe in `tools/wasm/README.md`) — the complete
-corresponding source, as the GPL requires.
+corresponding source, as the GPL requires. It links a static glib 2.82.5
+(LGPL) with one small patch, `tools/wasm/deps-patches/glib-2.82.5-wasm-callback-types.patch`
+in the same repository, so that callbacks are called with their own
+function types, which WebAssembly enforces.
 
 Sharp MZ ROM images embedded in the emulator are © Sharp Corporation and
 are included for preservation and interoperability purposes.

@@ -91,6 +91,8 @@ export const de: Ui = {
   },
   title: {
     play: '▶ Im Browser spielen',
+    continue: '▶ Weiterspielen',
+    continueSaved: 'gespeichert {ago}',
     playShort: '▶ Spielen',
     download: '⬇ .mzf herunterladen',
     downloadShort: '⬇ .mzf',
@@ -168,6 +170,25 @@ export const de: Ui = {
     unmute: '🔊 Ton an',
     muteTitle: 'Emulator stumm schalten / Ton einschalten',
     keysTips: 'Tasten & Tipps',
+    saves: {
+      save: '💾 Speichern',
+      saveTitle: 'Spielstand in diesem Browser speichern',
+      load: '⤴ Laden',
+      loadTitle: 'Zum gespeicherten Spielstand zurück',
+      panel: 'Gespeicherter Spielstand',
+      none: 'Für dieses Spiel gibt es noch keinen Spielstand.',
+      savedAt: 'Gespeichert {ago}.',
+      saving: 'speichere…',
+      saved: 'Spielstand gespeichert',
+      loaded: 'Spielstand geladen',
+      failed: 'Spielstand konnte nicht gespeichert werden',
+      loadFailed: 'der Spielstand passt nicht zu dieser Emulator- oder Band-Version — das Spiel läuft von vorn',
+      auto: 'Beim Spielen automatisch speichern (alle 2 Minuten und beim Verlassen der Seite)',
+      export: '⬇ .mzs herunterladen',
+      import: '⬆ .mzs öffnen…',
+      remove: '✕ Löschen',
+      note: 'Spielstände bleiben in diesem Browser auf diesem Gerät — nichts wird hochgeladen. Safari kann sie nach einer Woche ohne Besuch löschen; laden Sie die .mzs herunter, um einen dauerhaft zu behalten. Dieselbe Datei öffnet auch der Desktop-mz800emu.',
+    },
     tips: [
       'Klicken Sie auf den Bildschirm, um ihm die Tastatur zu geben. Sharp-Sondertasten: GRAPH = Feststelltaste, ALPHA = <code>\\</code>, INST = Einfg, DEL = Rücktaste.',
       'Der Emulator läuft im Kiosk-Modus: alle Tasten gehen an den MZ, außer <kbd>F11</kbd> (Vollbild an/aus, Esc verlässt es ebenfalls) und <kbd>F12</kbd> (Spiel neu starten) — dasselbe tun die Schaltflächen ⛶ Vollbild und ↻ Neustart.',
@@ -214,7 +235,7 @@ export const de: Ui = {
       },
       {
         h2: 'In Ihrem Browser gespeichert',
-        html: `<ul><li><b>Touch-Belegung</b> (<code>mz-touch-swap</code>) — nur wenn Sie am Handy die Bildschirmsteuerung vertauschen.</li><li><b>Bewertungs-Kennung</b> (<code>mz-voter</code>) — eine Zufallszahl, die bei Ihrer ersten Bewertung entsteht, damit Sie die Bewertung später ändern können und eine Person einmal zählt. Sie verrät nichts über Sie.</li></ul>Diese Daten bleiben auf Ihrem Gerät; wenn Sie die Websitedaten im Browser löschen, sind sie weg.`,
+        html: `<ul><li><b>Touch-Belegung</b> (<code>mz-touch-swap</code>) — nur wenn Sie am Handy die Bildschirmsteuerung vertauschen.</li><li><b>Bewertungs-Kennung</b> (<code>mz-voter</code>) — eine Zufallszahl, die bei Ihrer ersten Bewertung entsteht, damit Sie die Bewertung später ändern können und eine Person einmal zählt. Sie verrät nichts über Sie.</li><li><b>Spielstände</b> (IndexedDB <code>mzpico</code>) — nur wenn Sie auf Speichern drücken, das automatische Speichern einschalten oder eine .mzs-Datei öffnen: ein Abbild des emulierten Rechners mit einem Bild seines Bildschirms. Löschen können Sie sie auf der Seite des Spiels. Die Einstellung zum automatischen Speichern selbst steht unter <code>mz-autosave</code>.</li></ul>Diese Daten bleiben auf Ihrem Gerät; wenn Sie die Websitedaten im Browser löschen, sind sie weg.`,
       },
       {
         h2: 'Auf unserem Server gespeichert',

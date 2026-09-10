@@ -97,6 +97,12 @@ const breadcrumbLd = {
       )}
     </div>
 
+    {d.machine !== 'mz-1500' && (
+      <div class="continue" id="continue" hidden data-pagefind-ignore data-slug={d.slug} data-lang={lang}
+        data-play={p(`/play/${d.slug}/`)} data-multi={d.files.length > 1 ? '1' : ''}
+        data-ui={JSON.stringify({ label: t.title.continue, saved: t.title.continueSaved })}></div>
+    )}
+
     <section data-pagefind-ignore class="tape-audio tape-panel" id="tape-panel" hidden data-machine={d.machine}
       data-i18n={JSON.stringify({ generating: t.tape.generating, ready: t.tape.ready('{len}'), downloadFailed: t.tape.downloadFailed(0) })}>
       <p class="hint" set:html={t.tape.hintHtml} />
@@ -192,6 +198,34 @@ const breadcrumbLd = {
     </section>
   </article>
 </Base>
+
+<script>
+  // Continue where you left off: a saved position for this title in this
+  // browser (see lib/saves.ts) turns into a button next to Play.
+  import { savesFor, ago } from '../../lib/saves';
+  const cont = document.getElementById('continue');
+  if (cont) {
+    const ui = JSON.parse(cont.dataset.ui!) as { label: string; saved: string };
+    savesFor(cont.dataset.slug!).then((recs) => {
+      const rec = recs[0];
+      if (!rec) return;
+      const a = document.createElement('a');
+      a.className = 'btn primary';
+      a.href = `${cont.dataset.play}?file=${encodeURIComponent(rec.file)}&resume=1`;
+      if (rec.thumb) {
+        const img = document.createElement('img');
+        img.src = rec.thumb; img.alt = '';
+        a.append(img);
+      }
+      a.append(ui.label + (cont.dataset.multi ? ` (${rec.file})` : ''));
+      const when = document.createElement('span');
+      when.className = 'meta';
+      when.textContent = ui.saved.replace('{ago}', ago(rec.ts, cont.dataset.lang!));
+      cont.append(a, when);
+      cont.hidden = false;
+    });
+  }
+</script>
 
 <script>
   import { mzfToWav } from '../../lib/mzf2wav.js';
