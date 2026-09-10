@@ -283,12 +283,21 @@ const breadcrumbLd = {
       const stars = [...section.querySelectorAll<HTMLButtonElement>('.star')];
 
       // A random id in localStorage is what keeps one visitor from stuffing the
-      // ballot; there is no account and no cookie behind it.
-      let voter = localStorage.getItem('mz-voter');
-      if (!voter) {
-        voter = crypto.randomUUID();
-        try { localStorage.setItem('mz-voter', voter); } catch { /* private mode */ }
-      }
+      // ballot; there is no account and no cookie behind it. It is made on the
+      // first vote, not on page view: storing it is only needed once someone
+      // asks to rate (ePrivacy art. 5(3)), and a reader who never votes keeps
+      // nothing from us.
+      const storedVoter = () => {
+        try { return localStorage.getItem('mz-voter'); } catch { return null; }
+      };
+      const ensureVoter = () => {
+        let id = storedVoter();
+        if (!id) {
+          id = crypto.randomUUID();
+          try { localStorage.setItem('mz-voter', id); } catch { /* private mode: this vote only */ }
+        }
+        return id;
+      };
 
       const plural = (n: number) => (n === 1 ? ui.votes[0] : n < 5 ? ui.votes[1] : ui.votes[2]).replace(/\d+/, String(n));
       const paint = (s: { plays?: number; votes?: number; avg?: number; mine?: number }) => {
@@ -302,7 +311,9 @@ const breadcrumbLd = {
       };
 
       const load = async () => {
-        const res = await fetch(`/api/stats?slug=${encodeURIComponent(slug)}&voter=${voter}`);
+        // The id rides in a header, not the URL, so it stays out of access logs.
+        const voter = storedVoter();
+        const res = await fetch(`/api/stats?slug=${encodeURIComponent(slug)}`, voter ? { headers: { 'X-MZ-Voter': voter } } : {});
         if (res.ok) paint(await res.json());
       };
       load().catch(() => {});
@@ -310,6 +321,7 @@ const breadcrumbLd = {
       for (const star of stars) {
         star.addEventListener('click', async () => {
           const value = Number(star.dataset.value);
+          const voter = ensureVoter();
           paint({ mine: value });
           const res = await fetch('/api/rate', {
             method: 'POST',

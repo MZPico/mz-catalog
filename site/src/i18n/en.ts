@@ -12,6 +12,7 @@ export const en = {
   langSwitchLabel: 'Language',
   nav: { card: 'The Card', archive: 'Archive', titles: 'Featured', machines: 'Machines', about: 'About', github: 'GitHub' },
   footer: {
+    privacy: 'Privacy',
     blurb:
       'A preservation project for Sharp MZ series software. Files are offered for archival and emulation use.',
     rightsHtml: (aboutHref: string) =>
@@ -196,6 +197,38 @@ export const en = {
     takedownH2: 'Takedown requests',
     takedownHtml: (repo: string) =>
       `Files are offered for archival and educational use. If you hold rights to a title listed here and want it removed or credited differently, please <a href="${repo}/issues/new" rel="noopener">open an issue</a> or contact the maintainers through the repository. Verified requests are handled promptly.`,
+  },
+  privacy: {
+    title: 'Privacy',
+    description: `What mzpico.com stores about visitors, where, for how long and why — no cookies, no tracking.`,
+    h1: 'Privacy',
+    updated: 'Last updated',
+    sections: [
+      {
+        h2: 'In short',
+        html: `No cookies, no analytics, no advertising and nothing loaded from other companies' servers. The site remembers a few things in your own browser only when you use the feature that needs them, and our server keeps salted hashes — never your IP address or an identifier in the clear.`,
+      },
+      {
+        h2: 'Who runs the site',
+        html: `mzpico.com is a private, non-commercial project run by Martin Matyáš, who is responsible for the data described here. Contact: <a href="mailto:privacy@mzpico.com">privacy@mzpico.com</a>.`,
+      },
+      {
+        h2: 'Stored in your browser',
+        html: `<ul><li><b>Touch layout</b> (<code>mz-touch-swap</code>) — only if you swap the on-screen controls on a phone.</li><li><b>Rating id</b> (<code>mz-voter</code>) — a random number created the first time you rate a title, so you can change your rating later and so one person counts once. It says nothing about you.</li></ul>This data stays on your device; clearing the site data in your browser removes it.`,
+      },
+      {
+        h2: 'Stored on our server',
+        html: `<ul><li><b>Ratings</b>: the title, your 1–5 stars, the time, a salted hash of your rating id together with your network address, and a salted hash of the address alone (so one network cannot cast more than a few votes). Kept while the rating is shown.</li><li><b>Play counts</b>: a salted hash of your network address with the title and the day, so one network adds one play a day. Deleted after that day; only the total per title remains.</li><li><b>Abuse limit</b>: a counter of writes per hashed address and hour. Deleted after the hour.</li></ul>The salt is secret, so the hashes cannot be turned back into an address or an id. The legal basis is our legitimate interest in showing honest community ratings and protecting the site from abuse (GDPR art. 6(1)(f)).`,
+      },
+      {
+        h2: 'Hosting',
+        html: `The site runs on Cloudflare, which processes your IP address and request details to deliver the pages and protect them from attacks, as a processor under its data processing terms. Cloudflare may process data outside the EU on the basis of the EU–US Data Privacy Framework and standard contractual clauses. We do not use Cloudflare's analytics or logs to follow visitors.`,
+      },
+      {
+        h2: 'Your rights',
+        html: `You can ask for access to, correction or deletion of your data, and object to its processing. Because we only hold hashes, we can find your ratings only with the rating id from your browser — include it in your request (it is under <code>mz-voter</code> in the site's local storage). You can also complain to a data protection authority — in the Czech Republic the <a href="https://uoou.gov.cz/" rel="noopener">ÚOOÚ</a>, or the one where you live.`,
+      },
+    ],
   },
   card: {
     title: 'The MZPico Card',

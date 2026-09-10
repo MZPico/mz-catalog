@@ -1,0 +1,22 @@
+---
+import Base from '../../layouts/Base.astro';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+// Bump when the text changes in substance (GDPR notices carry their date).
+const updated = '2026-09-10';
+---
+<Base lang={lang} title={t.privacy.title} description={t.privacy.description}>
+  <article class="prose" data-pagefind-ignore>
+    <h1>{t.privacy.h1}</h1>
+    {t.privacy.sections.map((s) => (
+      <>
+        <h2>{s.h2}</h2>
+        <div set:html={s.html} />
+      </>
+    ))}
+    <p class="meta">{t.privacy.updated}: <time datetime={updated}>{updated}</time></p>
+  </article>
+</Base>

@@ -1,4 +1,4 @@
--- Community numbers behind the catalog. No personal data: `voter` and `ip` are
+-- Community numbers behind the catalog. Nothing in the clear: `voter` and `ip` are
 -- salted hashes computed in the Worker — of the visitor's own random id and of
 -- the address the request came from. Neither can be turned back into either.
 CREATE TABLE IF NOT EXISTS plays (
@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS plays (
 );
 
 -- One play per title per network per day. Keyed on the address rather than on
--- the browser's id, which the client could simply make up again.
+-- the browser's id, which the client could simply make up again. Rows from
+-- earlier days are deleted by the Worker's daily cron.
 CREATE TABLE IF NOT EXISTS play_log (
   slug TEXT NOT NULL,
   ip   TEXT NOT NULL,
@@ -28,6 +29,7 @@ CREATE INDEX IF NOT EXISTS votes_by_slug ON votes (slug);
 -- Supports the per-network cap: a household can vote, a script cannot.
 CREATE INDEX IF NOT EXISTS votes_by_ip ON votes (slug, ip);
 
+-- Hourly write budget per network; past hours are deleted by the daily cron.
 CREATE TABLE IF NOT EXISTS throttle (
   ip   TEXT    NOT NULL,
   hour INTEGER NOT NULL,

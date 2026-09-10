@@ -11,6 +11,7 @@ export const de: Ui = {
   langSwitchLabel: 'Sprache',
   nav: { card: 'Die Karte', archive: 'Archiv', titles: 'Perlen', machines: 'Computer', about: 'Über', github: 'GitHub' },
   footer: {
+    privacy: 'Datenschutz',
     blurb:
       'Ein Archivprojekt für Software der Sharp-MZ-Reihe. Die Dateien dienen der Archivierung und Emulation.',
     rightsHtml: (aboutHref: string) =>
@@ -196,6 +197,38 @@ export const de: Ui = {
     takedownH2: 'Löschanfragen',
     takedownHtml: (repo: string) =>
       `Die Dateien werden zu Archiv- und Bildungszwecken angeboten. Wenn Sie Rechte an einem hier gelisteten Titel halten und dessen Entfernung oder eine andere Nennung wünschen, <a href="${repo}/issues/new" rel="noopener">eröffnen Sie bitte ein Issue</a> oder wenden Sie sich über das Repository an die Betreuer. Geprüfte Anfragen werden zügig bearbeitet.`,
+  },
+  privacy: {
+    title: 'Datenschutz',
+    description: `Was mzpico.com über Besucher speichert, wo, wie lange und warum — keine Cookies, kein Tracking.`,
+    h1: 'Datenschutz',
+    updated: 'Zuletzt geändert',
+    sections: [
+      {
+        h2: 'Kurz gesagt',
+        html: `Keine Cookies, keine Analyse, keine Werbung und nichts, was von Servern anderer Firmen geladen wird. Einige wenige Dinge merkt sich die Seite in Ihrem eigenen Browser, und nur, wenn Sie die Funktion nutzen, die sie braucht. Unser Server speichert gesalzene Hashes — nie Ihre IP-Adresse oder eine Kennung im Klartext.`,
+      },
+      {
+        h2: 'Wer die Seite betreibt',
+        html: `mzpico.com ist ein privates, nicht kommerzielles Projekt von Martin Matyáš, der für die hier beschriebenen Daten verantwortlich ist. Kontakt: <a href="mailto:privacy@mzpico.com">privacy@mzpico.com</a>.`,
+      },
+      {
+        h2: 'In Ihrem Browser gespeichert',
+        html: `<ul><li><b>Touch-Belegung</b> (<code>mz-touch-swap</code>) — nur wenn Sie am Handy die Bildschirmsteuerung vertauschen.</li><li><b>Bewertungs-Kennung</b> (<code>mz-voter</code>) — eine Zufallszahl, die bei Ihrer ersten Bewertung entsteht, damit Sie die Bewertung später ändern können und eine Person einmal zählt. Sie verrät nichts über Sie.</li></ul>Diese Daten bleiben auf Ihrem Gerät; wenn Sie die Websitedaten im Browser löschen, sind sie weg.`,
+      },
+      {
+        h2: 'Auf unserem Server gespeichert',
+        html: `<ul><li><b>Bewertungen</b>: der Titel, Ihre 1–5 Sterne, der Zeitpunkt, ein gesalzener Hash Ihrer Bewertungs-Kennung zusammen mit Ihrer Netzwerkadresse sowie ein gesalzener Hash der Adresse allein (damit ein Netzwerk nur wenige Stimmen abgeben kann). Gespeichert, solange die Bewertung angezeigt wird.</li><li><b>Spielzähler</b>: ein gesalzener Hash Ihrer Netzwerkadresse mit Titel und Tag, damit ein Netzwerk höchstens ein Spiel pro Tag zählt. Nach dem Tag gelöscht; übrig bleibt nur die Summe je Titel.</li><li><b>Missbrauchsschutz</b>: ein Zähler der Schreibzugriffe je gehashter Adresse und Stunde. Nach der Stunde gelöscht.</li></ul>Das Salz ist geheim, die Hashes lassen sich also nicht in eine Adresse oder Kennung zurückverwandeln. Rechtsgrundlage ist unser berechtigtes Interesse, ehrliche Community-Bewertungen zu zeigen und die Seite vor Missbrauch zu schützen (Art. 6 Abs. 1 lit. f DSGVO).`,
+      },
+      {
+        h2: 'Hosting',
+        html: `Die Seite läuft bei Cloudflare, das als Auftragsverarbeiter nach seinen Datenverarbeitungsbedingungen Ihre IP-Adresse und Anfragedaten verarbeitet, um die Seiten auszuliefern und vor Angriffen zu schützen. Cloudflare kann Daten auch außerhalb der EU verarbeiten, auf Grundlage des EU-US Data Privacy Framework und von Standardvertragsklauseln. Wir nutzen weder Cloudflares Analysen noch seine Logs, um Besucher zu verfolgen.`,
+      },
+      {
+        h2: 'Ihre Rechte',
+        html: `Sie können Auskunft, Berichtigung oder Löschung Ihrer Daten verlangen und der Verarbeitung widersprechen. Da wir nur Hashes haben, finden wir Ihre Bewertungen nur mit der Bewertungs-Kennung aus Ihrem Browser — fügen Sie sie Ihrer Anfrage bei (sie steht unter <code>mz-voter</code> im lokalen Speicher der Seite). Beschweren können Sie sich bei einer Datenschutzaufsichtsbehörde — in Tschechien beim <a href="https://uoou.gov.cz/" rel="noopener">ÚOOÚ</a> oder bei der Behörde Ihres Wohnsitzlandes.`,
+      },
+    ],
   },
   card: {
     title: 'Die MZPico-Karte',

@@ -154,6 +154,9 @@ h2::before { content: "> "; color: var(--muted); }
 .shots img { width: 100%; background: #000; border: 1px solid var(--line); border-radius: 8px; image-rendering: pixelated; display: block; }
 
 .prose p { margin: 0 0 0.9rem; max-width: 70ch; }
+.prose ul { margin: 0 0 0.9rem; padding-left: 1.3rem; max-width: 70ch; }
+.prose li { margin: 0 0 0.45rem; }
+.prose > div { margin: 0 0 0.9rem; max-width: 70ch; }
 pre.controls { white-space: pre-wrap; font-family: var(--mono); font-size: 0.9rem; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 0.75rem 1rem; max-width: 70ch; }
 
 /* Tape audio panel (collapsible) */

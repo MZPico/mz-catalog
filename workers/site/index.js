@@ -1,13 +1,16 @@
 // The site is static; this Worker sits in front of it only to answer /api/*.
 //
 //   GET  /api/stats                     aggregate for every title (archive list)
-//   GET  /api/stats?slug=x&voter=y      one title, including that voter's own rating
+//   GET  /api/stats?slug=x              one title; with an X-MZ-Voter header, also
+//                                       that voter's own rating
 //   POST /api/rate  {slug, value, voter}
 //   POST /api/play  {slug}
 //
-// There are no accounts and no cookies. A visitor is a random id kept in their
-// own localStorage, salted and hashed here so the database never holds it (nor
-// the IP it arrived from) in the clear.
+// There are no accounts and no cookies. A visitor who rates is a random id kept
+// in their own localStorage (made on the first vote, sent in a header rather
+// than the URL), salted and hashed here so the database never holds it (nor the
+// IP it arrived from) in the clear. A daily cron drops what is only needed for
+// a short while: the play log after its day, the throttle after its hour.
 //
 // That id is the client's to invent, so it decides nothing on its own: writes
 // must come from our own pages, every address has an hourly budget, a title
@@ -112,6 +115,17 @@ async function statsForOne(env, request, slug, voter) {
   });
 }
 
+/** Drop what only mattered for a while. The plays and votes tables keep only
+ * totals and the pseudonymous ballots needed to let someone change a vote. */
+async function prune(env) {
+  const today = new Date().toISOString().slice(0, 10);
+  const hour = Math.floor(Date.now() / 3600000);
+  await env.STATS.batch([
+    env.STATS.prepare('DELETE FROM play_log WHERE day < ?').bind(today),
+    env.STATS.prepare('DELETE FROM throttle WHERE hour < ?').bind(hour),
+  ]);
+}
+
 async function rate(env, request, url) {
   if (!sameOrigin(request, url)) return bad('not accepted from here', 403);
   const body = await readBody(request);
@@ -174,7 +188,7 @@ export default {
         const slug = url.searchParams.get('slug');
         if (!slug) return statsForAll(env, ctx, request);
         if (!SLUG_RE.test(slug)) return bad('bad slug');
-        return statsForOne(env, request, slug, url.searchParams.get('voter'));
+        return statsForOne(env, request, slug, request.headers.get('X-MZ-Voter'));
       }
       if (request.method === 'POST' && url.pathname === '/api/rate') return rate(env, request, url);
       if (request.method === 'POST' && url.pathname === '/api/play') return play(env, request, url);
@@ -182,5 +196,9 @@ export default {
     } catch (err) {
       return json({ error: String(err) }, { status: 500 });
     }
+  },
+
+  async scheduled(_event, env, ctx) {
+    if (env.STATS) ctx.waitUntil(prune(env));
   },
 };

@@ -98,6 +98,7 @@ const structured = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
       <div class="wrap">
         <p>{t.footer.blurb}</p>
         <p set:html={t.footer.rightsHtml(p('/about/'))} />
+        <p><a href={p('/privacy/')}>{t.footer.privacy}</a></p>
       </div>
     </footer>
   </body>

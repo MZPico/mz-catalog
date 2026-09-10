@@ -11,6 +11,7 @@ export const cs: Ui = {
   langSwitchLabel: 'Jazyk',
   nav: { card: 'Karta', archive: 'Archiv', titles: 'Pecky', machines: 'Počítače', about: 'O projektu', github: 'GitHub' },
   footer: {
+    privacy: 'Soukromí',
     blurb:
       'Archivační projekt pro software řady Sharp MZ. Soubory slouží k archivaci a emulaci.',
     rightsHtml: (aboutHref: string) =>
@@ -195,6 +196,38 @@ export const cs: Ui = {
     takedownH2: 'Žádosti o stažení',
     takedownHtml: (repo: string) =>
       `Soubory jsou nabízeny pro archivační a vzdělávací účely. Pokud držíte práva k některému zde uvedenému titulu a přejete si jeho odstranění nebo jiné uvedení autorství, <a href="${repo}/issues/new" rel="noopener">založte prosím issue</a> nebo kontaktujte správce přes repozitář. Ověřené žádosti řeším bez odkladu.`,
+  },
+  privacy: {
+    title: 'Soukromí',
+    description: `Co mzpico.com o návštěvnících ukládá, kde, jak dlouho a proč — žádné cookies, žádné sledování.`,
+    h1: 'Ochrana soukromí',
+    updated: 'Naposledy upraveno',
+    sections: [
+      {
+        h2: 'Stručně',
+        html: `Žádné cookies, žádná analytika, žádná reklama a nic se nenačítá ze serverů jiných firem. Pár věcí si web pamatuje ve vašem prohlížeči, a to jen když použijete funkci, která je potřebuje. Náš server uchovává jen solené otisky (hashe) — nikdy vaši IP adresu ani identifikátor v čitelné podobě.`,
+      },
+      {
+        h2: 'Kdo web provozuje',
+        html: `mzpico.com je soukromý nekomerční projekt, který provozuje Martin Matyáš; ten také odpovídá za zde popsaná data. Kontakt: <a href="mailto:privacy@mzpico.com">privacy@mzpico.com</a>.`,
+      },
+      {
+        h2: 'Ve vašem prohlížeči',
+        html: `<ul><li><b>Rozložení dotykového ovládání</b> (<code>mz-touch-swap</code>) — jen pokud si na telefonu prohodíte ovládací prvky.</li><li><b>Identifikátor hodnocení</b> (<code>mz-voter</code>) — náhodné číslo, které vznikne, když poprvé ohodnotíte titul, abyste mohli hodnocení později změnit a aby se jeden člověk počítal jednou. Nic o vás neříká.</li></ul>Tato data zůstávají ve vašem zařízení; smazáním dat webu v prohlížeči zmizí.`,
+      },
+      {
+        h2: 'Na našem serveru',
+        html: `<ul><li><b>Hodnocení</b>: titul, počet hvězdiček, čas, solený otisk vašeho identifikátoru spolu s adresou sítě a solený otisk samotné adresy (aby jedna síť nemohla hlasovat víckrát než párkrát). Uchovává se, dokud se hodnocení zobrazuje.</li><li><b>Počty spuštění</b>: solený otisk adresy vaší sítě s titulem a dnem, aby jedna síť přidala nejvýš jedno spuštění denně. Po skončení dne se maže; zůstává jen součet za titul.</li><li><b>Ochrana proti zneužití</b>: počítadlo zápisů za otisk adresy a hodinu. Po uplynutí hodiny se maže.</li></ul>Sůl je tajná, takže otisky nejde převést zpět na adresu ani na identifikátor. Právním základem je náš oprávněný zájem ukazovat poctivá hodnocení komunity a chránit web před zneužitím (čl. 6 odst. 1 písm. f) GDPR).`,
+      },
+      {
+        h2: 'Hosting',
+        html: `Web běží na Cloudflare, který jako zpracovatel podle svých podmínek zpracování dat zpracovává vaši IP adresu a údaje o požadavku, aby stránky doručil a chránil je před útoky. Cloudflare může data zpracovávat i mimo EU na základě rámce EU–USA pro ochranu osobních údajů a standardních smluvních doložek. Analytiku ani logy Cloudflare ke sledování návštěvníků nepoužíváme.`,
+      },
+      {
+        h2: 'Vaše práva',
+        html: `Můžete žádat o přístup ke svým údajům, jejich opravu či výmaz a vznést námitku proti zpracování. Protože máme jen otisky, najdeme vaše hodnocení jen s identifikátorem z vašeho prohlížeče — přiložte ho k žádosti (najdete ho pod <code>mz-voter</code> v místním úložišti webu). Stížnost můžete podat u dozorového úřadu — v Česku u <a href="https://uoou.gov.cz/" rel="noopener">ÚOOÚ</a>, případně u úřadu v zemi, kde žijete.`,
+      },
+    ],
   },
   card: {
     title: 'Karta MZPico',
