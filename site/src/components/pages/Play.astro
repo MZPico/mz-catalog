@@ -349,6 +349,7 @@ const ui = {
         setStatus: (m) => { status.textContent = m; },
         onRuntimeInitialized: () => {
           status.textContent = ''; canvas.focus(); runtimeReady = true;
+          window.__mzReady = true; // the module below may attach after this fires
           document.dispatchEvent(new CustomEvent('mz:ready'));
           // Keep the screen awake while playing — also stops aggressive tab throttling (Edge efficiency mode).
           let lock = null;
@@ -549,7 +550,8 @@ const ui = {
     getSave(slug, file).then((rec) => { current = rec; render(); });
     setInterval(render, 30000); // keep "saved … ago" current
 
-    document.addEventListener('mz:ready', async () => {
+    const onReady = async () => {
+      if (ready) return;
       const t = (window as unknown as { __mzTape?: { bytes: Uint8Array } }).__mzTape;
       if (t) tape = await tapeFingerprint(t.bytes);
       ready = true;
@@ -561,6 +563,8 @@ const ui = {
         const rec = current ?? (await getSave(slug, file));
         if (rec) { await running(); await sleep(300); restore(rec.mzs); }
       }
-    });
+    };
+    if ((window as unknown as { __mzReady?: boolean }).__mzReady) onReady();
+    else document.addEventListener('mz:ready', onReady, { once: true });
   </script>
 </Base>

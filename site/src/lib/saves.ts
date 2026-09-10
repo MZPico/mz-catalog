@@ -21,8 +21,12 @@ const STORE = 'saves';
 
 function open(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB, 1);
-    req.onupgradeneeded = () => req.result.createObjectStore(STORE, { keyPath: 'key' });
+    // Version 2: a database of that name without the store (opened by something
+    // else first) gets it on upgrade instead of failing every transaction.
+    const req = indexedDB.open(DB, 2);
+    req.onupgradeneeded = () => {
+      if (!req.result.objectStoreNames.contains(STORE)) req.result.createObjectStore(STORE, { keyPath: 'key' });
+    };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
   });
