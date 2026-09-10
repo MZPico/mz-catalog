@@ -1,6 +1,11 @@
 title: "Manic Miner 800"
 web: true
+year: 1987
 publisher: "Unisoft"
+original:
+  title: "Manic Miner"
+  publisher: "Software Projects"
+  year: 1983
 machine: mz-800
 mode: native
 port: zx-spectrum
@@ -53,4 +58,4 @@ touch:
     - { label: "JUMP", key: "Space" }
   extra:
     - { label: "CR", key: "Enter" }
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage. Slovak version by Unisoft, Banská Bystrica, dated 24.11.1987. Original by Matthew Smith.
