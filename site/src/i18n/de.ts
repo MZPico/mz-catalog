@@ -189,7 +189,9 @@ export const de: Ui = {
       remove: '✕ Löschen',
       note: 'Spielstände bleiben in diesem Browser auf diesem Gerät — nichts wird hochgeladen. Safari kann sie nach einer Woche ohne Besuch löschen; laden Sie die .mzs herunter, um einen dauerhaft zu behalten. Dieselbe Datei öffnet auch der Desktop-mz800emu.',
     },
+    gamepad: '🎮 Controller: {map}',
     tips: [
+      'Auch Gamepads funktionieren (Xbox, PlayStation, 8BitDo…): zum Verbinden einmal eine beliebige Taste drücken. Steuerkreuz oder linker Stick = Pfeiltasten, A/B/X/Y = die Tasten des Spiels, Start und Schultertasten = seine weiteren Tasten — die Zeile unter dem Bild zeigt die genaue Belegung.',
       'Klicken Sie auf den Bildschirm, um ihm die Tastatur zu geben. Sharp-Sondertasten: GRAPH = Feststelltaste, ALPHA = <code>\\</code>, INST = Einfg, DEL = Rücktaste.',
       'Der Emulator läuft im Kiosk-Modus: alle Tasten gehen an den MZ, außer <kbd>F11</kbd> (Vollbild an/aus, Esc verlässt es ebenfalls) und <kbd>F12</kbd> (Spiel neu starten) — dasselbe tun die Schaltflächen ⛶ Vollbild und ↻ Neustart.',
       'Handy und Tablet: 🎮 Touch zeigt ein Steuerkreuz auf dem Bildschirm (Cursortasten samt Diagonalen), FIRE (Leertaste) und RET (Enter) — für die meisten Spiele genug. Handy quer drehen und ⛶ Vollbild nutzen.',

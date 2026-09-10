@@ -188,7 +188,9 @@ export const cs: Ui = {
       remove: '✕ Smazat',
       note: 'Uložené pozice zůstávají v tomto prohlížeči na tomto zařízení — nic se nikam neposílá. Safari je může po týdnu bez návštěvy smazat, proto si pozici, o kterou nechcete přijít, stáhněte jako .mzs. Stejný soubor otevře i desktopový mz800emu.',
     },
+    gamepad: '🎮 Ovladač: {map}',
     tips: [
+      'Funguje i herní ovladač (Xbox, PlayStation, 8BitDo…): pro připojení stiskněte jednou libovolné tlačítko. Kříž nebo levá páčka = šipky, A/B/X/Y = tlačítka hry, Start a boční tlačítka = její další klávesy — přesné přiřazení ukáže řádek pod obrazovkou.',
       'Kliknutím na obrazovku jí předáte klávesnici. Speciální klávesy Sharpu: GRAPH = Caps Lock, ALPHA = <code>\\</code>, INST = Insert, DEL = Backspace.',
       'Emulátor běží v režimu kiosku: všechny klávesy jdou do MZ kromě <kbd>F11</kbd> (zvětšení: celá obrazovka, Esc ji také opustí) a <kbd>F12</kbd> (restart hry) — totéž dělají tlačítka ⛶ Celá obrazovka a ↻ Restart.',
       'Telefon a tablet: tlačítko 🎮 Dotyk zobrazí kříž (kurzorové šipky včetně diagonál), FIRE (mezerník) a RET (Enter) — pro většinu her to stačí. Otočte telefon na šířku a použijte ⛶ Celou obrazovku.',

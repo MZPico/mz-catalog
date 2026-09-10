@@ -32,6 +32,7 @@ const ui = {
   mute: t.play.mute,
   unmute: t.play.unmute,
   pace: t.play.pace(0),
+  gamepad: t.play.gamepad,
 };
 ---
 <Base lang={lang} title={t.play.headline(d.title)} description={t.play.pageDescription(d.title)}>
@@ -63,6 +64,7 @@ const ui = {
     <span class="play-status meta" id="play-status"></span>
   </div>
   <p class="play-pace" id="play-pace" hidden></p>
+  <p class="play-gamepad meta" id="play-gamepad" hidden></p>
   <section class="play-saves" id="play-saves" data-slug={d.slug} data-lang={lang} data-files={JSON.stringify(files)}
     data-emu={emuVersion} data-ui={JSON.stringify(t.play.saves)}>
     <img id="save-thumb" alt="" hidden />
@@ -273,6 +275,69 @@ const ui = {
     const setTouch = (on) => { touchEl.hidden = !on; touchEl.setAttribute('aria-hidden', String(!on)); swapBtn.hidden = !on; document.getElementById('play-touch-toggle').classList.toggle('active', on); if (!on) { padRelease(); } };
     document.getElementById('play-touch-toggle').addEventListener('click', () => setTouch(touchEl.hidden));
     if (params.has('touch') || params.has('touchspec') || matchMedia('(pointer: coarse)').matches) setTouch(true);
+
+    // ---- Game controllers (Gamepad API, "standard" layout). The same spec as the touch overlay,
+    // so every title that describes its keys for phones is playable on a controller for free:
+    // d-pad / left stick = the pad keys, A B X Y = the buttons in order, Start = the START extra
+    // (else the first extra, else Enter), Select and the shoulders = the remaining extras.
+    const gpMap = (() => {
+      const extras = Array.isArray(spec.extra) ? [...spec.extra] : [];
+      const map = new Map(); // gamepad button index -> { key, label }
+      buttons.slice(0, 4).forEach((b, i) => map.set(i, b));          // 0 A, 1 B, 2 X, 3 Y
+      const si = extras.findIndex((b) => /start/i.test(b.label));
+      const start = si >= 0 ? extras.splice(si, 1)[0] : extras.shift() ?? { label: 'RET', key: 'Enter' };
+      map.set(9, start);                                               // Start / Options / Menu
+      for (const idx of [8, 4, 5, 6, 7]) { const b = extras.shift(); if (b) map.set(idx, b); } // Select, LB, RB, LT, RT
+      return map;
+    })();
+    const GP_NAMES = { 0: 'A', 1: 'B', 2: 'X', 3: 'Y', 4: 'LB', 5: 'RB', 6: 'LT', 7: 'RT', 8: 'Select', 9: 'Start' };
+    const gpEl = document.getElementById('play-gamepad');
+    const gpLegend = () => {
+      const parts = [...gpMap].sort((a, b) => [0, 1, 2, 3, 9, 8, 4, 5, 6, 7].indexOf(a[0]) - [0, 1, 2, 3, 9, 8, 4, 5, 6, 7].indexOf(b[0]))
+        .map(([i, b]) => `${GP_NAMES[i]} = ${b.label}`);
+      if (padKeys) parts.unshift(`✚ = ${spec.pad === 'wasd' ? 'WASD' : typeof spec.pad === 'object' && spec.pad ? Object.values(padKeys).join(' ') : '← ↑ → ↓'}`);
+      return ui.gamepad.replace('{map}', parts.join(' · '));
+    };
+    const gpDown = new Set(); // keys (names) the controller currently holds
+    const gpSet = (want) => {
+      for (const k of gpDown) if (!want.has(k)) { gpDown.delete(k); sendKey('keyup', k); }
+      for (const k of want) if (!gpDown.has(k)) { gpDown.add(k); sendKey('keydown', k); }
+    };
+    // Polled on a timer, not per animation frame: the emulator's rendering can hold the page to a
+    // few frames a second on slow devices, and input must not wait for the picture.
+    let gpActive = false, gpTimer = 0;
+    const gpStop = () => { clearInterval(gpTimer); gpTimer = 0; };
+    const gpPoll = () => {
+      const pads = [...(navigator.getGamepads?.() ?? [])].filter(Boolean);
+      if (!pads.length) { gpSet(new Set()); gpStop(); return; }
+      const want = new Set();
+      for (const gp of pads) {
+        const pressed = (i) => !!gp.buttons[i]?.pressed;
+        if (padKeys) {
+          const ax = gp.axes[0] ?? 0, ay = gp.axes[1] ?? 0, dz = 0.5;
+          if (pressed(12) || ay < -dz) want.add(padKeys.up);
+          if (pressed(13) || ay > dz) want.add(padKeys.down);
+          if (pressed(14) || ax < -dz) want.add(padKeys.left);
+          if (pressed(15) || ax > dz) want.add(padKeys.right);
+        }
+        for (const [i, b] of gpMap) if (pressed(i) && KEYS[b.key]) want.add(b.key);
+      }
+      if (want.size && !gpActive) {
+        // First real use: the controller replaces the on-screen pad, and shows its mapping.
+        gpActive = true;
+        if (!touchEl.hidden) setTouch(false);
+        gpEl.textContent = gpLegend(); gpEl.hidden = false;
+        window.Module?.SDL3?.audioContext?.resume?.()?.catch?.(() => {});
+      }
+      gpSet(want);
+    };
+    const gpStart = () => { if (!gpTimer) gpTimer = setInterval(gpPoll, 8); };
+    addEventListener('gamepadconnected', gpStart);
+    addEventListener('gamepaddisconnected', () => { if (![...(navigator.getGamepads?.() ?? [])].some(Boolean)) { gpSet(new Set()); gpActive = false; gpEl.hidden = true; } });
+    // A key held while the tab loses focus would stay down in the MZ.
+    addEventListener('blur', () => gpSet(new Set()));
+    document.addEventListener('visibilitychange', () => { if (document.hidden) { gpSet(new Set()); gpStop(); } else if ([...(navigator.getGamepads?.() ?? [])].some(Boolean)) gpStart(); });
+    if ([...(navigator.getGamepads?.() ?? [])].some(Boolean)) gpStart();
 
     // Pace indicator: emulated frames (50/s) vs wall clock. Sags mean the browser or
     // machine is throttling the emulator thread — tell the player instead of feeling "slow".

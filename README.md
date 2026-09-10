@@ -289,6 +289,17 @@ npx wrangler d1 execute mz-catalog-stats-staging --remote --file=workers/site/sc
 npx wrangler d1 execute mz-catalog-stats --remote --file=workers/site/schema.sql -c wrangler.jsonc
 ```
 
+## Game controllers
+
+The play page reads game controllers through the Gamepad API and maps them
+from the title's `touch` spec, so nothing extra goes into `meta.yaml`: d-pad
+and left stick = the pad keys, A/B/X/Y = `buttons` in order, Start = the extra
+labelled START (else the first extra, else Enter), Select, LB, RB, LT, RT = the
+remaining extras. The controller is polled on an 8 ms timer rather than per
+animation frame, because the emulator's rendering can hold a slow device to a
+few frames a second. First use hides the touch overlay and shows the mapping
+under the screen.
+
 ## Saved positions
 
 The play page can save the whole emulated machine and resume it later

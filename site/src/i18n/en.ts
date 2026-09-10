@@ -189,7 +189,9 @@ export const en = {
       remove: '✕ Delete',
       note: 'Saved positions stay in this browser on this device — nothing is uploaded. Safari may clear them after a week without a visit, so download the .mzs to keep one for good. The same file opens in the desktop mz800emu.',
     },
+    gamepad: '🎮 Controller: {map}',
     tips: [
+      'Game controllers work too (Xbox, PlayStation, 8BitDo…): press any button once to connect. D-pad or left stick = the arrows, A/B/X/Y = the game&rsquo;s buttons, Start and the shoulder buttons = its other keys — the line under the screen shows the exact mapping.',
       'Click the screen to give it keyboard focus. Sharp specials: GRAPH = Caps Lock, ALPHA = <code>\\</code>, INST = Insert, DEL = Backspace.',
       'The emulator runs in kiosk mode: every key goes to the MZ except <kbd>F11</kbd> (zoom: fullscreen on/off, Esc also leaves it) and <kbd>F12</kbd> (restart the game) — same as the ⛶ Fullscreen and ↻ Restart buttons.',
       'Phones/tablets: 🎮 Touch shows an on-screen pad (cursor keys, diagonals included), FIRE (Space) and RET (Enter) — enough for most games. Turn the phone sideways and use ⛶ Fullscreen.',

@@ -430,3 +430,6 @@ body.pseudo-fs-on { overflow: hidden; }
 .continue { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; margin: -0.4rem 0 1rem; }
 .continue img { height: 3rem; aspect-ratio: 928 / 576; object-fit: fill; border-radius: 3px; background: #000; }
 .continue .btn { display: inline-flex; align-items: center; gap: 0.55rem; }
+
+/* Controller mapping line under the player */
+.play-gamepad { margin: 0.3rem 0 0; }
