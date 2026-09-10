@@ -1,9 +1,20 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
-title: "Bbg's Quixy"
+title: "Quixy"
+publisher: "BBG Software"
 machine: mz-700
 genre: [game]
 files:
   - path: quixy.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.
+    note: Tape name "BBG's QUIXY". A German-language loader (J/N prompts) sits in front of the game.
+controls: |
+  Cursor keys, and Space or Z — as the title screen puts it
+  Y — play again at "Try again ?"
+touch:
+  buttons:
+    - { label: "SPACE", key: "Space" }
+    - { label: "Z", key: "Z" }
+  extra:
+    - { label: "Y", key: "Y" }
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. A Qix clone; its own title screen spells the name "Qixi" and credits it "by AS". A second dump of the same game was catalogued as bbg-qixi (tape name "BBG's Qixi c") — same screens and rules, 6 KB larger but without this loader — and the entries were merged on 2026-09-10.

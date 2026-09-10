@@ -95,7 +95,12 @@ def main():
         bits = [b for b in (field(meta, 'year'), field(meta, 'publisher'), machine) if b]
         card(shot, title.upper(), ' - '.join(bits), f'{OUT}/{slug}.png')
         made += 1
-    print(f'wrote {made} card(s) to {OUT}/')
+    # A title that left the catalog should not leave its card behind.
+    live = {os.path.basename(os.path.dirname(m)) for m in glob.glob('titles/*/meta.yaml')}
+    stale = [c for c in glob.glob(f'{OUT}/*.png') if os.path.splitext(os.path.basename(c))[0] not in live]
+    for c in stale:
+        os.remove(c)
+    print(f'wrote {made} card(s) to {OUT}/' + (f', removed {len(stale)} stale' if stale else ''))
 
 
 if __name__ == '__main__':
