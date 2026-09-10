@@ -1,6 +1,12 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Fernandez (code)"
+year: 1993
+publisher: "SAKR Soft"
+original:
+  title: "Fernandez Must Die"
+  publisher: "Imageworks"
+  year: 1988
 machine: mz-800
 mode: native
 port: zx-spectrum
@@ -8,4 +14,4 @@ genre: [game]
 files:
   - path: fer-b.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage. By Roman Konečný, Ostrava, 6.4.1993.

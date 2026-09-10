@@ -1,6 +1,12 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Jetpac.V32K"
+year: 1988
+publisher: "J&R Soft"
+original:
+  title: "Jetpac"
+  publisher: "Ultimate Play the Game"
+  year: 1983
 machine: mz-800
 mode: native
 port: zx-spectrum

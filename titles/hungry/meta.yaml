@@ -1,6 +1,11 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Hungry Horace"
+year: 1989
+publisher: "Petr Pátík"
+original:
+  publisher: "Melbourne House"
+  year: 1982
 machine: mz-800
 mode: native
 port: zx-spectrum
@@ -8,4 +13,4 @@ genre: [game]
 files:
   - path: hungry.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage. Sharp version 2, Děčín 1989. Original by Beam Software.

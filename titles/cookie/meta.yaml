@@ -1,6 +1,11 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Cookie"
+year: 1990
+publisher: "CATE soft"
+original:
+  publisher: "Ultimate Play the Game"
+  year: 1983
 machine: mz-800
 mode: native
 port: zx-spectrum
@@ -8,4 +13,4 @@ genre: [game]
 files:
   - path: cookie.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage. Sharp version dated 23.9.1990.

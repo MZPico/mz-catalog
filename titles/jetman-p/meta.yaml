@@ -1,6 +1,12 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Jetman (color)"
+year: 1988
+publisher: "J.O. Vsetín"
+original:
+  title: "Jetpac"
+  publisher: "Ultimate Play the Game"
+  year: 1983
 machine: mz-800
 mode: native
 port: zx-spectrum
@@ -8,4 +14,4 @@ genre: [game]
 files:
   - path: jetman-p.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage. Sharp version dated 26.12.1988.

@@ -1,6 +1,8 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Revers"
+year: 1988
+publisher: "J&R Soft"
 machine: mz-700
 genre: [game]
 files:

@@ -1,6 +1,10 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Blue Max 16 KB"
+original:
+  title: "Blue Max"
+  publisher: "U.S. Gold"
+  year: 1984
 machine: mz-800
 mode: native
 port: zx-spectrum
@@ -8,4 +12,4 @@ genre: [game]
 files:
   - path: blue-max.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage. Original by Bob Polin.

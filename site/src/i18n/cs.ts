@@ -114,6 +114,7 @@ export const cs: Ui = {
     mode700: 'kompatibilní režim MZ-700',
     modeTitle: 'Provozní režim MZ-800',
     portZx: 'ZX port',
+    original: 'Originál',
     portTitle: 'Konverze ze ZX Spectra',
     languageTitle: 'Jazyk',
     notCurated:

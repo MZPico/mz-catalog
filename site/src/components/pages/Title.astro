@@ -35,6 +35,12 @@ const gameLd = {
   ...(d.year ? { datePublished: String(d.year) } : {}),
   ...(d.publisher ? { publisher: { '@type': 'Organization', name: d.publisher } } : {}),
   ...(d.language ? { inLanguage: d.language } : {}),
+  ...(d.original ? { isBasedOn: {
+    '@type': 'VideoGame',
+    name: d.original.title ?? d.title,
+    ...(d.original.year ? { datePublished: String(d.original.year) } : {}),
+    ...(d.original.publisher ? { publisher: { '@type': 'Organization', name: d.original.publisher } } : {}),
+  } } : {}),
   description: description ?? summary,
   ...(d.screenshots.length ? { image: d.screenshots.map((f) => abs(`/screenshots/${d.slug}/${f}`)) } : {}),
   downloadUrl: abs(`/files/${d.slug}/${d.files[0].path}`),
@@ -58,6 +64,9 @@ const breadcrumbLd = {
     <div class="title-head">
       <h1>{d.title}</h1>
       <span class="meta">{[d.year, d.publisher].filter(Boolean).join(' · ')}</span>
+      {d.original && (
+        <span class="meta original">{t.title.original}: {[d.original.title, d.original.publisher, d.original.year].filter(Boolean).join(', ')}{d.port === 'zx-spectrum' && ' (ZX Spectrum)'}</span>
+      )}
     </div>
     <div class="title-badges">
       <a class:list={['badge', d.machine]} href={p(`/machines/${d.machine}/`)} data-pagefind-filter="machine">{machineLabel[d.machine]}</a>

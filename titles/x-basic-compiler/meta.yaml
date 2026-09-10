@@ -1,10 +1,12 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "X-BASIC compiler"
+year: 1987
+publisher: "BBG Software"
 machine: mz-800
 mode: native
 genre: [language]
 files:
   - path: x-basic_compiler.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder languages); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder languages); originally Oracle Object Storage. Extended BASIC compiler by Bryan Hayes (26.4.1987), distributed by BBG Software; correction and cassette adaptation by MiKrSoft, 25.11.1988.

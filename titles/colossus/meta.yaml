@@ -1,9 +1,14 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Colossus V4.0/89"
+year: 1989
+original:
+  title: "Colossus Chess 4"
+  publisher: "Martin Bryan"
+  year: 1986
 machine: mz-700
 genre: [game]
 files:
   - path: colossus.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. Screen reads "(C) 1986 M.Bryan"; the binary also carries a repeated "89CiSoft" signature.

@@ -115,6 +115,7 @@ export const en = {
     mode700: 'MZ-700 compatibility mode',
     modeTitle: 'MZ-800 operating mode',
     portZx: 'ZX port',
+    original: 'Original',
     portTitle: 'Converted from the ZX Spectrum version',
     languageTitle: 'Language',
     notCurated:

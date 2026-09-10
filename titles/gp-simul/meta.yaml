@@ -1,6 +1,11 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "G.p.simulator 2"
+publisher: "Proton Software"
+original:
+  title: "Grand Prix Simulator 2"
+  publisher: "Code Masters"
+  year: 1988
 machine: mz-800
 mode: native
 port: zx-spectrum

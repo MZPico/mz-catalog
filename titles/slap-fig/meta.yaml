@@ -1,6 +1,12 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Slap Fight New!"
+year: 1992
+publisher: "Perex Soft"
+original:
+  title: "Slap Fight"
+  publisher: "Imagine Software"
+  year: 1987
 machine: mz-800
 mode: native
 port: zx-spectrum
@@ -8,4 +14,4 @@ genre: [game]
 files:
   - path: slap-fig.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage. Based on the J.O. Vsetín conversion of 25.3.1989.

@@ -114,6 +114,7 @@ export const de: Ui = {
     mode700: 'MZ-700-Kompatibilitätsmodus',
     modeTitle: 'MZ-800-Betriebsmodus',
     portZx: 'ZX port',
+    original: 'Original',
     portTitle: 'Umsetzung der ZX-Spectrum-Fassung',
     languageTitle: 'Sprache',
     notCurated:

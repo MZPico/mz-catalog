@@ -1,6 +1,11 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Spindizzy-32K"
+publisher: "Petr Pátík"
+original:
+  title: "Spindizzy"
+  publisher: "Electric Dreams Software"
+  year: 1986
 machine: mz-800
 mode: native
 port: zx-spectrum
@@ -8,4 +13,4 @@ genre: [game]
 files:
   - path: spindizzy.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage. Signed "Mz-complement by Petr Patik", poked version 3.1c.

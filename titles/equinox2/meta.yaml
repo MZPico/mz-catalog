@@ -1,6 +1,11 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Equinox (color)"
+year: 1989
+publisher: "J.O. Vsetín"
+original:
+  publisher: "Mikro-Gen"
+  year: 1986
 machine: mz-800
 mode: native
 port: zx-spectrum
@@ -8,4 +13,4 @@ genre: [game]
 files:
   - path: equinox2.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage. The same program was also catalogued as equinox4 (tape name "EQUINOX.PRG"); merged on 2026-09-09.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage. The same program was also catalogued as equinox4 (tape name "EQUINOX.PRG"); merged on 2026-09-09. Sharp version dated 4.2.1989.

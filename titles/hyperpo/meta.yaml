@@ -1,6 +1,8 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Hyper Poke 1.3"
+year: 1993
+publisher: "Microcode"
 machine: mz-800
 mode: native
 port: zx-spectrum
@@ -8,4 +10,4 @@ genre: [game]
 files:
   - path: hyperpo.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage. By David Voráček; produced by Miracle Corp.

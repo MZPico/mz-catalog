@@ -1,6 +1,10 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Nodes of Yesod"
+publisher: "Proton Software"
+original:
+  publisher: "Odin Computer Graphics"
+  year: 1985
 machine: mz-800
 mode: native
 port: zx-spectrum

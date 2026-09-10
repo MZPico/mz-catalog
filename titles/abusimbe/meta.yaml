@@ -1,6 +1,10 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Abu Simbel"
+original:
+  title: "Abu Simbel Profanation"
+  publisher: "Dinamic Software"
+  year: 1985
 machine: mz-800
 mode: native
 port: zx-spectrum
@@ -8,4 +12,4 @@ genre: [game]
 files:
   - path: abusimbe.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage. Original by Victor Ruiz.

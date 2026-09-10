@@ -1,6 +1,9 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Tankmachine"
+original:
+  publisher: "Alternative Software"
+  year: 1990
 machine: mz-800
 mode: native
 port: zx-spectrum
@@ -8,4 +11,4 @@ genre: [game]
 files:
   - path: tankmac.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage. Original by Enigma Variations for Britt Allcroft.

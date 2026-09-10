@@ -1,6 +1,8 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "SHARP Basic 800"
+year: 1984
+publisher: "Sharp Corp."
 machine: mz-800
 mode: native
 genre: [language]

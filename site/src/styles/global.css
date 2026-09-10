@@ -121,6 +121,7 @@ h2::before { content: "> "; color: var(--muted); }
 /* Title page */
 .title-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.7rem; }
 .title-head .meta { color: var(--muted); }
+.title-head .original { flex-basis: 100%; margin-top: -0.5rem; font-size: 0.9rem; }
 .title-badges { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.5rem 0 1.1rem; align-items: center; }
 
 /* Action bar — the one place with the important buttons */

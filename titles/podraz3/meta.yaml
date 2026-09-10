@@ -1,9 +1,11 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Podraz III"
+year: 1987
+publisher: "Manic Software"
 machine: mz-700
 genre: [game]
 files:
   - path: podraz3.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. The same program also circulated as "PODRAZ 3"; that dump was byte-identical and its duplicate entry (podraz-3) was merged into this one on 2026-09-09.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. The same program also circulated as "PODRAZ 3"; that dump was byte-identical and its duplicate entry (podraz-3) was merged into this one on 2026-09-09. After Fuxoft.

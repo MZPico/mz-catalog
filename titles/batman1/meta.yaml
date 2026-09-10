@@ -1,6 +1,11 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Batman"
+year: 2001
+publisher: "RDOS"
+original:
+  publisher: "Ocean"
+  year: 1986
 machine: mz-800
 mode: native
 port: zx-spectrum
@@ -8,4 +13,4 @@ genre: [game]
 files:
   - path: batman1.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage. ZX2MZ conversion by RDOS, 27.11.2001. Original by Jon Ritman.

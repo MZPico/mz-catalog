@@ -1,6 +1,11 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Dizzy III"
+publisher: "mZx Software"
+original:
+  title: "Fantasy World Dizzy"
+  publisher: "Code Masters"
+  year: 1989
 machine: mz-800
 mode: native
 port: zx-spectrum

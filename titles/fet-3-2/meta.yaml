@@ -1,10 +1,12 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Fet 3.2 MZ-800cs"
+year: 1988
+publisher: "Pezik"
 machine: mz-800
 mode: native
 genre: [utility]
 files:
   - path: fet-3-2.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder programs); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder programs); originally Oracle Object Storage. Czech texts by R&L soft.

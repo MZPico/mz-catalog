@@ -1,6 +1,10 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Equinox.new"
+publisher: "Proton Software"
+original:
+  publisher: "Mikro-Gen"
+  year: 1986
 machine: mz-800
 mode: native
 port: zx-spectrum

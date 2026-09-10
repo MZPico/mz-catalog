@@ -1,9 +1,10 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Send-1"
+publisher: "ZAT Soft"
 machine: mz-700
 genre: [game]
 files:
   - path: send2.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. Programmed by Yoshihiro Sonoda.

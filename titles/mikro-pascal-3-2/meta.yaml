@@ -1,10 +1,11 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Mikro Pascal Gr"
+year: 1986
 machine: mz-800
 mode: native
 genre: [language]
 files:
   - path: mikro_pascal_3.2.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder languages); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder languages); originally Oracle Object Storage. Banner reads "SVOSOFT" and "1986 URRP Praha"; publisher left open.

@@ -1,9 +1,11 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Cirkus Star"
+year: 1983
+publisher: "OAK Corp."
 machine: mz-700
 genre: [game]
 files:
   - path: circus1.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. The same program was also catalogued as circus2 (tape name "CIRCUS STAR PRG."); merged on 2026-09-09.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. The same program was also catalogued as circus2 (tape name "CIRCUS STAR PRG."); merged on 2026-09-09. Programmed by K. Kobayashi & Kobax, produced by Kyoto Computer Brains.

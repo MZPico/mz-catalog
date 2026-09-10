@@ -69,7 +69,8 @@ The structure is flat: machine type is metadata, not a directory level.
    |---|---|---|
    | `title` | yes | display name |
    | `year` | no | integer; omit if unknown |
-   | `publisher` | no | publisher, author or group |
+   | `publisher` | no | publisher, author or group — of the Sharp version: for a conversion, the converter ("SHARP VERSION BY J.O. VSETIN 1988"), not the original house |
+   | `original` | no | for conversions: `{title, publisher, year}` of the release it was converted from, all optional; `title` only when the name differs. Shown under the heading as "Original: …" and as `isBasedOn` in the JSON-LD |
    | `genre` | yes | list; allowed values are in the schema (`game`, `arcade`, `adventure`, `puzzle`, `strategy`, `sports`, `simulation`, `rpg`, `text`, `demo`, `utility`, `language`, `education`, `music`, `graphics`, `system`, `other`) |
    | `machine` | yes | `mz-700`, `mz-800` or `mz-1500` |
    | `mode` | MZ-800 only | `native` or `mz-700` (compatibility mode); forbidden for other machines |
@@ -244,7 +245,8 @@ and scans the program for copyright and credit lines, into
 `<out>/<slug>/hints.json`. `tools/screenshots/metadata-hints.py <out>` turns
 those into year / publisher suggestions with the evidence beside them — for a
 human to confirm, since the year on a title screen may be the port's rather
-than the original's.
+than the original's. The convention: `year`/`publisher` get the Sharp
+version, the original release goes to `original`.
 
 ## The logotype
 

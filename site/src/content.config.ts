@@ -53,6 +53,7 @@ const titles = defineCollection({
     title: z.string(),
     year: z.number().int().optional(),
     publisher: z.string().optional(),
+    original: z.object({ title: z.string().optional(), publisher: z.string().optional(), year: z.number().int().optional() }).optional(),
     genre: z.array(z.string()),
     machine: z.enum(['mz-700', 'mz-800', 'mz-1500']),
     mode: z.enum(['native', 'mz-700']).optional(),

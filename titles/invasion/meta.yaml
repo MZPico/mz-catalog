@@ -1,6 +1,8 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Invasion 800"
+year: 1986
+publisher: "Anselm Althöfer"
 machine: mz-700
 genre: [game]
 files:

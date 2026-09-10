@@ -1,6 +1,9 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Draughts Prg"
+original:
+  publisher: "Hewson Consultants"
+  year: 1987
 machine: mz-800
 mode: native
 port: zx-spectrum

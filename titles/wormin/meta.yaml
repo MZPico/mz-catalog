@@ -1,6 +1,12 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Worm in Paradise"
+year: 1993
+publisher: "RDOS"
+original:
+  title: "The Worm in Paradise"
+  publisher: "Level 9"
+  year: 1985
 machine: mz-800
 mode: native
 port: zx-spectrum
@@ -8,4 +14,4 @@ genre: [game]
 files:
   - path: wormin.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage. Conversion by Roman Dolejší, presented by Miracle Corp.

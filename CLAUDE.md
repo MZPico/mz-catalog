@@ -20,7 +20,9 @@ card (RP2040-based storage card for the MZ-800).
   CI on every PR.
 
 ## meta.yaml fields
-title, year, publisher, genre[], machine (mz-700|mz-800|mz-1500),
+title, year, publisher (both of the Sharp version — for a conversion,
+the converter), original {title, publisher, year} (the release it was
+converted from), genre[], machine (mz-700|mz-800|mz-1500),
 mode (for MZ-800: native|mz-700), language, files[] {path, kind:
 standard|turbo|alt-dump, note}, description, controls, source,
 touch (optional: pad/buttons/extra for the phone overlay, see schema),

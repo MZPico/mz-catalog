@@ -114,6 +114,7 @@ export const ja: Ui = {
     mode700: 'MZ-700 互換モード',
     modeTitle: 'MZ-800 の動作モード',
     portZx: 'ZX port',
+    original: 'オリジナル',
     portTitle: 'ZX Spectrum 版からの移植',
     languageTitle: '言語',
     notCurated:

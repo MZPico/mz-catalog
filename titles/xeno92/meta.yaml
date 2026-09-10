@@ -1,6 +1,12 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Xeno 1992"
+year: 1992
+publisher: "Proton Software"
+original:
+  title: "Xeno"
+  publisher: "A'n'F Software"
+  year: 1986
 machine: mz-800
 mode: native
 port: zx-spectrum

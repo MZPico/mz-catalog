@@ -1,6 +1,8 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Megab"
+year: 1993
+publisher: "Microcode"
 machine: mz-800
 mode: native
 port: zx-spectrum
@@ -8,4 +10,4 @@ genre: [game]
 files:
   - path: megab.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-zx); originally Oracle Object Storage. Conversion by David Voráček; construction poke by Matasoft.

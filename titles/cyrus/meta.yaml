@@ -1,9 +1,11 @@
 # Bootstrap-imported from the legacy MZPico cloud catalog on 2026-08-31.
 # TODO: verify/curate — title, year, publisher, genre, language, description.
 title: "Cyrus/270887"
+year: 1982
+publisher: "Intelligent Software"
 machine: mz-700
 genre: [game]
 files:
   - path: cyrus.mzf
     kind: standard
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. Cyrus chess by Richard Lang.

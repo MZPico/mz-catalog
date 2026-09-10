@@ -81,6 +81,17 @@
         "arcade"
       ]
     },
+    "original": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "description": "For conversions: the release this one was converted from. year/publisher above describe the Sharp version itself.",
+      "properties": {
+        "title": { "type": "string", "minLength": 1, "maxLength": 120, "description": "Original name, when it differs from the Sharp title." },
+        "publisher": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "year": { "type": "integer", "minimum": 1970, "maximum": 2100 }
+      }
+    },
     "language": {
       "type": "string",
       "pattern": "^[a-z]{2,3}$",
