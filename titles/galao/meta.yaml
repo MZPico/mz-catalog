@@ -1,5 +1,7 @@
 title: "Galao"
 web: true
+year: 1983
+publisher: "Fuji Onkyo Microcomputer Center RAM"
 machine: mz-700
 genre: [game]
 files:
@@ -47,4 +49,4 @@ touch:
     - { label: "FIRE", key: "Space" }
   extra:
     - { label: "START", key: "S" }
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.
+source: "Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. This is the PCG version; the tape image reads \"PCG GALAO ... ORIGINAL MZ-80K/C/1200/700 [VERSION 1.00] 1983.3\". Publisher per the We Love MZ-700 catalog (http://we-love-mz.sakura.ne.jp/wiki/?GALAO): 富士音響マイコンセンターRAM, machine code for MZ-80K and MZ-700, 3,000 yen."

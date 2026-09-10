@@ -1,5 +1,6 @@
 title: "Muc Mac 800"
 web: true
+publisher: "BBG Software"
 machine: mz-800
 mode: native
 genre: [game]
@@ -44,4 +45,4 @@ touch:
     - { label: "START", key: "S" }
   extra:
     - { label: "Y", key: "Y" }
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-800); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-800); originally Oracle Object Storage. Publisher per SharpMZ.org (sharpmz.org/mz-700/mucmac), which lists the tape as BBG with an MZ-800 version on one side and an MZ-700 version on the other; no year is known.

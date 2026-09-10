@@ -1,5 +1,6 @@
 title: "Moty"
 web: true
+year: 1985
 publisher: "BBG Software"
 machine: mz-800
 mode: native
@@ -52,4 +53,4 @@ touch:
     - { label: "GO", key: "Space" }
   extra:
     - { label: "START", key: "S" }
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-800); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-800); originally Oracle Object Storage. The tape image reads "(C) 1985 BBG SOFTWARE".

@@ -1,5 +1,6 @@
 title: "Submarine Shooter!"
 web: true
+year: 1983
 publisher: "Hudson Soft"
 machine: mz-700
 genre: [game]
@@ -45,4 +46,4 @@ controls: |
 touch:
   buttons:
     - { label: "FIRE", key: "Space" }
-source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage.
+source: Legacy MZPico cloud catalog (api.mzpico.com, folder games-700); originally Oracle Object Storage. The tape image reads "COPYRIGHT (C) 1983 HUDSONSOFT", written by Kiku (Masaaki Kikuta).
