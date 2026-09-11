@@ -1,0 +1,44 @@
+title: "BomberNet"
+web: true
+year: 2026
+publisher: "MZPico"
+original:
+  title: "Bomber Man"
+  publisher: "Hudson Soft Inc."
+  year: 1983
+machine: mz-700
+genre: [game]
+files:
+  - path: bombernet.mzf
+    kind: standard
+    note: "Build with network play; needs an MZPico (or this browser player) for online rooms."
+description:
+  en: |
+    The 1983 Bomber Man rebuilt for more players. Cooperative or deathmatch for up
+    to four: two on the keyboard, two on joysticks, and over the network between
+    MZ-800s with an MZPico and this browser player. Same bricks, monsters, bonus
+    and exit as the original; player colours, a lobby with four-letter room codes
+    and lockstep play are new.
+
+    Pick MODE, PLAYERS and inputs on the title with the cursor keys. HOST creates a
+    room and shows its code; JOIN asks for one. Source and protocol:
+    github.com/MZPico/BomberNet.
+  cs: |
+    Bomber Man z roku 1983 přestavěný pro více hráčů. Kooperace nebo deathmatch až
+    pro čtyři: dva na klávesnici, dva na joysticích a po síti mezi MZ-800 s MZPico
+    a tímto přehrávačem v prohlížeči. Stejné cihly, příšery, bonus i východ jako v
+    originále; nové jsou barvy hráčů, lobby s čtyřpísmennými kódy místností a
+    synchronní hra.
+
+    Na titulní obrazovce se kurzorovými klávesami volí MODE, PLAYERS a ovládání.
+    HOST založí místnost a ukáže její kód, JOIN si o kód řekne. Zdrojové kódy a
+    protokol: github.com/MZPico/BomberNet.
+controls: |
+  Cursor keys — menu, player 1
+  Space — start, drop a bomb (CR when a second keyboard player is set)
+  W A S D + E — player 2 on the keyboard
+touch:
+  buttons:
+    - { label: "BOMB", key: "Space" }
+    - { label: "E", key: "E" }
+source: MZPico/BomberNet on GitHub, built from the C port of the 1983 Hudson Soft original (bomber.mzf in this catalog).
