@@ -35,8 +35,10 @@ const gameLd = {
   ...(d.year ? { datePublished: String(d.year) } : {}),
   ...(d.publisher ? { publisher: { '@type': 'Organization', name: d.publisher } } : {}),
   ...(d.language ? { inLanguage: d.language } : {}),
+  // The original as a plain CreativeWork: a nested VideoGame is read by Google as a second
+  // software app, which then fails for lack of offers/rating.
   ...(d.original ? { isBasedOn: {
-    '@type': 'VideoGame',
+    '@type': 'CreativeWork',
     name: d.original.title ?? d.title,
     ...(d.original.year ? { datePublished: String(d.original.year) } : {}),
     ...(d.original.publisher ? { publisher: { '@type': 'Organization', name: d.original.publisher } } : {}),
@@ -44,6 +46,9 @@ const gameLd = {
   description: description ?? summary,
   ...(d.screenshots.length ? { image: d.screenshots.map((f) => abs(`/screenshots/${d.slug}/${f}`)) } : {}),
   downloadUrl: abs(`/files/${d.slug}/${d.files[0].path}`),
+  // Google's software-app results need offers, review or aggregateRating; a free download is
+  // an offer at price 0 (their own guidance for free apps).
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR', url: abs(`/files/${d.slug}/${d.files[0].path}`) },
   ...(d.machine !== 'mz-1500' ? { installUrl: abs(p(`/play/${d.slug}/`)) } : {}),
 };
 const breadcrumbLd = {
