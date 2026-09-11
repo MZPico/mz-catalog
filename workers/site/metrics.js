@@ -167,7 +167,7 @@ export async function metricsApi(env, request, url) {
     env.STATS.prepare('SELECT day, metric, key, value FROM metrics_daily WHERE day >= ? ORDER BY day').bind(from),
     env.STATS.prepare(`SELECT (SELECT COALESCE(SUM(n), 0) FROM plays) AS plays,
                               (SELECT COUNT(*) FROM votes) AS votes,
-                              (SELECT COUNT(DISTINCT slug) FROM plays) AS titles_played`),
+                              (SELECT COUNT(*) FROM plays WHERE n > 0) AS titles_played`),
   ]);
   return new Response(JSON.stringify({
     from, to: today(), generated: new Date().toISOString(),

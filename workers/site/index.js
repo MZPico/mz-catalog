@@ -34,6 +34,13 @@ const WEEKLY_CRON = '0 7 * * 1';
 
 const json = (body, init = {}) =>
   new Response(JSON.stringify(body), { ...init, headers: { ...JSON_HEADERS, ...init.headers } });
+/** A cache hit with our own lifetime restored: the zone's browser-cache TTL would
+ * otherwise stretch a minute of edge cache into four hours in the browser. */
+const fromCache = (hit, ttl) => {
+  const res = new Response(hit.body, hit);
+  res.headers.set('Cache-Control', `public, max-age=${ttl}`);
+  return res;
+};
 const bad = (message, status = 400) => json({ error: message }, { status });
 
 async function hash(...parts) {
@@ -87,7 +94,7 @@ async function statsForAll(env, ctx, request) {
   const cache = caches.default;
   const key = new Request(new URL('/api/stats', request.url), { method: 'GET' });
   const hit = await cache.match(key);
-  if (hit) return hit;
+  if (hit) return fromCache(hit, ALL_TTL);
 
   const [plays, votes] = await env.STATS.batch([
     env.STATS.prepare('SELECT slug, n FROM plays'),
@@ -193,9 +200,26 @@ export default {
     try {
       if (request.method === 'GET' && url.pathname === '/api/stats') {
         const slug = url.searchParams.get('slug');
+        if (slug && !SLUG_RE.test(slug)) return bad('bad slug');
+        // Crawlers render title pages and ask for the stars too; Googlebot's bursts
+        // of hundreds at once timed the database out (504s for everyone). They get
+        // empty numbers without a query.
+        if (isBot(request)) {
+          return json(slug ? { slug, plays: 0, votes: 0, avg: 0, mine: 0 } : { titles: {} },
+            { headers: { 'Cache-Control': 'public, max-age=3600' } });
+        }
         if (!slug) return statsForAll(env, ctx, request);
-        if (!SLUG_RE.test(slug)) return bad('bad slug');
-        return statsForOne(env, request, slug, request.headers.get('X-MZ-Voter'));
+        const voter = request.headers.get('X-MZ-Voter');
+        if (voter) return statsForOne(env, request, slug, voter);
+        // Without a voter the answer is the same for everyone: a minute of edge cache.
+        const key = new Request(new URL(`/api/stats?slug=${slug}`, request.url), { method: 'GET' });
+        const hit = await caches.default.match(key);
+        if (hit) return fromCache(hit, ALL_TTL);
+        const fresh = await statsForOne(env, request, slug, null);
+        const res = new Response(fresh.body, fresh);
+        res.headers.set('Cache-Control', `public, max-age=${ALL_TTL}`);
+        ctx.waitUntil(caches.default.put(key, res.clone()));
+        return res;
       }
       if (request.method === 'POST' && url.pathname === '/api/rate') return rate(env, request, url);
       if (request.method === 'POST' && url.pathname === '/api/play') return play(env, request, url);
