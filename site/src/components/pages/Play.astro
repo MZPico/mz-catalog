@@ -89,17 +89,6 @@ const ui = {
   </details>
   <p class="meta" set:html={t.play.creditHtml} />
 
-  <script is:inline define:vars={{ playSlug: d.slug }}>
-    // One play per network per title per day; the Worker counts it and decides
-    // whether it counts at all.
-    fetch('/api/play', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ slug: playSlug }),
-      keepalive: true,
-    }).catch(() => {});
-  </script>
-
   <script define:vars={{ slug: d.slug, files, touch: d.touch ?? null, emuVersion, ui }}>
     const params = new URLSearchParams(location.search);
     const file = files.includes(params.get('file')) ? params.get('file') : files[0];
@@ -130,6 +119,7 @@ const ui = {
     const toggleFullscreen = () => {
       if (pseudoOnly) { setPseudoFs(!pseudoFs); canvas.focus(); return; }
       if (fsElement()) { rawExit?.call(document); return; }
+      window.mzEvent?.('fullscreen');
       // Phones: fullscreen + landscape gives the 16:10 screen the whole display (lock is best-effort).
       rawRequest.call(frame, { navigationUI: 'hide' })?.then?.(() => screen.orientation?.lock?.('landscape').catch(() => {}))?.catch?.(() => {});
     };
@@ -146,6 +136,18 @@ const ui = {
       fsAutoDone = true;
       toggleFullscreen();
     };
+    // A play counts once a person actually plays: the first key, tap, click or controller
+    // button while the emulator runs. Crawlers render this page too (Googlebot does) and
+    // used to count as players. The Worker also refuses anything that says it is a robot.
+    let played = false, interacted = false;
+    const countPlay = () => {
+      if (played || !interacted || !runtimeReady) return;
+      played = true;
+      fetch('/api/play', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ slug }), keepalive: true }).catch(() => {});
+    };
+    const markInteraction = () => { interacted = true; countPlay(); };
+    addEventListener('keydown', markInteraction, { capture: true });
+    addEventListener('pointerdown', markInteraction, { capture: true });
     const restart = () => {
       if (runtimeReady && typeof window.Module?._mz_wasm_restart === 'function') { window.Module._mz_wasm_restart(); canvas.focus(); }
       else location.reload();
@@ -250,6 +252,8 @@ const ui = {
       const k = Math.min(dist, r.width * 0.3) / (dist || 1); nub.style.transform = `translate(${dx * k}px, ${dy * k}px)`;
     };
     const padRelease = () => { padPointer = null; setHeld(new Set()); nub.style.transform = ''; };
+    let touchCounted = false;
+    touchEl.addEventListener('pointerdown', () => { if (!touchCounted) { touchCounted = true; window.mzEvent?.('touch'); } }, { capture: true });
     pad.addEventListener('pointerdown', (e) => { e.preventDefault(); padPointer = e.pointerId; pad.setPointerCapture(e.pointerId); padUpdate(e); });
     pad.addEventListener('pointermove', (e) => { if (e.pointerId === padPointer) padUpdate(e); });
     for (const t of ['pointerup', 'pointercancel', 'lostpointercapture']) pad.addEventListener(t, (e) => { if (e.pointerId === padPointer) padRelease(); });
@@ -325,6 +329,7 @@ const ui = {
       if (want.size && !gpActive) {
         // First real use: the controller replaces the on-screen pad, and shows its mapping.
         gpActive = true;
+        markInteraction(); window.mzEvent?.('gamepad');
         if (!touchEl.hidden) setTouch(false);
         gpEl.textContent = gpLegend(); gpEl.hidden = false;
         window.Module?.SDL3?.audioContext?.resume?.()?.catch?.(() => {});
@@ -413,7 +418,7 @@ const ui = {
         },
         setStatus: (m) => { status.textContent = m; },
         onRuntimeInitialized: () => {
-          status.textContent = ''; canvas.focus(); runtimeReady = true;
+          status.textContent = ''; canvas.focus(); runtimeReady = true; countPlay();
           window.__mzReady = true; // the module below may attach after this fires
           document.dispatchEvent(new CustomEvent('mz:ready'));
           // Keep the screen awake while playing — also stops aggressive tab throttling (Edge efficiency mode).
@@ -503,6 +508,7 @@ const ui = {
     let current: SaveRecord | null = null;
     let ready = false, busy = false, tape = '';
 
+    const track = (e: string) => (window as unknown as { mzEvent?: (e: string) => void }).mzEvent?.(e);
     const say = (m: string) => {
       statusEl.textContent = m;
       setTimeout(() => { if (statusEl.textContent === m) statusEl.textContent = ''; }, 4000);
@@ -555,7 +561,7 @@ const ui = {
         await putSave(rec);
         current = rec;
         render();
-        if (!quiet) say(ui.saved);
+        if (!quiet) { say(ui.saved); track('save'); }
       } catch {
         if (!quiet) say(ui.failed);
       } finally {
@@ -582,17 +588,18 @@ const ui = {
     autoBox.checked = autoOn();
     autoBox.addEventListener('change', () => {
       try { localStorage.setItem('mz-autosave', autoBox.checked ? '1' : ''); } catch { /* private mode */ }
-      if (autoBox.checked) save(true);
+      if (autoBox.checked) { save(true); track('autosave'); }
     });
     setInterval(() => { if (autoOn() && document.visibilityState === 'visible') save(true); }, 120000);
     document.addEventListener('visibilitychange', () => { if (autoOn() && document.visibilityState === 'hidden') save(true); });
     addEventListener('pagehide', () => { if (autoOn()) save(true); });
 
     saveBtn.addEventListener('click', () => { wake(); save(); });
-    loadBtn.addEventListener('click', () => { wake(); if (current) restore(current.mzs); });
+    loadBtn.addEventListener('click', () => { wake(); if (current) { restore(current.mzs); track('load'); } });
     removeBtn.addEventListener('click', async () => { await deleteSave(slug, file); current = null; render(); });
     exportBtn.addEventListener('click', () => {
       if (!current) return;
+      track('export');
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([current.mzs], { type: 'application/zip' }));
       a.download = files.length > 1 ? `${slug}-${file.replace(/\.mzf$/i, '')}.mzs` : `${slug}.mzs`;
@@ -606,6 +613,7 @@ const ui = {
       if (!f) return;
       const mzs = new Uint8Array(await f.arrayBuffer());
       if (!(await restore(mzs))) return;
+      track('import');
       // Kept only once it has proven to load.
       current = { key: saveKey(slug, file), slug, file, ts: Date.now(), emu: emuBuild, tape, mzs, thumb: await thumbFromMzs(mzs) };
       await putSave(current);

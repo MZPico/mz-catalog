@@ -36,3 +36,22 @@ CREATE TABLE IF NOT EXISTS throttle (
   n    INTEGER NOT NULL,
   PRIMARY KEY (ip, hour)
 );
+
+-- The monitor (metrics.js): per-day totals, nothing that identifies anyone.
+-- metric/key pairs: page '/titles/flappy/', source 'search:google', country 'CZ',
+-- visitors '', plays '', bot 'ai-train|GPTBot (OpenAI)', card 'download', …
+CREATE TABLE IF NOT EXISTS metrics_daily (
+  day    TEXT    NOT NULL,
+  metric TEXT    NOT NULL,
+  key    TEXT    NOT NULL DEFAULT '',
+  value  INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (day, metric, key)
+);
+
+-- Visitors per day: a salted hash of address + browser + day, only to count each
+-- visitor once. Deleted by the daily cron the next day.
+CREATE TABLE IF NOT EXISTS visit_log (
+  day     TEXT NOT NULL,
+  visitor TEXT NOT NULL,
+  PRIMARY KEY (day, visitor)
+);

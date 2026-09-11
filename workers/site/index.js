@@ -5,6 +5,7 @@
 //                                       that voter's own rating
 //   POST /api/rate  {slug, value, voter}
 //   POST /api/play  {slug}
+//   POST /api/hit, GET /api/metrics      the monitor, see metrics.js
 //
 // There are no accounts and no cookies. A visitor who rates is a random id kept
 // in their own localStorage (made on the first vote, sent in a header rather
@@ -16,6 +17,8 @@
 // must come from our own pages, every address has an hourly budget, a title
 // takes at most VOTES_PER_IP votes from one network, and play counts are keyed
 // on the network alone.
+import { hit, metricsApi, daily, weekly, isBot } from './metrics.js';
+
 const JSON_HEADERS = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,63}$/;
 const ALL_TTL = 60;
@@ -26,6 +29,8 @@ const VOTES_PER_IP = 3;
 // Ceiling on writes from one address per hour, so nobody can hammer the
 // database even while staying under the per-title cap.
 const WRITES_PER_HOUR = 60;
+// Mondays 07:00 UTC: the weekly summary mail (wrangler.jsonc triggers).
+const WEEKLY_CRON = '0 7 * * 1';
 
 const json = (body, init = {}) =>
   new Response(JSON.stringify(body), { ...init, headers: { ...JSON_HEADERS, ...init.headers } });
@@ -57,14 +62,14 @@ function sameOrigin(request, url) {
 }
 
 /** Count this write against the address's hourly budget. */
-async function withinBudget(env, ip) {
+async function withinBudget(env, ip, limit = WRITES_PER_HOUR) {
   const hour = Math.floor(Date.now() / 3600000);
   const row = await env.STATS.prepare(
     `INSERT INTO throttle (ip, hour, n) VALUES (?, ?, 1)
        ON CONFLICT (ip, hour) DO UPDATE SET n = n + 1
        RETURNING n`,
   ).bind(ip, hour).first();
-  return (row?.n ?? 0) <= WRITES_PER_HOUR;
+  return (row?.n ?? 0) <= limit;
 }
 
 async function readBody(request) {
@@ -157,6 +162,8 @@ async function rate(env, request, url) {
 
 async function play(env, request, url) {
   if (!sameOrigin(request, url)) return bad('not accepted from here', 403);
+  // Crawlers render the play page too (Googlebot does); only people count.
+  if (isBot(request)) return json({ ok: true });
   const body = await readBody(request);
   const slug = body?.slug;
   if (!SLUG_RE.test(slug ?? '')) return bad('bad slug');
@@ -192,13 +199,25 @@ export default {
       }
       if (request.method === 'POST' && url.pathname === '/api/rate') return rate(env, request, url);
       if (request.method === 'POST' && url.pathname === '/api/play') return play(env, request, url);
+      if (request.method === 'POST' && url.pathname === '/api/hit') {
+        return hit(env, request, {
+          sameOrigin: sameOrigin(request, url),
+          readBody,
+          hash: (...parts) => hash(env.STATS_SALT ?? 'unsalted', ...parts),
+          withinBudget: (key, limit) => withinBudget(env, key, limit),
+        });
+      }
+      if (request.method === 'GET' && url.pathname === '/api/metrics') return metricsApi(env, request, url);
       return bad('not found', 404);
     } catch (err) {
       return json({ error: String(err) }, { status: 500 });
     }
   },
 
-  async scheduled(_event, env, ctx) {
-    if (env.STATS) ctx.waitUntil(prune(env));
+  async scheduled(event, env, ctx) {
+    if (!env.STATS) return;
+    if (event.cron === WEEKLY_CRON) ctx.waitUntil(weekly(env));
+    // Yesterday's totals first: they are read from the play log that prune() clears.
+    else ctx.waitUntil(daily(env).catch((err) => console.error('daily metrics:', String(err))).then(() => prune(env)));
   },
 };
