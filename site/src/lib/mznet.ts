@@ -34,6 +34,7 @@ const emu = () => (window as unknown as { Module?: Emu }).Module;
 
 /** Connect the emulator's NET device to the relay at relayBase (e.g. wss://host/net). */
 export function attachNet(relayBase: string, onState?: (s: NetState) => void): () => void {
+  (window as unknown as { __mzNetAttach?: number }).__mzNetAttach = ((window as unknown as { __mzNetAttach?: number }).__mzNetAttach ?? 0) + 1;
   const state: NetState = { linked: false, code: '', slot: -1, members: 0, running: false, desync: false, dropped: false };
   const emit = () => onState?.({ ...state });
   let ws: WebSocket | null = null;

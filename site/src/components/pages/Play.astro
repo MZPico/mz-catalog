@@ -658,6 +658,7 @@ const ui = {
         : 'network: ready';
     });
   };
+  (window as unknown as { __mzNetScript?: boolean }).__mzNetScript = true;
   if ((window as unknown as { __mzReady?: boolean }).__mzReady) start();
   else document.addEventListener('mz:ready', start, { once: true });
 </script>
