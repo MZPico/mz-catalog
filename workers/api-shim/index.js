@@ -20,6 +20,8 @@
 // paths that do not exist, countries, and cards per day through a salted hash
 // of the address kept for that day only (visit_log, cleared by the site's cron).
 // Anything that is not /list or /download is a scanner and only counted as such.
+import { netUpgrade } from '../site/net.js';
+
 const DEFAULT_ORIGIN = 'https://mzpico.com';
 
 const UPSERT = `INSERT INTO metrics_daily (day, metric, key, value) VALUES (?, ?, ?, 1)
@@ -57,6 +59,7 @@ const json = (obj) =>
 export default {
   async fetch(req, env, ctx) {
     const origin = env?.CATALOG_ORIGIN ?? DEFAULT_ORIGIN;
+    if (new URL(req.url).pathname === '/net') return netUpgrade(req, env);   // multiplayer relay (see wrangler.jsonc)
     const url = new URL(req.url);
     const p = (url.searchParams.get('path') ?? '/').replace(/^\/+/, '').replace(/\/+$/, '');
     const country = req.cf?.country ?? 'XX';

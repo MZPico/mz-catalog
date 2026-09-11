@@ -12,5 +12,10 @@
   ],
   "routes": [
     { "pattern": "api.mzpico.com/*", "zone_name": "mzpico.com" }
-  ]
+  ],
+  // Multiplayer relay for the physical card: ws://api.mzpico.com/net (this host is
+  // plain HTTP, the Pico speaks no TLS). The rooms are the site Worker's Durable
+  // Objects (script_name), so a card and a browser meet in the same room. Deploy
+  // the site Worker (mz-catalog) first: the class must exist before this binds to it.
+  "durable_objects": { "bindings": [{ "name": "NET_ROOM", "class_name": "NetRoom", "script_name": "mz-catalog" }] }
 }
