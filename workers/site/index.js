@@ -18,6 +18,7 @@
 // takes at most VOTES_PER_IP votes from one network, and play counts are keyed
 // on the network alone.
 import { hit, metricsApi, reportNow, collectNow, daily, weekly, isBot } from './metrics.js';
+import { netUpgrade } from './net.js';
 
 const JSON_HEADERS = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,63}$/;
@@ -191,9 +192,12 @@ async function play(env, request, url) {
   return json({ ok: true });
 }
 
+export { NetRoom } from './net.js';
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    if (url.pathname === '/net') return netUpgrade(request, env);   // multiplayer relay (Durable Object)
     if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(request);
     if (!env.STATS) return json({ error: 'stats database not bound' }, { status: 503 });
 

@@ -19,6 +19,10 @@
   // REPORT_TO (a verified Email Routing destination for the weekly mail).
   "vars": { "ZONE_ID": "e335ff5884e852f2f6c333c823d4ef1a", "SITE_HOST": "mzpico.com", "SITE_URL": "https://mzpico.com" },
   "send_email": [{ "name": "REPORT_MAIL" }],
+  // Multiplayer relay (workers/site/net.js): one Durable Object per room, SQLite-backed
+  // (the only kind on the free plan), reached through /net.
+  "durable_objects": { "bindings": [{ "name": "NET_ROOM", "class_name": "NetRoom" }] },
+  "migrations": [{ "tag": "v1-netroom", "new_sqlite_classes": ["NetRoom"] }],
   "d1_databases": [
     {
       "binding": "STATS",

@@ -641,3 +641,24 @@ const ui = {
     else document.addEventListener('mz:ready', onReady, { once: true });
   </script>
 </Base>
+
+<!-- MZPico NET: attach the browser emulator to the multiplayer relay once the
+     runtime is up. The game decides whether to use it (NETWORK row on its title);
+     the panel only mirrors the room state. Relay: same origin, /net. -->
+<script>
+  import { attachNet } from '../../lib/mznet';
+  const start = () => {
+    const relay = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/net`;
+    const panel = document.getElementById('netpanel');
+    attachNet(relay, (s) => {
+      if (!panel) return;
+      panel.hidden = !s.linked && !s.code;
+      panel.textContent = !s.linked ? 'network: offline'
+        : s.code ? `room ${s.code} · ${s.members} player${s.members === 1 ? '' : 's'}${s.running ? ' · running' : ''}${s.desync ? ' · DESYNC' : ''}${s.dropped ? ' · a player left' : ''}`
+        : 'network: ready';
+    });
+  };
+  if ((window as unknown as { __mzReady?: boolean }).__mzReady) start();
+  else document.addEventListener('mz:ready', start, { once: true });
+</script>
+<p id="netpanel" class="meta" hidden></p>
