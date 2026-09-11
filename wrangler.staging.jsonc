@@ -15,7 +15,12 @@
     "not_found_handling": "404-page"
   },
   // Daily clean-up of short-lived rows (see prune() in the Worker).
-  "triggers": { "crons": ["17 3 * * *"] },
+  "triggers": { "crons": ["17 3 * * *", "0 7 * * 1"] },
+  // The monitor (workers/site/metrics.js). Secrets set with `wrangler secret put`:
+  // STATS_KEY (dashboard link), CF_ANALYTICS_TOKEN (read-only analytics token),
+  // REPORT_TO (a verified Email Routing destination for the weekly mail).
+  "vars": { "ZONE_ID": "e335ff5884e852f2f6c333c823d4ef1a", "SITE_HOST": "staging.mzpico.com", "SITE_URL": "https://staging.mzpico.com" },
+  "send_email": [{ "name": "REPORT_MAIL" }],
   "d1_databases": [
     {
       "binding": "STATS",

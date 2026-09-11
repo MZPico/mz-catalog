@@ -229,7 +229,7 @@ export const en = {
     sections: [
       {
         h2: 'In short',
-        html: `No cookies, no analytics, no advertising and nothing loaded from other companies' servers. The site remembers a few things in your own browser only when you use the feature that needs them, and our server keeps salted hashes — never your IP address or an identifier in the clear.`,
+        html: `No cookies, no tracking, no advertising and nothing loaded from other companies' servers. Visits are counted anonymously, as daily totals. The site remembers a few things in your own browser only when you use the feature that needs them, and our server keeps salted hashes — never your IP address or an identifier in the clear.`,
       },
       {
         h2: 'Who runs the site',
@@ -241,11 +241,11 @@ export const en = {
       },
       {
         h2: 'Stored on our server',
-        html: `<ul><li><b>Ratings</b>: the title, your 1–5 stars, the time, a salted hash of your rating id together with your network address, and a salted hash of the address alone (so one network cannot cast more than a few votes). Kept while the rating is shown.</li><li><b>Play counts</b>: a salted hash of your network address with the title and the day, so one network adds one play a day. Deleted after that day; only the total per title remains.</li><li><b>Abuse limit</b>: a counter of writes per hashed address and hour. Deleted after the hour.</li></ul>The salt is secret, so the hashes cannot be turned back into an address or an id. The legal basis is our legitimate interest in showing honest community ratings and protecting the site from abuse (GDPR art. 6(1)(f)).`,
+        html: `<ul><li><b>Ratings</b>: the title, your 1–5 stars, the time, a salted hash of your rating id together with your network address, and a salted hash of the address alone (so one network cannot cast more than a few votes). Kept while the rating is shown.</li><li><b>Play counts</b>: a salted hash of your network address with the title and the day, so one network adds one play a day. Deleted after that day; only the total per title remains.</li><li><b>Abuse limit</b>: a counter of writes per hashed address and hour. Deleted after the hour.</li><li><b>Visit statistics</b>: when a page is shown, it tells us which page it is, the site you came from (its domain only, e.g. google.com) and any campaign tag in the link; from the request we take your country and whether it is a phone. These are added to daily totals — per page, source, country, language and device — and nothing else is kept. To count visitors per day, a salted hash of your network address and browser is kept for that day only and deleted the next. Robots are not counted, and if your browser sends Do Not Track or Global Privacy Control, the page sends nothing at all.</li></ul>The salt is secret, so the hashes cannot be turned back into an address or an id. The legal basis is our legitimate interest in showing honest community ratings and protecting the site from abuse (GDPR art. 6(1)(f)).`,
       },
       {
         h2: 'Hosting',
-        html: `The site runs on Cloudflare, which processes your IP address and request details to deliver the pages and protect them from attacks, as a processor under its data processing terms. Cloudflare may process data outside the EU on the basis of the EU–US Data Privacy Framework and standard contractual clauses. We do not use Cloudflare's analytics or logs to follow visitors.`,
+        html: `The site runs on Cloudflare, which processes your IP address and request details to deliver the pages and protect them from attacks, as a processor under its data processing terms. Cloudflare may process data outside the EU on the basis of the EU–US Data Privacy Framework and standard contractual clauses. We read Cloudflare's aggregate traffic totals (how many requests, which robots and crawlers, how often the MZPico card downloads) but never its records of individual visitors.`,
       },
       {
         h2: 'Your rights',

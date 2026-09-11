@@ -4,6 +4,9 @@
 //   POST /api/hit   {p, r, s}  one page view: path, referring host, campaign tag
 //   POST /api/hit   {e}        one use of a feature (save, gamepad, …)
 //   GET  /api/metrics?days=N   the daily totals, for /stats/ (X-Stats-Key header)
+//   POST /api/metrics/report   send the weekly mail now (X-Stats-Key header)
+//   POST /api/metrics/collect?day=YYYY-MM-DD   copy one past day of Cloudflare
+//                              analytics now (backfill; Cloudflare keeps 8 days)
 //
 // Everything is stored as per-day totals in metrics_daily; nothing identifies a
 // visitor. Visitors per day are counted through visit_log, a salted hash of
@@ -122,12 +125,42 @@ export async function hit(env, request, { sameOrigin, readBody, hash, withinBudg
   return nothing();
 }
 
+const authorised = (env, request) => {
+  const key = request.headers.get('X-Stats-Key') ?? '';
+  return !!env.STATS_KEY && key.length === env.STATS_KEY.length && timingSafeEqual(key, env.STATS_KEY);
+};
+const refused = () => new Response(JSON.stringify({ error: 'not authorised' }), { status: 401, headers: JSON_HEADERS });
+
+/** POST /api/metrics/report — the Monday mail on demand, to check that it arrives. */
+export async function reportNow(env, request) {
+  if (!authorised(env, request)) return refused();
+  if (!env.REPORT_MAIL || !env.REPORT_TO) return new Response(JSON.stringify({ error: 'REPORT_TO not set' }), { status: 409, headers: JSON_HEADERS });
+  await weekly(env);
+  return new Response(JSON.stringify({ sent: true }), { headers: JSON_HEADERS });
+}
+
+/** POST /api/metrics/collect?day= — the nightly Cloudflare copy for one past day, on demand. */
+export async function collectNow(env, request, url) {
+  if (!authorised(env, request)) return refused();
+  const day = url.searchParams.get('day') ?? '';
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || day >= today()) {
+    return new Response(JSON.stringify({ error: 'day must be a past YYYY-MM-DD' }), { status: 400, headers: JSON_HEADERS });
+  }
+  if (!env.CF_ANALYTICS_TOKEN || !env.ZONE_ID) {
+    return new Response(JSON.stringify({ error: 'CF_ANALYTICS_TOKEN not set' }), { status: 409, headers: JSON_HEADERS });
+  }
+  try {
+    await collectCloudflare(env, day);
+  } catch (err) {
+    return new Response(JSON.stringify({ error: String(err) }), { status: 502, headers: JSON_HEADERS });
+  }
+  const { results } = await env.STATS.prepare('SELECT metric, COUNT(*) AS keys, SUM(value) AS total FROM metrics_daily WHERE day = ? GROUP BY metric').bind(day).all();
+  return new Response(JSON.stringify({ collected: day, metrics: results }), { headers: JSON_HEADERS });
+}
+
 /** GET /api/metrics — the dashboard's data. The key is a Worker secret; the page keeps it in the URL fragment. */
 export async function metricsApi(env, request, url) {
-  const key = request.headers.get('X-Stats-Key') ?? '';
-  if (!env.STATS_KEY || key.length !== env.STATS_KEY.length || !timingSafeEqual(key, env.STATS_KEY)) {
-    return new Response(JSON.stringify({ error: 'not authorised' }), { status: 401, headers: JSON_HEADERS });
-  }
+  if (!authorised(env, request)) return refused();
   const days = Math.min(Math.max(Number(url.searchParams.get('days')) || 30, 1), 400);
   const from = dayBefore(today(), days - 1);
   const [rows, totals] = await env.STATS.batch([

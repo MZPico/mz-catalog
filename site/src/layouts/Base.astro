@@ -46,6 +46,31 @@ const structured = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
     {alternates.map((a) => <link rel="alternate" hreflang={a.lang} href={a.href} />)}
     <link rel="alternate" hreflang="x-default" href={new URL(basePath, Astro.site).href} />
     {staging && <meta name="robots" content="noindex, nofollow" />}
+    <script is:inline>
+      // Visit statistics (workers/site/metrics.js, described on /privacy/): one anonymous
+      // page view with the referring site's host and a ?utm_source tag. Nothing is stored
+      // in the browser; Do Not Track / Global Privacy Control switch it off.
+      (() => {
+        const off = navigator.globalPrivacyControl || navigator.doNotTrack === '1' || navigator.webdriver;
+        const send = (data) => {
+          if (off) return;
+          fetch('/api/hit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data), keepalive: true }).catch(() => {});
+        };
+        window.mzEvent = (e) => send({ e });
+        let ref = '';
+        try { ref = document.referrer ? new URL(document.referrer).host : ''; } catch {}
+        const q = new URLSearchParams(location.search);
+        const view = () => send({ p: location.pathname, r: ref, s: q.get('utm_source') || q.get('ref') || undefined });
+        // A second's grace: prerendered pages that are never shown are not visits.
+        const later = () => setTimeout(view, 1000);
+        if (document.visibilityState === 'visible') later();
+        else document.addEventListener('visibilitychange', function shown() {
+          if (document.visibilityState !== 'visible') return;
+          document.removeEventListener('visibilitychange', shown);
+          later();
+        });
+      })();
+    </script>
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={t.meta.siteName} />

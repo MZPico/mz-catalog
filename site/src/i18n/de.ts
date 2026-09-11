@@ -229,7 +229,7 @@ export const de: Ui = {
     sections: [
       {
         h2: 'Kurz gesagt',
-        html: `Keine Cookies, keine Analyse, keine Werbung und nichts, was von Servern anderer Firmen geladen wird. Einige wenige Dinge merkt sich die Seite in Ihrem eigenen Browser, und nur, wenn Sie die Funktion nutzen, die sie braucht. Unser Server speichert gesalzene Hashes — nie Ihre IP-Adresse oder eine Kennung im Klartext.`,
+        html: `Keine Cookies, kein Tracking, keine Werbung und nichts, was von Servern anderer Firmen geladen wird. Besuche zählen wir anonym, nur als Tagessummen. Einige wenige Dinge merkt sich die Seite in Ihrem eigenen Browser, und nur, wenn Sie die Funktion nutzen, die sie braucht. Unser Server speichert gesalzene Hashes — nie Ihre IP-Adresse oder eine Kennung im Klartext.`,
       },
       {
         h2: 'Wer die Seite betreibt',
@@ -241,11 +241,11 @@ export const de: Ui = {
       },
       {
         h2: 'Auf unserem Server gespeichert',
-        html: `<ul><li><b>Bewertungen</b>: der Titel, Ihre 1–5 Sterne, der Zeitpunkt, ein gesalzener Hash Ihrer Bewertungs-Kennung zusammen mit Ihrer Netzwerkadresse sowie ein gesalzener Hash der Adresse allein (damit ein Netzwerk nur wenige Stimmen abgeben kann). Gespeichert, solange die Bewertung angezeigt wird.</li><li><b>Spielzähler</b>: ein gesalzener Hash Ihrer Netzwerkadresse mit Titel und Tag, damit ein Netzwerk höchstens ein Spiel pro Tag zählt. Nach dem Tag gelöscht; übrig bleibt nur die Summe je Titel.</li><li><b>Missbrauchsschutz</b>: ein Zähler der Schreibzugriffe je gehashter Adresse und Stunde. Nach der Stunde gelöscht.</li></ul>Das Salz ist geheim, die Hashes lassen sich also nicht in eine Adresse oder Kennung zurückverwandeln. Rechtsgrundlage ist unser berechtigtes Interesse, ehrliche Community-Bewertungen zu zeigen und die Seite vor Missbrauch zu schützen (Art. 6 Abs. 1 lit. f DSGVO).`,
+        html: `<ul><li><b>Bewertungen</b>: der Titel, Ihre 1–5 Sterne, der Zeitpunkt, ein gesalzener Hash Ihrer Bewertungs-Kennung zusammen mit Ihrer Netzwerkadresse sowie ein gesalzener Hash der Adresse allein (damit ein Netzwerk nur wenige Stimmen abgeben kann). Gespeichert, solange die Bewertung angezeigt wird.</li><li><b>Spielzähler</b>: ein gesalzener Hash Ihrer Netzwerkadresse mit Titel und Tag, damit ein Netzwerk höchstens ein Spiel pro Tag zählt. Nach dem Tag gelöscht; übrig bleibt nur die Summe je Titel.</li><li><b>Missbrauchsschutz</b>: ein Zähler der Schreibzugriffe je gehashter Adresse und Stunde. Nach der Stunde gelöscht.</li><li><b>Besuchsstatistik</b>: Wird eine Seite angezeigt, teilt sie uns mit, welche Seite es ist, von welcher Website Sie kamen (nur deren Domain, z. B. google.com) und ein etwaiges Kampagnen-Kennzeichen im Link; aus der Anfrage übernehmen wir Ihr Land und ob es ein Handy ist. Das fließt in Tagessummen ein — je Seite, Quelle, Land, Sprache und Gerät — sonst wird nichts gespeichert. Um Besucher pro Tag zu zählen, wird ein gesalzener Hash aus Netzwerkadresse und Browser nur für diesen Tag aufbewahrt und am nächsten gelöscht. Robots werden nicht gezählt, und sendet Ihr Browser Do Not Track oder Global Privacy Control, schickt die Seite gar nichts.</li></ul>Das Salz ist geheim, die Hashes lassen sich also nicht in eine Adresse oder Kennung zurückverwandeln. Rechtsgrundlage ist unser berechtigtes Interesse, ehrliche Community-Bewertungen zu zeigen und die Seite vor Missbrauch zu schützen (Art. 6 Abs. 1 lit. f DSGVO).`,
       },
       {
         h2: 'Hosting',
-        html: `Die Seite läuft bei Cloudflare, das als Auftragsverarbeiter nach seinen Datenverarbeitungsbedingungen Ihre IP-Adresse und Anfragedaten verarbeitet, um die Seiten auszuliefern und vor Angriffen zu schützen. Cloudflare kann Daten auch außerhalb der EU verarbeiten, auf Grundlage des EU-US Data Privacy Framework und von Standardvertragsklauseln. Wir nutzen weder Cloudflares Analysen noch seine Logs, um Besucher zu verfolgen.`,
+        html: `Die Seite läuft bei Cloudflare, das als Auftragsverarbeiter nach seinen Datenverarbeitungsbedingungen Ihre IP-Adresse und Anfragedaten verarbeitet, um die Seiten auszuliefern und vor Angriffen zu schützen. Cloudflare kann Daten auch außerhalb der EU verarbeiten, auf Grundlage des EU-US Data Privacy Framework und von Standardvertragsklauseln. Wir lesen Cloudflares zusammengefasste Verkehrszahlen (wie viele Anfragen, welche Robots und Crawler, wie oft die MZPico-Karte lädt), nie aber Aufzeichnungen über einzelne Besucher.`,
       },
       {
         h2: 'Ihre Rechte',

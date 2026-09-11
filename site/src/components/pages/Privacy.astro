@@ -6,7 +6,7 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 // Bump when the text changes in substance (GDPR notices carry their date).
-const updated = '2026-09-10';
+const updated = '2026-09-11';
 ---
 <Base lang={lang} title={t.privacy.title} description={t.privacy.description}>
   <article class="prose" data-pagefind-ignore>

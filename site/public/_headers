@@ -25,6 +25,11 @@
   Cross-Origin-Embedder-Policy: require-corp
   Cache-Control: public, max-age=3600
 
+# Private dashboard (its key lives in the URL fragment): never indexed, never cached.
+/stats/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store
+
 # Device-facing index: short cache so firmware picks up new titles quickly.
 /manifest.json
   Cache-Control: public, max-age=300

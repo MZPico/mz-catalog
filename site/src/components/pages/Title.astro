@@ -97,7 +97,7 @@ const breadcrumbLd = {
               <a class="btn" href={`/files/${d.slug}/${f.path}`} download>{t.title.downloadShort}</a>
             </div>
           ))}
-          <button class="btn" type="button" id="tape-toggle" aria-expanded="false" aria-controls="tape-panel">♪ Tape audio</button>
+          <button class="btn" type="button" id="tape-toggle" aria-expanded="false" aria-controls="tape-panel">{t.title.tapeAudio}</button>
         </div>
       )}
     </div>
@@ -217,6 +217,7 @@ const breadcrumbLd = {
       const a = document.createElement('a');
       a.className = 'btn primary';
       a.href = `${cont.dataset.play}?file=${encodeURIComponent(rec.file)}&resume=1`;
+      a.addEventListener('click', () => (window as unknown as { mzEvent?: (e: string) => void }).mzEvent?.('continue'));
       if (rec.thumb) {
         const img = document.createElement('img');
         img.src = rec.thumb; img.alt = '';
@@ -243,7 +244,7 @@ const breadcrumbLd = {
       const open = tapePanel.hidden;
       tapePanel.hidden = !open;
       tapeToggle.setAttribute('aria-expanded', String(open));
-      if (open) tapePanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      if (open) { tapePanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); (window as unknown as { mzEvent?: (e: string) => void }).mzEvent?.('tape-audio'); }
     });
   }
 

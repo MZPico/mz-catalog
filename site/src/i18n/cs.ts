@@ -228,7 +228,7 @@ export const cs: Ui = {
     sections: [
       {
         h2: 'Stručně',
-        html: `Žádné cookies, žádná analytika, žádná reklama a nic se nenačítá ze serverů jiných firem. Pár věcí si web pamatuje ve vašem prohlížeči, a to jen když použijete funkci, která je potřebuje. Náš server uchovává jen solené otisky (hashe) — nikdy vaši IP adresu ani identifikátor v čitelné podobě.`,
+        html: `Žádné cookies, žádné sledování, žádná reklama a nic se nenačítá ze serverů jiných firem. Návštěvy počítáme anonymně, jen jako denní součty. Pár věcí si web pamatuje ve vašem prohlížeči, a to jen když použijete funkci, která je potřebuje. Náš server uchovává jen solené otisky (hashe) — nikdy vaši IP adresu ani identifikátor v čitelné podobě.`,
       },
       {
         h2: 'Kdo web provozuje',
@@ -240,11 +240,11 @@ export const cs: Ui = {
       },
       {
         h2: 'Na našem serveru',
-        html: `<ul><li><b>Hodnocení</b>: titul, počet hvězdiček, čas, solený otisk vašeho identifikátoru spolu s adresou sítě a solený otisk samotné adresy (aby jedna síť nemohla hlasovat víckrát než párkrát). Uchovává se, dokud se hodnocení zobrazuje.</li><li><b>Počty spuštění</b>: solený otisk adresy vaší sítě s titulem a dnem, aby jedna síť přidala nejvýš jedno spuštění denně. Po skončení dne se maže; zůstává jen součet za titul.</li><li><b>Ochrana proti zneužití</b>: počítadlo zápisů za otisk adresy a hodinu. Po uplynutí hodiny se maže.</li></ul>Sůl je tajná, takže otisky nejde převést zpět na adresu ani na identifikátor. Právním základem je náš oprávněný zájem ukazovat poctivá hodnocení komunity a chránit web před zneužitím (čl. 6 odst. 1 písm. f) GDPR).`,
+        html: `<ul><li><b>Hodnocení</b>: titul, počet hvězdiček, čas, solený otisk vašeho identifikátoru spolu s adresou sítě a solený otisk samotné adresy (aby jedna síť nemohla hlasovat víckrát než párkrát). Uchovává se, dokud se hodnocení zobrazuje.</li><li><b>Počty spuštění</b>: solený otisk adresy vaší sítě s titulem a dnem, aby jedna síť přidala nejvýš jedno spuštění denně. Po skončení dne se maže; zůstává jen součet za titul.</li><li><b>Ochrana proti zneužití</b>: počítadlo zápisů za otisk adresy a hodinu. Po uplynutí hodiny se maže.</li><li><b>Statistika návštěv</b>: když se stránka zobrazí, pošle nám, o kterou stránku jde, web, ze kterého jste přišli (jen jeho doménu, např. google.com), a případnou značku kampaně v odkazu; z požadavku bereme zemi a to, zda jde o telefon. Vše se přičte k denním součtům — po stránkách, zdrojích, zemích, jazycích a zařízeních — a nic dalšího se neuchovává. Abychom spočítali návštěvníky za den, uchováváme solený otisk adresy sítě a prohlížeče jen pro ten den a druhý den se maže. Roboti se nepočítají, a pokud prohlížeč posílá Do Not Track nebo Global Privacy Control, stránka neposílá nic.</li></ul>Sůl je tajná, takže otisky nejde převést zpět na adresu ani na identifikátor. Právním základem je náš oprávněný zájem ukazovat poctivá hodnocení komunity a chránit web před zneužitím (čl. 6 odst. 1 písm. f) GDPR).`,
       },
       {
         h2: 'Hosting',
-        html: `Web běží na Cloudflare, který jako zpracovatel podle svých podmínek zpracování dat zpracovává vaši IP adresu a údaje o požadavku, aby stránky doručil a chránil je před útoky. Cloudflare může data zpracovávat i mimo EU na základě rámce EU–USA pro ochranu osobních údajů a standardních smluvních doložek. Analytiku ani logy Cloudflare ke sledování návštěvníků nepoužíváme.`,
+        html: `Web běží na Cloudflare, který jako zpracovatel podle svých podmínek zpracování dat zpracovává vaši IP adresu a údaje o požadavku, aby stránky doručil a chránil je před útoky. Cloudflare může data zpracovávat i mimo EU na základě rámce EU–USA pro ochranu osobních údajů a standardních smluvních doložek. Čteme souhrnné statistiky provozu z Cloudflare (počty požadavků, kteří roboti a crawlery chodí, kolik stahuje karta MZPico), nikdy ale záznamy o jednotlivých návštěvnících.`,
       },
       {
         h2: 'Vaše práva',

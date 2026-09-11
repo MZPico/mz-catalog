@@ -116,7 +116,8 @@ export default function catalog() {
               const route = '/' + (rel ? rel.split(path.sep).join('/') + '/' : '');
               // The emulator pages are the app, not content: one per title per
               // language would be 1500 near-identical URLs in the sitemap.
-              if (!/(^|\/)play\//.test(route)) routes.push(route);
+              // /stats/ is the private dashboard.
+              if (!/(^|\/)(play|stats)\//.test(route)) routes.push(route);
             }
           }
         };

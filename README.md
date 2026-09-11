@@ -300,6 +300,33 @@ animation frame, because the emulator's rendering can hold a slow device to a
 few frames a second. First use hides the touch overlay and shows the mapping
 under the screen.
 
+## Monitor
+
+`workers/site/metrics.js` keeps per-day totals in D1 (`metrics_daily`), and
+`/stats/` shows them (private: open it as `/stats/#k=<STATS_KEY>`; the key
+stays in the URL fragment and is then remembered in that browser).
+
+- **People:** every page sends one anonymous beacon (`POST /api/hit`: path,
+  referring host, `utm_source`/`ref` tag) — page, language, country, device,
+  source (search / social / AI assistant / link / campaign / direct); visitors
+  per day via a salted address+browser hash kept for the day only
+  (`visit_log`). Robots (`BOT_UA`), Do Not Track and Global Privacy Control are
+  not counted. Feature use arrives as `{e: name}` from `window.mzEvent()`.
+- **Plays** count on the first key/tap/click/controller button while the
+  emulator runs, never on page load, and the Worker refuses robot user agents
+  (Googlebot and GoogleOther render pages and used to be most of the plays).
+- **From Cloudflare**, copied nightly for the day before (the free plan keeps 8
+  days): robots and AI crawlers by name (`ChatGPT-User`, `Claude-User` and the
+  like are live fetches for a person's question), MZPico card requests to
+  api.mzpico.com, `.mzf` downloads, 5xx errors.
+- **Weekly mail** on Mondays 07:00 UTC to `REPORT_TO`; `POST /api/metrics/report`
+  with the key sends it on demand; `POST /api/metrics/collect?day=YYYY-MM-DD`
+  copies one past day of Cloudflare analytics (backfill within its 8 days).
+
+Secrets per Worker (`npx wrangler secret put NAME [-c wrangler.staging.jsonc]`):
+`STATS_KEY`, `CF_ANALYTICS_TOKEN` (API token with Account Analytics: Read and
+Zone Analytics: Read), `REPORT_TO` (a verified Email Routing destination).
+
 ## Saved positions
 
 The play page can save the whole emulated machine and resume it later

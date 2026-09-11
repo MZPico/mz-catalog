@@ -17,7 +17,7 @@
 // must come from our own pages, every address has an hourly budget, a title
 // takes at most VOTES_PER_IP votes from one network, and play counts are keyed
 // on the network alone.
-import { hit, metricsApi, daily, weekly, isBot } from './metrics.js';
+import { hit, metricsApi, reportNow, collectNow, daily, weekly, isBot } from './metrics.js';
 
 const JSON_HEADERS = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,63}$/;
@@ -208,6 +208,8 @@ export default {
         });
       }
       if (request.method === 'GET' && url.pathname === '/api/metrics') return metricsApi(env, request, url);
+      if (request.method === 'POST' && url.pathname === '/api/metrics/report') return reportNow(env, request);
+      if (request.method === 'POST' && url.pathname === '/api/metrics/collect') return collectNow(env, request, url);
       return bad('not found', 404);
     } catch (err) {
       return json({ error: String(err) }, { status: 500 });
