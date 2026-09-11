@@ -319,6 +319,10 @@ stays in the URL fragment and is then remembered in that browser).
   days): robots and AI crawlers by name (`ChatGPT-User`, `Claude-User` and the
   like are live fetches for a person's question), MZPico card requests to
   api.mzpico.com, `.mzf` downloads, 5xx errors.
+- **MZPico card:** the api.mzpico.com Worker (`workers/api-shim`) counts into
+  the same table after responding: `card-list` folder, `card-dl` title,
+  `card-miss` paths the catalog lacks, `card-country`, `card-devices` (salted
+  address hash per day in `visit_log`) and `card-scan` for scanner probes.
 - **Weekly mail** on Mondays 07:00 UTC to `REPORT_TO`; `POST /api/metrics/report`
   with the key sends it on demand; `POST /api/metrics/collect?day=YYYY-MM-DD`
   copies one past day of Cloudflare analytics (backfill within its 8 days).

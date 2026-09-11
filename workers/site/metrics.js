@@ -225,16 +225,18 @@ async function graphql(env, query) {
   return data.data.viewer.zones[0];
 }
 
-/** One UTC day of Cloudflare analytics into metrics_daily (idempotent: values are set, not added). */
+/** One UTC day of Cloudflare analytics into metrics_daily (idempotent: values are set, not added).
+ * Row limits keep the work inside the free plan's 10 ms of CPU: the long tail of
+ * user agents and paths is one-off visits that change no total worth reading. */
 async function collectCloudflare(env, day) {
   const zone = env.ZONE_ID;
   const win = `datetime_geq:"${day}T00:00:00Z", datetime_lt:"${dayBefore(day, -1)}T00:00:00Z"`;
   const site = env.SITE_HOST ?? 'mzpico.com';
   const z = await graphql(env, `{ viewer { zones(filter:{zoneTag:"${zone}"}) {
     total: httpRequests1dGroups(limit:1, filter:{date:"${day}"}) { sum { requests pageViews bytes } uniq { uniques } }
-    agents: httpRequestsAdaptiveGroups(limit:1000, filter:{${win}, clientRequestHTTPHost:"${site}", edgeResponseContentTypeName:"html"}, orderBy:[count_DESC]) { count dimensions { userAgent } }
-    card: httpRequestsAdaptiveGroups(limit:200, filter:{${win}, clientRequestHTTPHost:"api.mzpico.com"}, orderBy:[count_DESC]) { count dimensions { clientRequestPath } }
-    files: httpRequestsAdaptiveGroups(limit:500, filter:{${win}, clientRequestHTTPHost:"${site}", clientRequestPath_like:"/files/%", userAgent_notlike:"%bot%"}, orderBy:[count_DESC]) { count dimensions { clientRequestPath } }
+    agents: httpRequestsAdaptiveGroups(limit:300, filter:{${win}, clientRequestHTTPHost:"${site}", edgeResponseContentTypeName:"html"}, orderBy:[count_DESC]) { count dimensions { userAgent } }
+    card: httpRequestsAdaptiveGroups(limit:60, filter:{${win}, clientRequestHTTPHost:"api.mzpico.com"}, orderBy:[count_DESC]) { count dimensions { clientRequestPath } }
+    files: httpRequestsAdaptiveGroups(limit:200, filter:{${win}, clientRequestHTTPHost:"${site}", clientRequestPath_like:"/files/%", userAgent_notlike:"%bot%"}, orderBy:[count_DESC]) { count dimensions { clientRequestPath } }
     errors: httpRequestsAdaptiveGroups(limit:1, filter:{${win}, clientRequestHTTPHost:"${site}", edgeResponseStatus_geq:500}) { count }
   } } }`);
 
@@ -326,13 +328,16 @@ export async function weekly(env) {
     line('Page views (people)', 'page', null),
     line('Plays', 'plays'),
     line('Ratings', 'votes'),
-    line('Card listings', 'card', 'list'),
-    line('Card downloads', 'card', 'download'),
+    line('MZPico cards (devices)', 'card-devices'),
+    line('Card downloads', 'card-dl', null),
+    line('Card folder listings', 'card-list', null),
     `${'Visits from AI assistants'.padEnd(26)} ${String(aiVisits).padStart(7)}`,
     '',
     'Where people came from:', list(now.top('source', 8)),
     '', 'Most visited pages:', list(now.top('page', 8)),
     '', 'Most played:', list(now.top('play', 8)),
+    '', 'Most downloaded to MZPico cards:', list(now.top('card-dl', 8)),
+    ...(now.top('card-miss', 5).length ? ['', 'Cards asked for, not in the catalog:', list(now.top('card-miss', 5))] : []),
     '', 'AI crawlers (pages fetched):', list(now.top('bot', 8, (k) => k.startsWith('ai-'))),
     '', 'Countries:', list(now.top('country', 6)),
     '', 'Features used:', list(now.top('event', 10)),

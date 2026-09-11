@@ -181,12 +181,13 @@ import '../styles/global.css';
             ${kpi('Page views (people)', 'page')}
             ${kpi('Plays', 'plays')}
             ${kpi('Visits from AI assistants', 'source', isAi)}
-            ${kpi('Card downloads', 'card', (k) => k === 'download')}
+            ${kpi('MZPico cards (devices)', 'card-devices')}
             ${kpi('AI crawler page fetches', 'bot', (k) => k.startsWith('ai-'))}
           </div>
           <div class="panels">
             <section class="panel wide"><h2>Visitors per day</h2><div id="c-visitors"></div></section>
             <section class="panel"><h2>Plays per day</h2><div id="c-plays"></div></section>
+            <section class="panel"><h2>MZPico cards per day</h2><div id="c-cards"></div></section>
             <section class="panel"><h2>MZPico card downloads per day</h2><div id="c-card"></div></section>
             <section class="panel wide"><h2>Robots per day (pages fetched)</h2><div id="c-bots"></div></section>
             <section class="panel"><h2>Where people came from</h2>${rank(byKey('source'), { label: (k) => { const [c, n] = k.includes(':') ? k.split(/:(.*)/) : [k, k]; return `${esc(n)} <span class="cls">${esc(SOURCE_CLASS[c] ?? '')}</span>`; } })}</section>
@@ -198,12 +199,20 @@ import '../styles/global.css';
             <section class="panel"><h2>Countries</h2>${rank(byKey('country'))}</section>
             <section class="panel"><h2>Languages · devices</h2>${rank(byKey('lang'))}${rank(byKey('device'))}</section>
             <section class="panel"><h2>Features used</h2>${rank(byKey('event'))}</section>
-            <section class="panel"><h2>Card requests · health</h2>${rank(byKey('card'))}${rank(byKey('health').filter(([, v]) => v), { label: () => 'server errors (5xx)' })}
+            <section class="panel"><h2>Card: most downloaded</h2>${rank(byKey('card-dl'), { label: (k) => `<a href="/titles/${esc(k)}/">${esc(k)}</a>` })}</section>
+            <section class="panel"><h2>Card: folders opened</h2>${rank(byKey('card-list'))}</section>
+            <section class="panel"><h2>Card: not found</h2>${rank(byKey('card-miss'))}<p class="meta">Folders or files a card asked for that the catalog does not have.</p></section>
+            <section class="panel"><h2>Card: countries</h2>${rank(byKey('card-country'))}</section>
+            <section class="panel"><h2>Health</h2>${rank([...byKey('health').filter(([, v]) => v).map(([, v]) => ['server errors (5xx)', v]),
+              ...[[ 'scanner probes on api.mzpico.com', sum(inCur, 'card-scan') || sum(inCur, 'card', (k) => k === 'other') ]].filter(([, v]) => v)])}
               <p class="meta">All time: ${fmt(data.totals.plays ?? 0)} plays of ${fmt(data.totals.titles_played ?? 0)} titles, ${fmt(data.totals.votes ?? 0)} ratings.</p></section>
           </div>`;
         document.getElementById('c-visitors').append(barChart(cur, [{ name: 'visitors', values: perDay('visitors'), color: 'var(--s1)' }]));
         document.getElementById('c-plays').append(barChart(cur, [{ name: 'plays', values: perDay('plays'), color: 'var(--s3)' }], { height: 170, width: 360 }));
-        document.getElementById('c-card').append(barChart(cur, [{ name: 'downloads', values: perDay('card', (k) => k === 'download'), color: 'var(--s6)' }], { height: 170, width: 360 }));
+        document.getElementById('c-cards').append(barChart(cur, [{ name: 'cards', values: perDay('card-devices'), color: 'var(--s6)' }], { height: 170, width: 360 }));
+        // The card Worker counts downloads itself from 12 Sep; before that, Cloudflare's request totals.
+        const own = perDay('card-dl'), cf = perDay('card', (k) => k === 'download');
+        document.getElementById('c-card').append(barChart(cur, [{ name: 'downloads', values: own.map((v, i) => v || cf[i]), color: 'var(--s6)' }], { height: 170, width: 360 }));
         document.getElementById('c-bots').append(barChart(cur, BOT_CLASSES.map(([cls, name, color]) => ({ name, color, values: perDay('bot', (k) => k.split('|')[0] === cls) }))));
       }
 

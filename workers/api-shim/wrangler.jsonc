@@ -5,6 +5,11 @@
   "name": "mzpico-api-shim",
   "main": "index.js",
   "compatibility_date": "2026-08-31",
+  // Usage counts go to the site's statistics database (production only — the
+  // card talks to api.mzpico.com alone). Secret: STATS_SALT (own value).
+  "d1_databases": [
+    { "binding": "STATS", "database_name": "mz-catalog-stats", "database_id": "cf01df15-0caf-4981-a0b4-92f447d266a5" }
+  ],
   "routes": [
     { "pattern": "api.mzpico.com/*", "zone_name": "mzpico.com" }
   ]
