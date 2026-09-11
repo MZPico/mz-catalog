@@ -42,9 +42,20 @@ export function attachNet(relayBase: string, onState?: (s: NetState) => void): (
   let pendingFirst: string | null = null;   // the create/join line that opens the socket
 
   const m = emu();
-  if (!m || !m._mz_wasm_net_enabled?.()) return () => {};
-  // "linked" = the relay is reachable; the device reports READY and the game can create/join
-  m._mz_wasm_net_link?.(1); state.linked = true; emit();
+  if (!m || !m._mz_wasm_net_enabled) return () => {};
+  // The runtime is up before the emulator has read its configuration; wait for
+  // the device to report the extension (a few seconds at most) before linking.
+  let linkTimer = 0, tries = 0;
+  const tryLink = () => {
+    if (stopped) return;
+    if (m._mz_wasm_net_enabled?.()) {
+      // "linked" = the relay is reachable; the device reports READY and the game can create/join
+      m._mz_wasm_net_link?.(1); state.linked = true; emit();
+    } else if (++tries < 40) {
+      linkTimer = window.setTimeout(tryLink, 250);
+    }
+  };
+  tryLink();
 
   const urlFor = (line: string): string | null => {
     try {
@@ -103,5 +114,5 @@ export function attachNet(relayBase: string, onState?: (s: NetState) => void): (
     }
   }, 20);
 
-  return () => { stopped = true; clearInterval(pump); ws?.close(); m._mz_wasm_net_link?.(0); };
+  return () => { stopped = true; clearTimeout(linkTimer); clearInterval(pump); ws?.close(); m._mz_wasm_net_link?.(0); };
 }
