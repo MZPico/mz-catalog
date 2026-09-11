@@ -1,5 +1,5 @@
 title: "BomberNet"
-web: true
+web: false   # archive + browser play only for now; true = front page, machine pages and the card's Featured folder
 year: 2026
 publisher: "MZPico"
 original:
