@@ -99,7 +99,8 @@ export function attachNet(relayBase: string, onState?: (s: NetState) => void): (
     ws.onerror = () => ws?.close();
   };
 
-  // device -> relay: a few lines per frame at most; 20 ms keeps input delay low
+  // device -> relay: a few lines per frame at most; polled every 4 ms so a step's
+  // input leaves within a fraction of a frame (20 ms here showed as stalls)
   pump = window.setInterval(() => {
     for (let i = 0; i < 32; i++) {
       const line = m.ccall('mz_wasm_net_pop', 'string', [], []) as string;
@@ -113,7 +114,7 @@ export function attachNet(relayBase: string, onState?: (s: NetState) => void): (
       else if (ws.readyState === WebSocket.CONNECTING && pendingFirst === null) pendingFirst = line;
       if (line.includes('"leave"')) { ws.close(); ws = null; }
     }
-  }, 20);
+  }, 4);
 
   return () => { stopped = true; clearTimeout(linkTimer); clearInterval(pump); ws?.close(); m._mz_wasm_net_link?.(0); };
 }
