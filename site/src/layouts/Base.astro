@@ -15,7 +15,6 @@ interface Props {
 const { lang = defaultLang, title, description, image, imageAlt, jsonLd } = Astro.props;
 const t = useTranslations(lang);
 const fullTitle = title ? `${title} · ${t.meta.siteName}` : t.meta.homeTitle;
-const repo = 'https://github.com/MZPico/mz-catalog';
 const staging = process.env.MZ_STAGING === '1';
 
 // The same page in every language, for hreflang and the language switcher.
@@ -100,7 +99,6 @@ const structured = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
           <a href={p('/archive/')}>{t.nav.archive}</a>
           <a href={p('/machines/')}>{t.nav.machines}</a>
           <a href={p('/about/')}>{t.nav.about}</a>
-          <a href={repo} rel="noopener">{t.nav.github}</a>
           <details class="lang-switch">
             <summary title={t.langSwitchLabel} aria-label={t.langSwitchLabel}>{t.langName[lang]}<span class="caret">▾</span></summary>
             <ul>

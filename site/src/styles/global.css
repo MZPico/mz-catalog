@@ -376,6 +376,20 @@ html[lang="ja"] h2 { font-size: 1.05rem; }
   border: 1px dashed var(--line); border-radius: var(--radius); background: var(--surface);
 }
 .tag.zx { border-color: #c084fc; color: #c084fc; }
+.tag.net { border-color: #34d399; color: #34d399; }
+.tag.new { border-color: var(--accent); color: var(--accent); }
+
+/* Front-page spotlight (meta.yaml: spotlight) */
+.spotlight { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; margin: 1.25rem 0 0.5rem; padding: 1rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.spot-shot { flex: 0 1 320px; min-width: 220px; }
+.spot-shot img { width: 100%; height: auto; display: block; border-radius: 8px; image-rendering: pixelated; }
+.spot-body { flex: 1 1 320px; min-width: 0; }
+.spot-body h2 { margin: 0.35rem 0 0.5rem; }
+.spot-body h2 a { text-decoration: none; }
+.spot-body p { margin: 0 0 0.75rem; max-width: 60ch; }
+.spot-kicker { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.spot-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.btn.ghost { background: transparent; }
 .chips.flags { gap: 0.4rem; }
 .chip.flag::before { content: ""; margin-right: 0; font-family: var(--mono); }
 .chip.flag[data-state="yes"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }

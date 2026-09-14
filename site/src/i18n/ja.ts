@@ -28,6 +28,7 @@ export const ja: Ui = {
     noMatch: '条件に合うタイトルはありません。',
     noScreenshot: 'スクリーンショットなし',
     playAria: (title: string) => `${title} をブラウザーで遊ぶ`,
+    spotlight: { label: '新着', play: 'ブラウザーで遊ぶ', more: 'ゲームについて' },
     archiveTeaser: 'ここに保存されているそれ以外のすべては、アーカイブ全体にあります。解説の有無は問いません。',
   },
   archive: {
@@ -119,6 +120,8 @@ export const ja: Ui = {
     portZx: 'ZX port',
     original: 'オリジナル',
     portTitle: 'ZX Spectrum 版からの移植',
+    network: 'ネットワーク対戦',
+    networkTitle: 'インターネット経由で対戦: MZPico カードとこのブラウザープレイヤーが同じルームに集まります',
     languageTitle: '言語',
     notCurated:
       'この項目はまだ誰も書き起こしていません。以下はカセットイメージそのものから読み取った情報です。作品や制作年、作者をご存じでしたらお知らせください。',

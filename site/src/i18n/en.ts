@@ -29,6 +29,7 @@ export const en = {
     noMatch: 'No titles match the selected filters.',
     noScreenshot: 'no screenshot',
     playAria: (title: string) => `Play ${title} in the browser`,
+    spotlight: { label: 'New', play: 'Play in the browser', more: 'About the game' },
     archiveTeaser: 'Everything else preserved here is in the full archive — written up or not.',
   },
   archive: {
@@ -120,6 +121,8 @@ export const en = {
     portZx: 'ZX port',
     original: 'Original',
     portTitle: 'Converted from the ZX Spectrum version',
+    network: 'network play',
+    networkTitle: 'Plays over the internet: MZPico cards and this browser player meet in the same room',
     languageTitle: 'Language',
     notCurated:
       'Nobody has written this entry up yet. What follows comes from the tape image itself; if you know the game, its year or its author, corrections are welcome.',

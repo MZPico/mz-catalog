@@ -65,6 +65,7 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e
               <span class:list={['badge', d.machine]}>{machineLabel[d.machine]}</span>
               {d.web && <span class="tag curated">{t.archive.curated}</span>}
               {d.port === 'zx-spectrum' && <span class="tag zx" title={t.title.portTitle}>{t.title.portZx}</span>}
+              {d.network && <span class="tag net" title={t.title.networkTitle}>{t.title.network}</span>}
               {d.genre.map((g) => <span class="tag">{g}</span>)}
               {[d.year, d.publisher].filter(Boolean).join(' · ')}
             </div>

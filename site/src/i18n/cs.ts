@@ -28,6 +28,7 @@ export const cs: Ui = {
     noMatch: 'Zvolenému filtru neodpovídá žádný titul.',
     noScreenshot: 'bez snímku',
     playAria: (title: string) => `Spustit ${title} v prohlížeči`,
+    spotlight: { label: 'Novinka', play: 'Hrát v prohlížeči', more: 'O hře' },
     archiveTeaser: 'Všechno ostatní, co tu máme uložené, je v archivu — popsané i nepopsané.',
   },
   archive: {
@@ -119,6 +120,8 @@ export const cs: Ui = {
     portZx: 'ZX port',
     original: 'Originál',
     portTitle: 'Konverze ze ZX Spectra',
+    network: 'síťová hra',
+    networkTitle: 'Hraje se přes internet: karty MZPico a tento přehrávač v prohlížeči se sejdou v jedné místnosti',
     languageTitle: 'Jazyk',
     notCurated:
       'Tenhle záznam zatím nikdo nesepsal. Co je níž, pochází přímo z obrazu kazety; jestli tu hru znáš, víš rok nebo autora, ozvi se.',

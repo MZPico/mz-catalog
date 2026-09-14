@@ -210,6 +210,22 @@
     "web": {
       "type": "boolean",
       "description": "Published on the web site (title page, lists, search, play). Absent or false = hidden from the site; the file is still served via manifest.json and the device API."
+    },
+    "network": {
+      "type": "boolean",
+      "description": "Plays over the internet (MZPico NET relay): shown as a badge on the site."
+    },
+    "spotlight": {
+      "description": "Front-page spotlight: a short pitch per language (en required). Independent of web; the title is shown above the featured grid.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["en"],
+      "properties": {
+        "en": { "type": "string", "maxLength": 600 },
+        "cs": { "type": "string", "maxLength": 600 },
+        "de": { "type": "string", "maxLength": 600 },
+        "ja": { "type": "string", "maxLength": 600 }
+      }
     }
   },
   "allOf": [

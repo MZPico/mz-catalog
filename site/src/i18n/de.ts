@@ -28,6 +28,7 @@ export const de: Ui = {
     noMatch: 'Keine Titel passen zu den gewählten Filtern.',
     noScreenshot: 'kein Screenshot',
     playAria: (title: string) => `${title} im Browser spielen`,
+    spotlight: { label: 'Neu', play: 'Im Browser spielen', more: 'Über das Spiel' },
     archiveTeaser: 'Alles Weitere, was hier bewahrt wird, steht im vollständigen Archiv — beschrieben oder nicht.',
   },
   archive: {
@@ -119,6 +120,8 @@ export const de: Ui = {
     portZx: 'ZX port',
     original: 'Original',
     portTitle: 'Umsetzung der ZX-Spectrum-Fassung',
+    network: 'Netzwerkspiel',
+    networkTitle: 'Spielbar über das Internet: MZPico-Karten und dieser Browser-Player treffen sich im selben Raum',
     languageTitle: 'Sprache',
     notCurated:
       'Diesen Eintrag hat noch niemand ausformuliert. Was folgt, stammt aus dem Kassettenabbild selbst; wer das Spiel, sein Jahr oder seinen Autor kennt, möge sich melden.',

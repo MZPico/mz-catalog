@@ -69,6 +69,9 @@ const titles = defineCollection({
       .optional(),
     controls: z.string().optional(),
     web: z.boolean().optional(),
+    network: z.boolean().optional(),          // plays over the internet (badge)
+    // front-page spotlight: a short pitch per language (en required)
+    spotlight: z.object({ en: z.string(), cs: z.string().optional(), de: z.string().optional(), ja: z.string().optional() }).optional(),
     touch: z
       .object({
         pad: z.union([z.enum(['cursor', 'wasd', 'none']), z.object({ up: z.string(), down: z.string(), left: z.string(), right: z.string() })]).optional(),

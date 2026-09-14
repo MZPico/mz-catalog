@@ -12,6 +12,8 @@ const p = (path: string) => localizePath(lang, path);
 const titles = (await getCollection('titles')).filter((e) => e.data.web).sort((a, b) =>
   a.data.title.localeCompare(b.data.title, 'en', { sensitivity: 'base' }),
 );
+const spotlights = (await getCollection('titles')).filter((e) => e.data.spotlight);
+const pick = (m: { en: string; cs?: string; de?: string; ja?: string }) => (m as Record<string, string | undefined>)[lang] ?? m.en;
 const machines = ['mz-700', 'mz-800'] as const;
 const machineLabel: Record<string, string> = { 'mz-700': 'MZ-700', 'mz-800': 'MZ-800' };
 const genres = [...new Set(titles.flatMap((e) => e.data.genre))].sort();
@@ -52,6 +54,23 @@ const listLd = {
     </div>
     <img class="hero-badge" src="/mz-badge.svg" alt="Sharp MZ-700 and MZ-800" width="300" height="168" />
   </div>
+  {spotlights.map(({ data: d }) => {
+    const shot = d.screenshots[0];
+    return (
+      <section class="spotlight">
+        {shot && <a class="spot-shot" href={p(`/titles/${d.slug}/`)} tabindex="-1" aria-hidden="true"><img src={`/screenshots/${d.slug}/${shot}`} alt="" width="640" height="480" loading="eager" /></a>}
+        <div class="spot-body">
+          <div class="spot-kicker"><span class="tag new">{t.home.spotlight.label}</span>{d.network && <span class="tag net" title={t.title.networkTitle}>{t.title.network}</span>}</div>
+          <h2><a href={p(`/titles/${d.slug}/`)}>{d.title}</a></h2>
+          <p>{pick(d.spotlight!)}</p>
+          <p class="spot-actions">
+            {d.machine !== 'mz-1500' && <a class="btn" href={p(`/play/${d.slug}/`)}>▶ {t.home.spotlight.play}</a>}
+            <a class="btn ghost" href={p(`/titles/${d.slug}/`)}>{t.home.spotlight.more}</a>
+          </p>
+        </div>
+      </section>
+    );
+  })}
 
   <div class="chips" role="group" aria-label={t.home.filterByMachine} data-filter="machine">
     <button class="chip" type="button" aria-pressed="true" data-value="">{t.home.allMachines}</button>
@@ -84,6 +103,7 @@ const listLd = {
             <div class="tags">
               <span class:list={['badge', d.machine]}>{machineLabel[d.machine]}{d.mode === 'mz-700' ? ' · 700' : ''}</span>
               {d.port === 'zx-spectrum' && <span class="tag zx" title={t.title.portTitle}>{t.title.portZx}</span>}
+              {d.network && <span class="tag net" title={t.title.networkTitle}>{t.title.network}</span>}
               <span class="card-stats meta" data-stats={d.slug}></span>
             </div>
           </div>

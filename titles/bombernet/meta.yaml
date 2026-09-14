@@ -1,5 +1,11 @@
 title: "BomberNet"
-web: false   # archive + browser play only for now; true = front page, machine pages and the card's Featured folder
+web: false
+network: true
+spotlight:
+  en: "The first Sharp MZ game with network play. Host a room on your MZ-800 with an MZPico, or right here in the browser, and hand the four-letter code to a friend. Coop or deathmatch, up to four players, any mix of local and remote."
+  cs: "První hra pro Sharp MZ s hraním po síti. Založte místnost na svém MZ-800 s MZPico nebo přímo tady v prohlížeči a pošlete kamarádovi čtyřpísmenný kód. Kooperace nebo deathmatch, až čtyři hráči, libovolná kombinace místních a vzdálených."
+  de: "Das erste Sharp-MZ-Spiel mit Netzwerkmodus. Eröffne einen Raum auf deinem MZ-800 mit MZPico oder direkt hier im Browser und gib den Vier-Buchstaben-Code weiter. Koop oder Deathmatch, bis zu vier Spieler, lokal und übers Netz gemischt."
+  ja: "Sharp MZ 初のネットワーク対戦ゲーム。MZPico 付きの MZ-800 か、このブラウザーでルームを作り、4 文字のコードを友達に伝えるだけ。協力プレイでもデスマッチでも、最大 4 人、ローカルとリモートの組み合わせは自由です。"   # archive + browser play only for now; true = front page, machine pages and the card's Featured folder
 year: 2026
 publisher: "MZPico"
 original:
