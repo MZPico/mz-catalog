@@ -139,12 +139,16 @@ export class NetRoom {
         await this.save();
         const members = this.members();
         this.broadcast({ op: 'members', count: members.size, ready: this.readyMask() });
-        if (!this.room.running && members.size === this.room.slots && [...members.values()].every((m) => m.ready)) {
+        // every member present is ready: the game decides when the room is full
+        // (BomberNet's host readies last, once every seat is taken)
+        if (!this.room.running && [...members.values()].every((m) => m.ready)) {
           this.room.running = true;
           this.room.seed = 1 + Math.floor(Math.random() * 0xFFFE);
           this.inputs.clear(); this.hashes.clear();
           await this.save();
-          this.broadcast({ op: 'start', seed: this.room.seed, frame: 0 });
+          // mask: the slots taking part (a frame is complete when they all sent input)
+          let mask = 0; for (const slot of members.keys()) mask |= 1 << slot;
+          this.broadcast({ op: 'start', seed: this.room.seed, frame: 0, mask });
         }
         return;
       }
