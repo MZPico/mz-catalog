@@ -280,13 +280,6 @@ export const en = {
     menuCaption: 'Customizable boot menu with favorite programs.',
     explorerAlt: 'MZPico file explorer on the MZ-800',
     explorerCaption: 'File explorer with directory trees and fast search.',
-    panelsCaption: 'The explorer’s panels: file info (F1), mount manager (F3), recent launches (F4) and the file operations reached with SHIFT.',
-    panelsAlt: [
-      'MZPico explorer: file info panel',
-      'MZPico explorer: mount manager',
-      'MZPico explorer: recent launches',
-      'MZPico explorer: file operations footer',
-    ],
     boardsH2: 'Two boards',
     frugalAlt: 'MZPico Frugal board',
     frugalHtml: (href: string) =>

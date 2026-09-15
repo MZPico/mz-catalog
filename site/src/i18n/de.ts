@@ -280,13 +280,6 @@ export const de: Ui = {
     menuCaption: 'Anpassbares Startmenü mit Lieblingsprogrammen.',
     explorerAlt: 'MZPico-Dateimanager auf dem MZ-800',
     explorerCaption: 'Dateimanager mit Verzeichnisbaum und schneller Suche.',
-    panelsCaption: 'Die Panels des Dateimanagers: Dateiinfo (F1), Laufwerksverwaltung (F3), zuletzt gestartet (F4) und die Dateioperationen über SHIFT.',
-    panelsAlt: [
-      'MZPico-Dateimanager: Dateiinfo',
-      'MZPico-Dateimanager: Laufwerksverwaltung',
-      'MZPico-Dateimanager: zuletzt gestartet',
-      'MZPico-Dateimanager: Dateioperationen',
-    ],
     boardsH2: 'Zwei Platinen',
     frugalAlt: 'MZPico-Frugal-Platine',
     frugalHtml: (href: string) =>
