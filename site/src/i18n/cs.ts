@@ -279,6 +279,13 @@ export const cs: Ui = {
     menuCaption: 'Upravitelná zaváděcí nabídka s oblíbenými programy.',
     explorerAlt: 'Správce souborů MZPico na MZ-800',
     explorerCaption: 'Správce souborů se stromem adresářů a rychlým hledáním.',
+    panelsCaption: 'Panely správce souborů: informace o souboru (F1), správa mechanik (F3), naposledy spuštěné (F4) a souborové operace pod klávesou SHIFT.',
+    panelsAlt: [
+      'Správce souborů MZPico: informace o souboru',
+      'Správce souborů MZPico: správa mechanik',
+      'Správce souborů MZPico: naposledy spuštěné',
+      'Správce souborů MZPico: souborové operace',
+    ],
     boardsH2: 'Dvě desky',
     frugalAlt: 'Deska MZPico Frugal',
     frugalHtml: (href: string) =>

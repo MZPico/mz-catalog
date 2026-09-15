@@ -279,6 +279,13 @@ export const ja: Ui = {
     menuCaption: 'お気に入りのプログラムを並べられる起動メニュー。',
     explorerAlt: 'MZ-800 上の MZPico ファイルエクスプローラー',
     explorerCaption: 'ディレクトリーツリーと高速検索を備えたファイル一覧。',
+    panelsCaption: 'ファイルエクスプローラーのパネル: ファイル情報 (F1)、マウント管理 (F3)、最近の起動 (F4)、SHIFT で開くファイル操作。',
+    panelsAlt: [
+      'MZPico エクスプローラー: ファイル情報',
+      'MZPico エクスプローラー: マウント管理',
+      'MZPico エクスプローラー: 最近の起動',
+      'MZPico エクスプローラー: ファイル操作',
+    ],
     boardsH2: '2 種類の基板',
     frugalAlt: 'MZPico Frugal 基板',
     frugalHtml: (href: string) =>
