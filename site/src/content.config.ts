@@ -33,7 +33,7 @@ const titles = defineCollection({
         for (const t of catalog) {
           const data = await parseData({
             id: t.slug,
-            data: { ...t.meta, slug: t.slug, files: t.files, screenshots: t.screenshots },
+            data: { ...t.meta, slug: t.slug, files: t.files, extras: t.extras, screenshots: t.screenshots },
           });
           store.set({ id: t.slug, data });
         }
@@ -80,6 +80,21 @@ const titles = defineCollection({
       })
       .optional(),
     source: z.string().optional(),
+    // builds for other machines, download only (never in manifest.json)
+    extras: z
+      .array(
+        z.object({
+          path: z.string(),
+          machine: z.enum(['zx-spectrum']),
+          note: z.union([
+            z.string(),
+            z.object({ en: z.string(), cs: z.string().optional(), de: z.string().optional(), ja: z.string().optional() }),
+          ]),
+          screenshots: z.array(z.string()).optional(),
+          size: z.number().int(),
+        }),
+      )
+      .optional(),
     screenshots: z.array(z.string()),
   }),
 });

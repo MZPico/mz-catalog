@@ -16,6 +16,12 @@ const hex4 = (n: number) => '$' + n.toString(16).toUpperCase().padStart(4, '0');
 const kb = (n: number) => (n / 1024).toFixed(1) + ' KB';
 const description = typeof d.description === 'string' ? d.description : d.description?.[lang] ?? d.description?.en;
 const paragraphs = (description ?? '').trim().split(/\n\s*\n/).filter(Boolean);
+// builds for other machines (download only) and the screenshots that belong to them
+const extras = d.extras ?? [];
+const extraShots = new Set(extras.flatMap((x) => x.screenshots ?? []));
+const shots = d.screenshots.filter((s) => !extraShots.has(s));
+const extraMachine: Record<string, string> = { 'zx-spectrum': 'ZX Spectrum' };
+const localized = (v: string | Record<string, string | undefined>) => (typeof v === 'string' ? v : v[lang] ?? v.en ?? '');
 const summary = t.title.summary(d.title, machineLabel[d.machine], d.genre.join(', '), d.year);
 
 // Social/AI preview: the 1200x630 card built by tools/og/build-og.py from the
@@ -44,7 +50,7 @@ const gameLd = {
     ...(d.original.publisher ? { publisher: { '@type': 'Organization', name: d.original.publisher } } : {}),
   } } : {}),
   description: description ?? summary,
-  ...(d.screenshots.length ? { image: d.screenshots.map((f) => abs(`/screenshots/${d.slug}/${f}`)) } : {}),
+  ...(shots.length ? { image: shots.map((f) => abs(`/screenshots/${d.slug}/${f}`)) } : {}),
   downloadUrl: abs(`/files/${d.slug}/${d.files[0].path}`),
   // Google's software-app results need offers, review or aggregateRating; a free download is
   // an offer at price 0 (their own guidance for free apps).
@@ -130,9 +136,9 @@ const breadcrumbLd = {
       ))}
     </section>
 
-    {d.screenshots.length > 0 && (
+    {shots.length > 0 && (
       <ul class="shots">
-        {d.screenshots.map((s, i) => (
+        {shots.map((s, i) => (
           <li>
             <img src={`/screenshots/${d.slug}/${s}`} alt={t.title.screenshotAlt(d.title, i + 1)} loading={i === 0 ? 'eager' : 'lazy'}
               {...(i === 0 ? { 'data-pagefind-meta': 'image[src]' } : {})} />
@@ -140,6 +146,24 @@ const breadcrumbLd = {
         ))}
       </ul>
     )}
+
+    {extras.map((x) => (
+      <section class="extra" data-machine={x.machine}>
+        <h2>{t.title.alsoFor(extraMachine[x.machine])}</h2>
+        <p>{localized(x.note)}</p>
+        <div class="actionbar" data-pagefind-ignore>
+          <a class="btn" href={`/files/${d.slug}/${x.path}`} download>{t.title.downloadTap}</a>
+          <span class="meta mono">{x.path} · {Math.round(x.size / 1024)} KB</span>
+        </div>
+        {(x.screenshots ?? []).length > 0 && (
+          <ul class="shots">
+            {(x.screenshots ?? []).map((s, i) => (
+              <li><img src={`/screenshots/${d.slug}/${s}`} alt={t.title.extraShotAlt(d.title, extraMachine[x.machine], i + 1)} loading="lazy" /></li>
+            ))}
+          </ul>
+        )}
+      </section>
+    ))}
 
     {paragraphs.length > 0 ? (
       <section class="prose">

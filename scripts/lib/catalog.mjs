@@ -120,8 +120,13 @@ export async function readTitle(slug) {
     const buf = await readFile(path.join(dir, f.path));
     files.push({ ...f, size: buf.length, crc32: crc32Hex(buf), header: parseMzfHeader(buf) });
   }
+  const extras = [];
+  for (const x of meta.extras ?? []) {
+    const buf = await readFile(path.join(dir, x.path));
+    extras.push({ ...x, size: buf.length });
+  }
   const screenshots = await listScreenshots(dir);
-  return { slug, dir, meta, files, screenshots };
+  return { slug, dir, meta, files, extras, screenshots };
 }
 
 /** Read the whole catalog, sorted by slug. */

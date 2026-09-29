@@ -143,6 +143,14 @@
       "maxLength": 2000,
       "description": "Keys / joystick usage."
     },
+    "extras": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Builds of the title for other machines (e.g. a ZX Spectrum tape), offered for download on the title page. Not MZ files: never in manifest.json, so MZPico cards do not see them.",
+      "items": {
+        "$ref": "#/$defs/extra"
+      }
+    },
     "source": {
       "type": "string",
       "maxLength": 500,
@@ -252,6 +260,50 @@
     }
   ],
   "$defs": {
+    "extra": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "machine",
+        "note"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*\\.tap$",
+          "description": "File name inside the title folder (lowercase .tap extension)."
+        },
+        "machine": {
+          "enum": [
+            "zx-spectrum"
+          ],
+          "description": "Machine this build runs on."
+        },
+        "note": {
+          "description": "What it needs and how to start it: English, or a per-language map (en required).",
+          "oneOf": [
+            { "type": "string", "maxLength": 1000 },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["en"],
+              "properties": {
+                "en": { "type": "string", "maxLength": 1000 },
+                "cs": { "type": "string", "maxLength": 1000 },
+                "de": { "type": "string", "maxLength": 1000 },
+                "ja": { "type": "string", "maxLength": 1000 }
+              }
+            }
+          ]
+        },
+        "screenshots": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+          "description": "Files in screenshots/ that show this build; they appear with it, not in the title's gallery."
+        }
+      }
+    },
     "file": {
       "type": "object",
       "additionalProperties": false,

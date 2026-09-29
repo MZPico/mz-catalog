@@ -122,6 +122,9 @@ export const cs: Ui = {
     portTitle: 'Konverze ze ZX Spectra',
     network: 'síťová hra',
     networkTitle: 'Hraje se přes internet: karty MZPico a tento přehrávač v prohlížeči se sejdou v jedné místnosti',
+    alsoFor: (m: string) => `Také pro ${m}`,
+    downloadTap: '⬇ Stáhnout .tap',
+    extraShotAlt: (title: string, m: string, n: number) => `${title} na ${m}, snímek ${n}`,
     languageTitle: 'Jazyk',
     notCurated:
       'Tenhle záznam zatím nikdo nesepsal. Co je níž, pochází přímo z obrazu kazety; jestli tu hru znáš, víš rok nebo autora, ozvi se.',

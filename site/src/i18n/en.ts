@@ -123,6 +123,9 @@ export const en = {
     portTitle: 'Converted from the ZX Spectrum version',
     network: 'network play',
     networkTitle: 'Plays over the internet: MZPico cards and this browser player meet in the same room',
+    alsoFor: (m: string) => `Also for the ${m}`,
+    downloadTap: '⬇ Download .tap',
+    extraShotAlt: (title: string, m: string, n: number) => `${title} on the ${m}, screenshot ${n}`,
     languageTitle: 'Language',
     notCurated:
       'Nobody has written this entry up yet. What follows comes from the tape image itself; if you know the game, its year or its author, corrections are welcome.',

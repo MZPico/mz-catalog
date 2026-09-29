@@ -67,6 +67,17 @@ async function checkTitle(slug) {
     }
   }
 
+  // --- builds for other machines (extras[]): listed files must exist
+  const extras = new Set();
+  for (const x of meta.extras ?? []) {
+    if (extras.has(x.path) || listed.has(x.path)) fail(slug, `extras[]: "${x.path}" listed twice`);
+    extras.add(x.path);
+    if (!(await exists(path.join(dir, x.path)))) fail(slug, `extras[]: "${x.path}" does not exist`);
+    for (const s of x.screenshots ?? []) {
+      if (!(await exists(path.join(dir, 'screenshots', s)))) fail(slug, `extras[]: screenshot "${s}" does not exist`);
+    }
+  }
+
   // --- folder contents: no orphans, nothing unexpected
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     const name = entry.name;
@@ -80,6 +91,7 @@ async function checkTitle(slug) {
       if (!listed.has(name)) fail(slug, `"${name}" is not listed in meta.yaml files[]`);
       continue;
     }
+    if (extras.has(name)) continue;
     fail(slug, `unexpected file "${name}"`);
   }
 

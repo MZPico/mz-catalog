@@ -447,3 +447,8 @@ body.pseudo-fs-on { overflow: hidden; }
 
 /* Controller mapping line under the player */
 .play-gamepad { margin: 0.3rem 0 0; }
+/* builds for other machines on a title page (e.g. the ZX Spectrum tape) */
+.extra { margin: 1.5rem 0; padding: 1rem 1.1rem; border: 1px solid var(--line); border-radius: 8px; }
+.extra h2 { margin-top: 0; }
+.extra .actionbar { align-items: center; }
+.extra .shots { margin-top: 0.9rem; }

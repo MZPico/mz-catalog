@@ -122,6 +122,9 @@ export const ja: Ui = {
     portTitle: 'ZX Spectrum 版からの移植',
     network: 'ネットワーク対戦',
     networkTitle: 'インターネット経由で対戦: MZPico カードとこのブラウザープレイヤーが同じルームに集まります',
+    alsoFor: (m: string) => `${m} 版もあります`,
+    downloadTap: '⬇ .tap をダウンロード',
+    extraShotAlt: (title: string, m: string, n: number) => `${m} 版 ${title} のスクリーンショット ${n}`,
     languageTitle: '言語',
     notCurated:
       'この項目はまだ誰も書き起こしていません。以下はカセットイメージそのものから読み取った情報です。作品や制作年、作者をご存じでしたらお知らせください。',

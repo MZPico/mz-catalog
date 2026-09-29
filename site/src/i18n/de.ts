@@ -122,6 +122,9 @@ export const de: Ui = {
     portTitle: 'Umsetzung der ZX-Spectrum-Fassung',
     network: 'Netzwerkspiel',
     networkTitle: 'Spielbar über das Internet: MZPico-Karten und dieser Browser-Player treffen sich im selben Raum',
+    alsoFor: (m: string) => `Auch für den ${m}`,
+    downloadTap: '⬇ .tap herunterladen',
+    extraShotAlt: (title: string, m: string, n: number) => `${title} auf dem ${m}, Bild ${n}`,
     languageTitle: 'Sprache',
     notCurated:
       'Diesen Eintrag hat noch niemand ausformuliert. Was folgt, stammt aus dem Kassettenabbild selbst; wer das Spiel, sein Jahr oder seinen Autor kennt, möge sich melden.',
