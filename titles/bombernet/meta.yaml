@@ -21,7 +21,7 @@ files:
 extras:
   - path: bombernet.tap
     machine: zx-spectrum
-    screenshots: [zx-01-title.png, zx-02-game.png, zx-03-cross-play.png]
+    screenshots: [zx-01-title.png, zx-02-game.png]
     note:
       en: >-
         BomberNet 0.2.0 on a ZX Spectrum 48K or larger. Network play needs a Spectranet or a
