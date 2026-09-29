@@ -147,24 +147,6 @@ const breadcrumbLd = {
       </ul>
     )}
 
-    {extras.map((x) => (
-      <section class="extra" data-machine={x.machine}>
-        <h2>{t.title.alsoFor(extraMachine[x.machine])}</h2>
-        <p>{localized(x.note)}</p>
-        <div class="actionbar" data-pagefind-ignore>
-          <a class="btn" href={`/files/${d.slug}/${x.path}`} download>{t.title.downloadTap}</a>
-          <span class="meta mono">{x.path} · {Math.round(x.size / 1024)} KB</span>
-        </div>
-        {(x.screenshots ?? []).length > 0 && (
-          <ul class="shots">
-            {(x.screenshots ?? []).map((s, i) => (
-              <li><img src={`/screenshots/${d.slug}/${s}`} alt={t.title.extraShotAlt(d.title, extraMachine[x.machine], i + 1)} loading="lazy" /></li>
-            ))}
-          </ul>
-        )}
-      </section>
-    ))}
-
     {paragraphs.length > 0 ? (
       <section class="prose">
         <h2>{t.title.aboutGame}</h2>
@@ -226,6 +208,23 @@ const breadcrumbLd = {
       </div>
       </details>
     </section>
+    {extras.map((x) => (
+      <section class="extra" data-machine={x.machine}>
+        <h2>{t.title.alsoFor(extraMachine[x.machine])}</h2>
+        <p>{localized(x.note)}</p>
+        <div class="actionbar" data-pagefind-ignore>
+          <a class="btn" href={`/files/${d.slug}/${x.path}`} download>{t.title.downloadTap}</a>
+          <span class="meta mono">{x.path} · {Math.round(x.size / 1024)} KB</span>
+        </div>
+        {(x.screenshots ?? []).length > 0 && (
+          <ul class="shots">
+            {(x.screenshots ?? []).map((s, i) => (
+              <li><img src={`/screenshots/${d.slug}/${s}`} alt={t.title.extraShotAlt(d.title, extraMachine[x.machine], i + 1)} loading="lazy" /></li>
+            ))}
+          </ul>
+        )}
+      </section>
+    ))}
   </article>
 </Base>
 
