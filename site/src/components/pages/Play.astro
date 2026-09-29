@@ -395,7 +395,9 @@ const ui = {
       if (started) return; started = true;
       overlay.hidden = true;
       status.textContent = ui.downloading;
-      const resp = await fetch(`/files/${slug}/${file}`);
+      // revalidate (ETag): /files/ may be cached for a day, and a new release of
+      // the title must play at once, not after the browser's copy expires
+      const resp = await fetch(`/files/${slug}/${file}`, { cache: 'no-cache' });
       if (!resp.ok) { status.textContent = ui.fetchFailed.replace('{file}', file).replace('0', String(resp.status)); return; }
       const mzf = new Uint8Array(await resp.arrayBuffer());
       window.__mzTape = { file, bytes: mzf }; // for the saved-position module below
