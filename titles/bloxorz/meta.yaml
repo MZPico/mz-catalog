@@ -1,5 +1,4 @@
 title: "Bloxorz"
-web: true
 year: 2026
 publisher: "ORDOZ"
 original:
@@ -29,6 +28,9 @@ description:
     menu takes it back through ENTER PASSWORD — or RESUME continues where you
     stopped. The first title in this catalog that arrives as a floppy image
     instead of a tape.
+
+    Get past the last level and the game has something more for you — there is
+    a reward waiting beyond the final hole.
   cs: |
     Válejte kvádr 1×2 po síti plovoucích dlaždic a shoďte ho do čtvercové díry.
     Propadne jen nastojato, takže každá úroveň je otázka, jak k díře dorazit na
@@ -41,6 +43,9 @@ description:
     nativním režimu MZ-800, ke každé patří šestimístný kód, který menu přijme přes
     ENTER PASSWORD — nebo rovnou pokračujete přes RESUME. První titul v katalogu,
     který přichází jako disketa, ne jako páska.
+
+    Kdo zdolá poslední level, nekončí u prázdné obrazovky — za posledním otvorem
+    čeká odměna.
   de: |
     Rollen Sie einen 1×2-Quader über ein Raster schwebender Platten und lassen Sie
     ihn in das quadratische Loch fallen. Hinein fällt er nur hochkant, also ist
@@ -54,10 +59,15 @@ description:
     isometrisch im nativen MZ-800-Modus gezeichnet, jede zeigt einen sechsstelligen
     Code, den das Menü unter ENTER PASSWORD annimmt — oder RESUME macht direkt
     weiter. Der erste Titel im Katalog, der als Diskette kommt und nicht als Band.
+
+    Wer die letzte Ebene schafft, geht nicht leer aus — hinter dem letzten Loch
+    wartet eine Belohnung.
   ja: |
     1×2 のブロックを浮いたタイルの上で転がし、正方形の穴に落とす。立った状態でしか落ちないので、各面は「どうすれば穴の手前で立った向きになるか」、そして「途中で縁から落ちないか」という問題になる。スペースキーでブロックは 2 つの立方体に分かれ、操作対象を切り替えられる。
 
     MZ-800 版は 2026 年、エミュレーター mz800emu の作者である Michal Hučík が制作（バージョン 0.99）。原作は Damien Clarke が 2007 年に公開したウェブゲームで、音楽は BBC Micro 用 Crazee Rider の Martin Galway による。面は MZ-800 ネイティブモードのアイソメトリック表示で、各面に 6 桁のコードが表示され、メニューの ENTER PASSWORD で再開できる。RESUME なら続きからすぐ遊べる。カセットではなくフロッピーで収録された、カタログ初のタイトル。
+
+    最後の面を突破した人には、その先にごほうびが用意されている。
 controls: |
   Cursor keys  roll the block
   Space        switch between the two cubes
