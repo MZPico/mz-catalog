@@ -22,6 +22,8 @@ const extraShots = new Set(extras.flatMap((x) => x.screenshots ?? []));
 const shots = d.screenshots.filter((s) => !extraShots.has(s));
 const extraMachine: Record<string, string> = { 'zx-spectrum': 'ZX Spectrum' };
 const localized = (v: string | Record<string, string | undefined>) => (typeof v === 'string' ? v : v[lang] ?? v.en ?? '');
+const isDisk = (f: { path: string }) => f.path.toLowerCase().endsWith('.dsk');
+const hasTape = d.files.some((f) => !isDisk(f));
 const summary = t.title.summary(d.title, machineLabel[d.machine], d.genre.join(', '), d.year);
 
 // Social/AI preview: the 1200x630 card built by tools/og/build-og.py from the
@@ -92,8 +94,8 @@ const breadcrumbLd = {
       {d.files.length === 1 ? (
         <>
           {d.machine !== 'mz-1500' && <a class="btn primary" href={p(`/play/${d.slug}/?file=${d.files[0].path}`)}>{t.title.play}</a>}
-          <a class="btn" href={`/files/${d.slug}/${d.files[0].path}`} download>{t.title.download}</a>
-          <button class="btn" type="button" id="tape-toggle" aria-expanded="false" aria-controls="tape-panel">{t.title.tapeAudio}</button>
+          <a class="btn" href={`/files/${d.slug}/${d.files[0].path}`} download>{isDisk(d.files[0]) ? t.title.downloadDisk : t.title.download}</a>
+          {hasTape && <button class="btn" type="button" id="tape-toggle" aria-expanded="false" aria-controls="tape-panel">{t.title.tapeAudio}</button>}
         </>
       ) : (
         <div class="multi">
@@ -101,10 +103,10 @@ const breadcrumbLd = {
             <div class="tape-row">
               <span class="file-label">{f.path}</span>
               {d.machine !== 'mz-1500' && <a class="btn primary" href={p(`/play/${d.slug}/?file=${f.path}`)}>{t.title.playShort}</a>}
-              <a class="btn" href={`/files/${d.slug}/${f.path}`} download>{t.title.downloadShort}</a>
+              <a class="btn" href={`/files/${d.slug}/${f.path}`} download>{isDisk(f) ? t.title.downloadShortDisk : t.title.downloadShort}</a>
             </div>
           ))}
-          <button class="btn" type="button" id="tape-toggle" aria-expanded="false" aria-controls="tape-panel">{t.title.tapeAudio}</button>
+          {hasTape && <button class="btn" type="button" id="tape-toggle" aria-expanded="false" aria-controls="tape-panel">{t.title.tapeAudio}</button>}
         </div>
       )}
     </div>
@@ -115,10 +117,11 @@ const breadcrumbLd = {
         data-ui={JSON.stringify({ label: t.title.continue, saved: t.title.continueSaved })}></div>
     )}
 
+    {hasTape && (
     <section data-pagefind-ignore class="tape-audio tape-panel" id="tape-panel" hidden data-machine={d.machine}
       data-i18n={JSON.stringify({ generating: t.tape.generating, ready: t.tape.ready('{len}'), downloadFailed: t.tape.downloadFailed(0) })}>
       <p class="hint" set:html={t.tape.hintHtml} />
-      {d.files.map((f) => (
+      {d.files.filter((f) => !isDisk(f)).map((f) => (
         <div class="tape-row" data-file={`/files/${d.slug}/${f.path}`} data-name={f.header?.name ?? f.path}>
           <span class="mono file">{f.path}</span>
           <label>{t.tape.layout}
@@ -135,6 +138,7 @@ const breadcrumbLd = {
         </div>
       ))}
     </section>
+    )}
 
     {shots.length > 0 && (
       <ul class="shots">

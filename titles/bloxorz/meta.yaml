@@ -1,0 +1,74 @@
+title: "Bloxorz"
+web: true
+year: 2026
+publisher: "ORDOZ"
+original:
+  title: "Bloxorz"
+  publisher: "DX Interactive"
+  year: 2007
+machine: mz-800
+mode: native
+genre: [game, puzzle]
+language: en
+files:
+  - path: bloxorz.dsk
+    kind: disk
+    note: 3.5" floppy image; the MZ-800 boots it from drive 0 on reset.
+description:
+  en: |
+    Roll a 1×2 block across a grid of floating tiles and drop it into the square
+    hole. It only falls in standing upright, so every level is a question of
+    arriving at the hole on end rather than on its side — and of not rolling over
+    an edge on the way. Space splits the block into two cubes and switches between
+    them.
+
+    Michal Hučík, the author of the mz800emu emulator, wrote this MZ-800 remake in
+    2026 (version 0.99) of Damien Clarke's 2007 web game, with Martin Galway's
+    music from the BBC Micro game Crazee Rider. The levels are drawn in isometric
+    graphics in native MZ-800 mode, every level shows a six-digit code, and the
+    menu takes it back through ENTER PASSWORD — or RESUME continues where you
+    stopped. The first title in this catalog that arrives as a floppy image
+    instead of a tape.
+  cs: |
+    Válejte kvádr 1×2 po síti plovoucích dlaždic a shoďte ho do čtvercové díry.
+    Propadne jen nastojato, takže každá úroveň je otázka, jak k díře dorazit na
+    výšku, a ne na ležato — a jak cestou nesjet přes okraj. Mezerník kvádr rozdělí
+    na dvě krychle a přepíná mezi nimi.
+
+    MZ-800 verzi napsal v roce 2026 Michal Hučík, autor emulátoru mz800emu (verze
+    0.99), podle webové hry Damiena Clarka z roku 2007; hudba je od Martina
+    Galwaye ze hry Crazee Rider pro BBC Micro. Úrovně jsou v izometrické grafice v
+    nativním režimu MZ-800, ke každé patří šestimístný kód, který menu přijme přes
+    ENTER PASSWORD — nebo rovnou pokračujete přes RESUME. První titul v katalogu,
+    který přichází jako disketa, ne jako páska.
+  de: |
+    Rollen Sie einen 1×2-Quader über ein Raster schwebender Platten und lassen Sie
+    ihn in das quadratische Loch fallen. Hinein fällt er nur hochkant, also ist
+    jede Ebene die Frage, wie man aufrecht am Loch ankommt — und unterwegs nicht
+    über die Kante rollt. Die Leertaste teilt den Quader in zwei Würfel und
+    wechselt zwischen ihnen.
+
+    Die MZ-800-Fassung schrieb 2026 Michal Hučík, der Autor des Emulators
+    mz800emu (Version 0.99), nach Damien Clarkes Webspiel von 2007; die Musik
+    stammt von Martin Galway aus dem BBC-Micro-Spiel Crazee Rider. Die Ebenen sind
+    isometrisch im nativen MZ-800-Modus gezeichnet, jede zeigt einen sechsstelligen
+    Code, den das Menü unter ENTER PASSWORD annimmt — oder RESUME macht direkt
+    weiter. Der erste Titel im Katalog, der als Diskette kommt und nicht als Band.
+  ja: |
+    1×2 のブロックを浮いたタイルの上で転がし、正方形の穴に落とす。立った状態でしか落ちないので、各面は「どうすれば穴の手前で立った向きになるか」、そして「途中で縁から落ちないか」という問題になる。スペースキーでブロックは 2 つの立方体に分かれ、操作対象を切り替えられる。
+
+    MZ-800 版は 2026 年、エミュレーター mz800emu の作者である Michal Hučík が制作（バージョン 0.99）。原作は Damien Clarke が 2007 年に公開したウェブゲームで、音楽は BBC Micro 用 Crazee Rider の Martin Galway による。面は MZ-800 ネイティブモードのアイソメトリック表示で、各面に 6 桁のコードが表示され、メニューの ENTER PASSWORD で再開できる。RESUME なら続きからすぐ遊べる。カセットではなくフロッピーで収録された、カタログ初のタイトル。
+controls: |
+  Cursor keys  roll the block
+  Space        switch between the two cubes
+  R            restart the level
+  ESC          back to the menu
+touch:
+  pad: cursor
+  buttons:
+    - { label: "SWAP", key: "Space" }
+    - { label: "CR", key: "Enter" }
+  extra:
+    - { label: "R", key: "R" }
+    - { label: "ESC", key: "Escape" }
+source: "Contributed from Martin's collection (2026-10-02). Extended CPC/EDSK floppy image, 760 KB; boots in drive 0 without a key press. Credits screen in the game, 2026-10-02 - \"Game: Bloxorz by Damien Clarke (DX Interactive, 2007) / Music, Martin Galway - Crazee Rider (BBC Micro) / MZ-800 remake, Michal Hucik - ORDOZ, 2026 / Version 0.99\"."

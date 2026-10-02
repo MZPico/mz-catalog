@@ -92,6 +92,7 @@ const ui = {
   <script define:vars={{ slug: d.slug, files, touch: d.touch ?? null, emuVersion, ui }}>
     const params = new URLSearchParams(location.search);
     const file = files.includes(params.get('file')) ? params.get('file') : files[0];
+    const isDisk = /\.dsk$/i.test(file);
     // Audio buffer size in frames (power of two, 256..16384). Larger = fewer crackles, more latency.
     // Edge throttles the main-thread audio callback harder than Chrome, so give it more slack.
     const defaultBuf = /Edg\//.test(navigator.userAgent) ? '2048' : '1024';
@@ -399,17 +400,26 @@ const ui = {
       // the title must play at once, not after the browser's copy expires
       const resp = await fetch(`/files/${slug}/${file}`, { cache: 'no-cache' });
       if (!resp.ok) { status.textContent = ui.fetchFailed.replace('{file}', file).replace('0', String(resp.status)); return; }
-      const mzf = new Uint8Array(await resp.arrayBuffer());
-      window.__mzTape = { file, bytes: mzf }; // for the saved-position module below
+      const image = new Uint8Array(await resp.arrayBuffer());
+      window.__mzTape = { file, bytes: image }; // for the saved-position module below
       status.textContent = ui.loadingEmulator;
       window.Module = {
         canvas,
-        arguments: ['--no-first-run-windows', '--no-save-ini', '--kiosk', '--run-mzf', '/tape.mzf'],
+        // A tape image is injected straight into memory (--run-mzf); a floppy image is
+        // mounted in drive 0 through a minimal ini and the ROM boots it by itself.
+        arguments: isDisk
+          ? ['--no-first-run-windows', '--no-save-ini', '--kiosk', '--config', '/mz800emu.ini']
+          : ['--no-first-run-windows', '--no-save-ini', '--kiosk', '--run-mzf', '/tape.mzf'],
         preRun: [() => {
           // The emulator paces itself on the audio callback; the wasm build pulls as many
           // frames per callback as the buffer needs, so this only trades latency vs. robustness.
           ENV.SDL_AUDIO_DEVICE_SAMPLE_FRAMES = buf; // module-scope runtime global
-          Module.FS.writeFile('/tape.mzf', mzf);
+          if (isDisk) {
+            Module.FS.writeFile('/disk.dsk', image);
+            Module.FS.writeFile('/mz800emu.ini', '[FDC]\nconnected = 1\nwd279x_fdd0_dskpath = /disk.dsk\n');
+          } else {
+            Module.FS.writeFile('/tape.mzf', image);
+          }
         }],
         locateFile: (p) => `/play/emu/${p}?v=${emuVersion}`,
         print: () => {},

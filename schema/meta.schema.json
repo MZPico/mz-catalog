@@ -314,16 +314,17 @@
       "properties": {
         "path": {
           "type": "string",
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*\\.mzf$",
-          "description": "File name inside the title folder (no subdirectories, lowercase .mzf extension)."
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*\\.(mzf|dsk)$",
+          "description": "File name inside the title folder (no subdirectories, lowercase .mzf tape image or .dsk floppy image)."
         },
         "kind": {
           "enum": [
             "standard",
             "turbo",
-            "alt-dump"
+            "alt-dump",
+            "disk"
           ],
-          "description": "standard = normal tape format, turbo = turbo-loader variant, alt-dump = alternative dump of the same title."
+          "description": "standard = normal tape format, turbo = turbo-loader variant, alt-dump = alternative dump of the same title, disk = floppy image (.dsk, boots in drive 0)."
         },
         "note": {
           "type": "string",

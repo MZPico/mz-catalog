@@ -75,7 +75,7 @@ The structure is flat: machine type is metadata, not a directory level.
    | `machine` | yes | `mz-700`, `mz-800` or `mz-1500` |
    | `mode` | MZ-800 only | `native` or `mz-700` (compatibility mode); forbidden for other machines |
    | `language` | no | ISO 639 code of the software's UI language (`en`, `cs`, `de`, `ja`, …); omit if unknown |
-   | `files[]` | yes | `path` (file name in the folder), `kind`, optional `note` |
+   | `files[]` | yes | `path` (file name in the folder: `.mzf` tape image or `.dsk` floppy image), `kind` (`standard`/`turbo`/`alt-dump` for tapes, `disk` for a floppy), optional `note` |
    | `description` | no | free text, paragraphs separated by blank lines. Either a string (English) or a per-language map (`en` required, the fallback; `cs`, `de`, `ja` optional). Keep Japanese paragraphs on one line — a hard wrap renders as a stray space. |
    | `controls` | no | key / joystick reference, shown verbatim |
    | `web` | no | `true` publishes the title on the web site; absent/false keeps it API-only (manifest.json + device API still serve every title) |
@@ -330,6 +330,23 @@ stays in the URL fragment and is then remembered in that browser).
 Secrets per Worker (`npx wrangler secret put NAME [-c wrangler.staging.jsonc]`):
 `STATS_KEY`, `CF_ANALYTICS_TOKEN` (API token with Account Analytics: Read and
 Zone Analytics: Read), `REPORT_TO` (a verified Email Routing destination).
+
+## Floppy images (.dsk)
+
+A title can ship a floppy image instead of a tape: `kind: disk` with a `.dsk`
+path (Extended CPC/EDSK, what mz800emu and the MZPico mount). Validation checks
+the container magic instead of the MZF header, and the loader leaves `header`
+null, so the tape columns stay empty on the title page and the tape-audio panel
+is not offered.
+
+The play page mounts it in drive 0 through a minimal ini written into MEMFS
+(`[FDC] connected = 1 / wd279x_fdd0_dskpath = /disk.dsk`) and lets the ROM boot
+it — no `--run-mzf`. Saved positions work as for tapes.
+
+The card's cloud tree skips anything over `CLOUD_FILE_MAX` (49 KB), so a floppy
+image is left out of `legacy-api.json` with a build warning; it is still in
+`manifest.json` and downloadable from the title page (and can be copied to the
+card's SD by hand).
 
 ## Saved positions
 

@@ -118,7 +118,9 @@ export async function readTitle(slug) {
   const files = [];
   for (const f of meta.files ?? []) {
     const buf = await readFile(path.join(dir, f.path));
-    files.push({ ...f, size: buf.length, crc32: crc32Hex(buf), header: parseMzfHeader(buf) });
+    // Only tapes carry the 128-byte header; a .dsk floppy image has none.
+    const header = f.path.toLowerCase().endsWith('.mzf') ? parseMzfHeader(buf) : null;
+    files.push({ ...f, size: buf.length, crc32: crc32Hex(buf), header });
   }
   const extras = [];
   for (const x of meta.extras ?? []) {

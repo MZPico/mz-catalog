@@ -16,7 +16,7 @@ const mzfHeader = z.object({
 
 const file = z.object({
   path: z.string(),
-  kind: z.enum(['standard', 'turbo', 'alt-dump']),
+  kind: z.enum(['standard', 'turbo', 'alt-dump', 'disk']),
   note: z.string().optional(),
   size: z.number().int(),
   crc32: z.string(),

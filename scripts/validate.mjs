@@ -55,6 +55,19 @@ async function checkTitle(slug) {
     const abs = path.join(dir, f.path);
     if (!(await exists(abs))) { fail(slug, `files[]: "${f.path}" does not exist`); continue; }
     const buf = await readFile(abs);
+    const isDisk = f.path.toLowerCase().endsWith('.dsk');
+    if (isDisk !== (f.kind === 'disk')) {
+      fail(slug, `${f.path}: kind "disk" and the .dsk extension go together (a tape image is standard/turbo/alt-dump)`);
+      continue;
+    }
+    if (isDisk) {
+      // Floppy images are CPC/EDSK containers — what the emulator and the card mount.
+      const magic = buf.subarray(0, 34).toString('latin1');
+      if (!/^(EXTENDED CPC DSK File|MV - CPCEMU)/.test(magic)) {
+        fail(slug, `${f.path}: not a CPC/EDSK floppy image (starts with "${magic.slice(0, 21).replace(/[^\x20-\x7e]/g, '.')}")`);
+      }
+      continue;
+    }
     if (buf.length < MZF_HEADER_SIZE) { fail(slug, `${f.path}: shorter than a 128-byte MZF header`); continue; }
     const h = parseMzfHeader(buf);
     if (!(h.attribute in MZF_ATTRIBUTES)) warn(slug, `${f.path}: unusual MZF attribute 0x${h.attribute.toString(16)}`);
@@ -87,7 +100,7 @@ async function checkTitle(slug) {
       fail(slug, `unexpected directory "${name}" (only screenshots/ is allowed)`);
       continue;
     }
-    if (name.toLowerCase().endsWith('.mzf')) {
+    if (/\.(mzf|dsk)$/i.test(name)) {
       if (!listed.has(name)) fail(slug, `"${name}" is not listed in meta.yaml files[]`);
       continue;
     }
