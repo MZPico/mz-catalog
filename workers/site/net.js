@@ -9,6 +9,11 @@
 //   /net?game=<id>&create=1        the Worker picks a free 4-letter code
 //   /net?game=<id>&code=<ABCD>     join (or spectate a full/running room)
 // The first message must be the matching {"op":"create"} / {"op":"join"}.
+//   &bin=1                         input lines as binary messages, both ways
+//                                  (the serial-bus machines, e.g. the Atari's
+//                                  FujiNet): to the relay [frame lo, frame hi,
+//                                  data...], from it [slot, frame lo, frame hi,
+//                                  data...]; every other message stays JSON
 //
 // Free-plan budget: incoming WebSocket messages count 20:1, outgoing are free;
 // a 4-player room at 17 inputs/s per member is ~3.5 requests/s.
@@ -58,11 +63,16 @@ export class NetRoom {
 
   broadcast(obj, exclude) {
     const data = JSON.stringify(obj);
+    let blob = null;                       // the input line for bin=1 sockets
+    if (obj.op === 'input') {
+      const hex = obj.data.match(/../g) ?? [];
+      blob = new Uint8Array([obj.slot, obj.frame & 0xFF, (obj.frame >> 8) & 0xFF, ...hex.map((h) => parseInt(h, 16))]);
+    }
     for (const ws of this.sockets()) {
       if (ws === exclude) continue;
       const a = ws.deserializeAttachment();
       if (!a || a.slot === -2) continue;   // not yet created/joined
-      try { ws.send(data); } catch { /* closing */ }
+      try { ws.send(blob && a.bin ? blob : data); } catch { /* closing */ }
     }
   }
 
@@ -80,11 +90,12 @@ export class NetRoom {
     const game = Number(url.searchParams.get('game') ?? 0);
     const create = url.searchParams.get('create') === '1';
     const code = (url.searchParams.get('code') ?? '').toUpperCase();
+    const bin = url.searchParams.get('bin') === '1';
     const pair = new WebSocketPair();
     const [client, server] = Object.values(pair);
     this.ctx.acceptWebSocket(server);
     // slot -2 = handshake pending (create or join must come first)
-    server.serializeAttachment({ slot: -2, ready: false, create, game, code });
+    server.serializeAttachment({ slot: -2, ready: false, create, game, code, bin });
     if (!create && !this.room) {
       send(server, { op: 'error', code: E_ROOM, text: 'room unknown' });
       server.close(1000, 'room unknown');
@@ -94,8 +105,14 @@ export class NetRoom {
 
   async webSocketMessage(ws, raw) {
     let msg;
-    try { msg = JSON.parse(typeof raw === 'string' ? raw : new TextDecoder().decode(raw)); } catch { return send(ws, { op: 'error', code: E_PARAM, text: 'bad json' }); }
     const a = ws.deserializeAttachment();
+    if (typeof raw !== 'string' && a && a.bin) {   // a binary input line: [frame lo, frame hi, data...]
+      const b = new Uint8Array(raw);
+      if (b.length < 2) return send(ws, { op: 'error', code: E_PARAM, text: 'bad input' });
+      msg = { op: 'input', frame: b[0] | (b[1] << 8), data: [...b.subarray(2)].map((x) => x.toString(16).padStart(2, '0')).join('') };
+    } else {
+      try { msg = JSON.parse(typeof raw === 'string' ? raw : new TextDecoder().decode(raw)); } catch { return send(ws, { op: 'error', code: E_PARAM, text: 'bad json' }); }
+    }
     await this.load();
     const op = msg.op;
 
