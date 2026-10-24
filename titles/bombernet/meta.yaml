@@ -77,5 +77,6 @@ controls: |
 touch:
   buttons:
     - { label: "BOMB", key: "Space" }
+  extra:                                  # small, in the top corner: next to BOMB it was hit by mistake
     - { label: "BREAK", key: "Escape" }   # the MZ's BREAK (mz800emu maps Escape to it): cancel a room code or the lobby, leave a match
 source: MZPico/BomberNet on GitHub, built from the C port of the 1983 Hudson Soft original (bomber.mzf in this catalog).
