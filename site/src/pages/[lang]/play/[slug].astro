@@ -10,5 +10,6 @@ export async function getStaticPaths() {
     .flatMap((lang) => titles.map((entry) => ({ params: { lang, slug: entry.data.slug }, props: { lang, entry } })));
 }
 const { lang, entry } = Astro.props;
+if (entry.data.play) return Astro.redirect(entry.data.play, 301);   // a native build replaces the emulator
 ---
 <Play lang={lang as Lang} entry={entry} />

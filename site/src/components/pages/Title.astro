@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { useTranslations, localizePath, type Lang } from '../../i18n';
+import { playHref } from '../../lib/play';
 import type { CollectionEntry } from 'astro:content';
 
 interface Props { lang: Lang; entry: CollectionEntry<'titles'> }
@@ -57,7 +58,7 @@ const gameLd = {
   // Google's software-app results need offers, review or aggregateRating; a free download is
   // an offer at price 0 (their own guidance for free apps).
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR', url: abs(`/files/${d.slug}/${d.files[0].path}`) },
-  ...(d.machine !== 'mz-1500' ? { installUrl: abs(p(`/play/${d.slug}/`)) } : {}),
+  ...(d.machine !== 'mz-1500' ? { installUrl: abs(playHref(d, p)) } : {}),
 };
 const breadcrumbLd = {
   '@context': 'https://schema.org',
@@ -93,7 +94,7 @@ const breadcrumbLd = {
     <div class="actionbar" data-pagefind-ignore>
       {d.files.length === 1 ? (
         <>
-          {d.machine !== 'mz-1500' && <a class="btn primary" href={p(`/play/${d.slug}/?file=${d.files[0].path}`)}>{t.title.play}</a>}
+          {d.machine !== 'mz-1500' && <a class="btn primary" href={playHref(d, p, `?file=${d.files[0].path}`)}>{t.title.play}</a>}
           <a class="btn" href={`/files/${d.slug}/${d.files[0].path}`} download>{isDisk(d.files[0]) ? t.title.downloadDisk : t.title.download}</a>
           {hasTape && <button class="btn" type="button" id="tape-toggle" aria-expanded="false" aria-controls="tape-panel">{t.title.tapeAudio}</button>}
         </>
@@ -102,7 +103,7 @@ const breadcrumbLd = {
           {d.files.map((f) => (
             <div class="tape-row">
               <span class="file-label">{f.path}</span>
-              {d.machine !== 'mz-1500' && <a class="btn primary" href={p(`/play/${d.slug}/?file=${f.path}`)}>{t.title.playShort}</a>}
+              {d.machine !== 'mz-1500' && <a class="btn primary" href={playHref(d, p, `?file=${f.path}`)}>{t.title.playShort}</a>}
               <a class="btn" href={`/files/${d.slug}/${f.path}`} download>{isDisk(f) ? t.title.downloadShortDisk : t.title.downloadShort}</a>
             </div>
           ))}
@@ -113,7 +114,7 @@ const breadcrumbLd = {
 
     {d.machine !== 'mz-1500' && (
       <div class="continue" id="continue" hidden data-pagefind-ignore data-slug={d.slug} data-lang={lang}
-        data-play={p(`/play/${d.slug}/`)} data-multi={d.files.length > 1 ? '1' : ''}
+        data-play={playHref(d, p)} data-multi={d.files.length > 1 ? '1' : ''}
         data-ui={JSON.stringify({ label: t.title.continue, saved: t.title.continueSaved })}></div>
     )}
 

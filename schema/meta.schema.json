@@ -156,6 +156,11 @@
       "maxLength": 500,
       "description": "Where the dump came from (URL or free text)."
     },
+    "play": {
+      "type": "string",
+      "pattern": "^/[a-z0-9_/-]*/$",
+      "description": "A native browser build of the title (a site path, e.g. /bombernet/): the site's play links go there instead of the emulator, and /play/<slug>/ redirects to it."
+    },
     "touch": {
       "type": "object",
       "additionalProperties": false,

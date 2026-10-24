@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import type { Machine } from '../../data/machines';
 import { useTranslations, localizePath, type Lang } from '../../i18n';
+import { playHref } from '../../lib/play';
 
 interface Props { lang: Lang; machine: Machine }
 const { lang, machine } = Astro.props;
@@ -39,7 +40,7 @@ const titles = all
                 ? <img src={`/screenshots/${d.slug}/${shot}`} alt="" loading="lazy" width="640" height="480" />
                 : <div class="thumb-empty">{t.home.noScreenshot}</div>}
             </a>
-            <a class="card-play" href={p(`/play/${d.slug}/`)} title={t.home.playAria(d.title)} aria-label={t.home.playAria(d.title)}>▶</a>
+            <a class="card-play" href={playHref(d, p)} title={t.home.playAria(d.title)} aria-label={t.home.playAria(d.title)}>▶</a>
             <div class="body">
               <h3><a href={p(`/titles/${d.slug}/`)}>{d.title}</a></h3>
               <div class="meta">{[d.year, d.publisher].filter(Boolean).join(' · ') || ' '}</div>

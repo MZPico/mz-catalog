@@ -1,6 +1,7 @@
 title: "BomberNet"
 web: false
 network: true
+play: /bombernet/                       # the game compiled to WebAssembly (BomberNet c/platform/web), not the emulated MZ-800
 spotlight:
   en: "The first Sharp MZ game with network play. Host a room on your MZ-800 with an MZPico, or right here in the browser, and hand the four-letter code to a friend. Coop or deathmatch, up to four players, any mix of local and remote. Now also on the ZX Spectrum, in the same rooms."
   cs: "První hra pro Sharp MZ s hraním po síti. Založte místnost na svém MZ-800 s MZPico nebo přímo tady v prohlížeči a pošlete kamarádovi čtyřpísmenný kód. Kooperace nebo deathmatch, až čtyři hráči, libovolná kombinace místních a vzdálených. Nově i na ZX Spectru, ve stejných místnostech."

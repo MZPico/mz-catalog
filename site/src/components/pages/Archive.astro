@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { useTranslations, localizePath, type Lang } from '../../i18n';
+import { playHref } from '../../lib/play';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -72,7 +73,7 @@ const counts = Object.fromEntries(machines.map((m) => [m, titles.filter((e) => e
           </div>
           <div class="row-stats meta" data-stats={d.slug}></div>
           <div class="row-actions">
-            {d.machine !== 'mz-1500' && <a class="btn small" href={p(`/play/${d.slug}/`)}>▶</a>}
+            {d.machine !== 'mz-1500' && <a class="btn small" href={playHref(d, p)}>▶</a>}
             <a class="btn small" href={`/files/${d.slug}/${d.files[0].path}`} download>⬇</a>
           </div>
         </li>

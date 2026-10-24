@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { useTranslations, localizePath, type Lang } from '../../i18n';
+import { playHref } from '../../lib/play';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -64,7 +65,7 @@ const listLd = {
           <h2><a href={p(`/titles/${d.slug}/`)}>{d.title}</a></h2>
           <p>{pick(d.spotlight!)}</p>
           <p class="spot-actions">
-            {d.machine !== 'mz-1500' && <a class="btn" href={p(`/play/${d.slug}/`)}>▶ {t.home.spotlight.play}</a>}
+            {d.machine !== 'mz-1500' && <a class="btn" href={playHref(d, p)}>▶ {t.home.spotlight.play}</a>}
             <a class="btn ghost" href={p(`/titles/${d.slug}/`)}>{t.home.spotlight.more}</a>
           </p>
         </div>
@@ -96,7 +97,7 @@ const listLd = {
               ? <img src={`/screenshots/${d.slug}/${shot}`} alt="" loading="lazy" width="640" height="480" />
               : <div class="thumb-empty">{t.home.noScreenshot}</div>}
           </a>
-          <a class="card-play" href={p(`/play/${d.slug}/`)} title={t.home.playAria(d.title)} aria-label={t.home.playAria(d.title)}>▶</a>
+          <a class="card-play" href={playHref(d, p)} title={t.home.playAria(d.title)} aria-label={t.home.playAria(d.title)}>▶</a>
           <div class="body">
             <h3><a href={href}>{d.title}</a></h3>
             <div class="meta">{[d.year, d.publisher].filter(Boolean).join(' · ') || ' '}</div>

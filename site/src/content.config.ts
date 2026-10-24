@@ -70,6 +70,7 @@ const titles = defineCollection({
     controls: z.string().optional(),
     web: z.boolean().optional(),
     network: z.boolean().optional(),          // plays over the internet (badge)
+    play: z.string().regex(/^\/[a-z0-9_\/-]*\/$/).optional(),   // a native browser build played instead of the emulator (a site path)
     // front-page spotlight: a short pitch per language (en required)
     spotlight: z.object({ en: z.string(), cs: z.string().optional(), de: z.string().optional(), ja: z.string().optional() }).optional(),
     touch: z

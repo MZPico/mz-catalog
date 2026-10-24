@@ -9,5 +9,6 @@ export async function getStaticPaths() {
     .map((entry) => ({ params: { slug: entry.data.slug }, props: { entry } }));
 }
 const { entry } = Astro.props;
+if (entry.data.play) return Astro.redirect(entry.data.play, 301);   // a native build replaces the emulator
 ---
 <Play lang="en" entry={entry} />
