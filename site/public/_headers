@@ -38,3 +38,7 @@
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
+
+# BomberNet compiled to WebAssembly (no emulator: no cross-origin isolation needed); short-lived, it changes.
+/bombernet/*
+  Cache-Control: public, max-age=300
