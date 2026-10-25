@@ -17,6 +17,9 @@ const hex4 = (n: number) => '$' + n.toString(16).toUpperCase().padStart(4, '0');
 const kb = (n: number) => (n / 1024).toFixed(1) + ' KB';
 const description = typeof d.description === 'string' ? d.description : d.description?.[lang] ?? d.description?.en;
 const paragraphs = (description ?? '').trim().split(/\n\s*\n/).filter(Boolean);
+// links in the prose: a URL, or a bare github.com/... path, becomes an anchor (a trailing full stop stays text)
+const linkify = (text: string) => text.split(/((?:https?:\/\/|github\.com\/)[^\s]*[^\s.,;:)])/g).map((part, i) =>
+  i % 2 ? { href: part.startsWith('http') ? part : `https://${part}`, text: part } : part);
 const shots = d.screenshots;
 const ports = d.ports ?? [];                 // the same title on other machines: a card each, with its downloads
 const localized = (v: string | Record<string, string | undefined>) => (typeof v === 'string' ? v : v[lang] ?? v.en ?? '');
@@ -154,7 +157,7 @@ const breadcrumbLd = {
     {paragraphs.length > 0 ? (
       <section class="prose">
         <h2>{t.title.aboutGame}</h2>
-        {paragraphs.map((p) => <p>{p}</p>)}
+        {paragraphs.map((para) => <p>{linkify(para).map((x) => (typeof x === 'string' ? x : <a href={x.href}>{x.text}</a>))}</p>)}
       </section>
     ) : (
       <p class="not-curated">{t.title.notCurated}</p>
