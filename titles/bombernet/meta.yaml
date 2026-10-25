@@ -18,7 +18,7 @@ original:
 machine: mz-700
 genre: [game]
 files:
-  - path: bombernet.mzf
+  - path: bombernet-0.3.0-mz800.mzf
     kind: standard
     note: "The Sharp MZ-800 build (the MZ-700 plays locally); online rooms need an MZPico with a Pico W and Wi-Fi enabled, or a Unicard with the NET firmware and a relay of your own."
 description:
@@ -112,7 +112,7 @@ ports:
     guide: https://github.com/MZPico/BomberNet/blob/main/docs/setup/mz-800.md
     name: "Sharp MZ-800"
     files:
-      - { path: bombernet.mzf, label: ".mzf" }
+      - { path: bombernet-0.3.0-mz800.mzf, label: ".mzf" }
     needs:
       en: "A Sharp MZ-800; an MZPico loads it straight from this catalog. The MZ-700 plays locally."
       cs: "Sharp MZ-800; MZPico ho nahraje přímo z tohoto katalogu. Na MZ-700 se hraje bez sítě."
@@ -132,7 +132,7 @@ ports:
     guide: https://github.com/MZPico/BomberNet/blob/main/docs/setup/zx-spectrum-48k.md
     name: "ZX Spectrum 48K"
     files:
-      - { path: bombernet.tap, label: ".tap" }
+      - { path: bombernet-0.3.0-zx-spectrum-48k.tap, label: ".tap" }
     needs:
       en: "A ZX Spectrum 48K or larger; LOAD \"\" (on a Spectranext choose 48 BASIC first). Also runs in FuseX."
       cs: "ZX Spectrum 48K nebo větší; LOAD \"\" (na Spectranextu nejdřív zvolte 48 BASIC). Běží i ve FuseX."
@@ -152,7 +152,7 @@ ports:
     guide: https://github.com/MZPico/BomberNet/blob/main/docs/setup/element-zx-128k-esp01.md
     name: "eLeMeNt ZX, 128K mode, with an ESP-01"
     files:
-      - { path: bombernet-zx-spectrum-128k-esp01.tap, label: ".tap" }
+      - { path: bombernet-0.3.0-zx-spectrum-128k-esp01.tap, label: ".tap" }
     needs:
       en: "An eLeMeNt ZX board in its ZX Spectrum 128K mode, with its ESP-01 Wi-Fi module. Milan Stava's port; written for the MB03+ interface too, untried there."
       cs: "Deska eLeMeNt ZX v režimu ZX Spectrum 128K s jejím Wi-Fi modulem ESP-01. Port Milana Stavy; psaný i pro rozhraní MB03+, tam nevyzkoušený."
@@ -172,8 +172,8 @@ ports:
     guide: https://github.com/MZPico/BomberNet/blob/main/docs/setup/amstrad-cpc.md
     name: "Amstrad CPC"
     files:
-      - { path: bombernet-amstrad-cpc.dsk, label: "disk image" }
-      - { path: bombernet-amstrad-cpc.cpc, label: "program" }
+      - { path: bombernet-0.3.0-amstrad-cpc.dsk, label: "disk image" }
+      - { path: bombernet-0.3.0-amstrad-cpc.cpc, label: "program" }
     needs:
       en: "A CPC 464 or larger, 64 KB; run the program from the disk."
       cs: "CPC 464 nebo větší, 64 KB; program se spouští z disku."
@@ -193,7 +193,7 @@ ports:
     guide: https://github.com/MZPico/BomberNet/blob/main/docs/setup/atari-xl.md
     name: "Atari XL/XE"
     files:
-      - { path: bombernet-atari-xl.xex, label: ".xex" }
+      - { path: bombernet-0.3.0-atari-xl.xex, label: ".xex" }
     needs:
       en: "An Atari XL/XE with 64 KB; load the .xex from a disk or a FujiNet."
       cs: "Atari XL/XE s 64 KB; .xex se nahrává z disku nebo z FujiNetu."
@@ -218,8 +218,8 @@ ports:
     guide: https://github.com/MZPico/BomberNet/blob/main/docs/setup/c64.md
     name: "Commodore 64"
     files:
-      - { path: bombernet-c64.d64, label: "disk image" }
-      - { path: bombernet-c64.prg, label: "program" }
+      - { path: bombernet-0.3.0-c64.d64, label: "disk image" }
+      - { path: bombernet-0.3.0-c64.prg, label: "program" }
     needs:
       en: "Any Commodore 64, PAL or NTSC."
       cs: "Jakýkoli Commodore 64, PAL i NTSC."
@@ -239,8 +239,8 @@ ports:
     guide: https://github.com/MZPico/BomberNet/blob/main/docs/setup/amiga.md
     name: "Amiga"
     files:
-      - { path: bombernet-amiga.adf, label: "bootable floppy" }
-      - { path: bombernet-amiga, label: "program" }
+      - { path: bombernet-0.3.0-amiga.adf, label: "bootable floppy" }
+      - { path: bombernet-0.3.0-amiga, label: "program" }
     needs:
       en: "Any Amiga with Kickstart 2.04 or later, 512 KB of chip RAM (1 MB in all recommended); the floppy boots."
       cs: "Jakákoli Amiga s Kickstartem 2.04 a novějším, 512 KB chip RAM (doporučen 1 MB celkem); disketa je bootovací."
@@ -260,8 +260,8 @@ ports:
     guide: https://github.com/MZPico/BomberNet/blob/main/docs/setup/atari-st.md
     name: "Atari ST"
     files:
-      - { path: bombernet-atari-st.st, label: "bootable floppy" }
-      - { path: bombernet-atari-st.prg, label: "program" }
+      - { path: bombernet-0.3.0-atari-st.st, label: "bootable floppy" }
+      - { path: bombernet-0.3.0-atari-st.prg, label: "program" }
     needs:
       en: "An ST, STE, Mega ST or Mega STE with 1 MB and a colour monitor; the floppy boots. Also runs in Hatari."
       cs: "ST, STE, Mega ST nebo Mega STE s 1 MB a barevným monitorem; disketa je bootovací. Běží i v Hatari."
@@ -281,8 +281,8 @@ ports:
     guide: https://github.com/MZPico/BomberNet/blob/main/docs/setup/pc-dos.md
     name: "IBM PC (DOS)"
     files:
-      - { path: bombernet-pc-dos.exe, label: "program" }
-      - { path: bombernet-pc-dos.img, label: "floppy image" }
+      - { path: bombernet-0.3.0-pc-dos.exe, label: "program" }
+      - { path: bombernet-0.3.0-pc-dos.img, label: "floppy image" }
     needs:
       en: "Any PC from an 8088 up, DOS 3 or FreeDOS; CGA, EGA or VGA; PC speaker, AdLib or Sound Blaster. BOMBER /? lists the switches."
       cs: "Jakékoli PC od 8088 výš, DOS 3 nebo FreeDOS; CGA, EGA nebo VGA; PC speaker, AdLib nebo Sound Blaster. BOMBER /? vypíše přepínače."
