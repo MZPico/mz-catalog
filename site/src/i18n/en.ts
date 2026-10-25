@@ -131,6 +131,7 @@ export const en = {
     portNetwork: 'Network play',
     portKeys: 'Keys',
     portLimits: 'Notes',
+    portGuide: 'Setup guide ↗',
     portsJump: '⬇ All platforms',
     machines: (n: number) => `${n} platforms`,
     version: (v: string) => `version ${v}`,

@@ -299,6 +299,7 @@
         "machine": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$", "description": "An id for the machine (anchors, styling)." },
         "name": { "type": "string", "minLength": 1, "maxLength": 60, "description": "The machine as shown." },
         "play": { "type": "boolean", "description": "This machine is the browser: the title's play link instead of a download." },
+        "guide": { "type": "string", "pattern": "^https://", "maxLength": 300, "description": "The setup guide's page for this platform." },
         "files": {
           "type": "array",
           "items": {

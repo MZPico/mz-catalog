@@ -231,6 +231,7 @@ const breadcrumbLd = {
               </dl>
               <div class="actions" data-pagefind-ignore>
                 {x.play && <a class="btn primary" href={playHref(d, p)}>{t.title.play}</a>}
+                {x.guide && <a class="btn" href={x.guide}>{t.title.portGuide}</a>}
                 {x.files.map((f) => (
                   <a class="btn" href={`/files/${d.slug}/${f.path}`} download title={f.path}>⬇ {f.label ?? f.path.replace(/^.*\./, '.')}<span class="meta">{Math.round(f.size / 1024)} KB</span></a>
                 ))}

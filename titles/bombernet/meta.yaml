@@ -109,6 +109,7 @@ ports:
       de: "Zeigt den eigenen Spieler ohne die Eingabeverzögerung des Netzes (Run-ahead)."
       ja: "自分のプレイヤーはネットワークの入力遅延なしに表示されます (先行実行)。"
   - machine: mz-800
+    guide: https://github.com/MZPico/BomberNet/blob/main/docs/setup/mz-800.md
     name: "Sharp MZ-800"
     files:
       - { path: bombernet.mzf, label: ".mzf" }
@@ -128,6 +129,7 @@ ports:
       de: "Cursortasten und Leertaste (oder CR); W A S D und E; MZ-800-Joysticks, MZ-1X03; BREAK verlässt ein Match."
       ja: "カーソルキーとスペース (または CR)、W A S D と E、MZ-800 ジョイスティック、MZ-1X03。BREAK で対戦から抜けます。"
   - machine: zx-spectrum-48k
+    guide: https://github.com/MZPico/BomberNet/blob/main/docs/setup/zx-spectrum-48k.md
     name: "ZX Spectrum 48K"
     files:
       - { path: bombernet.tap, label: ".tap" }
@@ -146,26 +148,28 @@ ports:
       cs: "Q A O P a mezerník (M, když se o klávesnici dělí dva); klávesy Sinclair 6 až 0 a 1 až 5; joystick Kempston, Fuller nebo Cursor; BREAK opustí zápas."
       de: "Q A O P und Leertaste (M, wenn sich zwei die Tastatur teilen); die Sinclair-Tasten 6 bis 0 und 1 bis 5; Kempston-, Fuller- oder Cursor-Joystick; BREAK verlässt ein Match."
       ja: "Q A O P とスペース (2 人でキーボードを使うときは M)、Sinclair キー 6〜0 と 1〜5、Kempston・Fuller・Cursor ジョイスティック。BREAK で対戦から抜けます。"
-  - machine: zx-spectrum-128k
-    name: "ZX Spectrum 128K with an ESP-01"
+  - machine: element-zx-128k
+    guide: https://github.com/MZPico/BomberNet/blob/main/docs/setup/element-zx-128k-esp01.md
+    name: "eLeMeNt ZX, 128K mode, with an ESP-01"
     files:
       - { path: bombernet-zx-spectrum-128k-esp01.tap, label: ".tap" }
     needs:
-      en: "A 128K Spectrum with an eLeMeNt ZX or an MB03+ and its ESP-01 Wi-Fi module. Milan Stava's port."
-      cs: "128K Spectrum s eLeMeNt ZX nebo MB03+ a jeho Wi-Fi modulem ESP-01. Port Milana Stavy."
-      de: "Ein 128K-Spectrum mit eLeMeNt ZX oder MB03+ und dessen ESP-01-WLAN-Modul. Milan Stavas Portierung."
-      ja: "eLeMeNt ZX または MB03+ と ESP-01 Wi-Fi モジュールを備えた 128K Spectrum。Milan Stava による移植。"
+      en: "An eLeMeNt ZX board in its ZX Spectrum 128K mode, with its ESP-01 Wi-Fi module. Milan Stava's port; written for the MB03+ interface too, untried there."
+      cs: "Deska eLeMeNt ZX v režimu ZX Spectrum 128K s jejím Wi-Fi modulem ESP-01. Port Milana Stavy; psaný i pro rozhraní MB03+, tam nevyzkoušený."
+      de: "Ein eLeMeNt-ZX-Board im ZX-Spectrum-128K-Modus mit seinem ESP-01-WLAN-Modul. Milan Stavas Portierung; auch für das MB03+-Interface geschrieben, dort nicht erprobt."
+      ja: "ZX Spectrum 128K モードの eLeMeNt ZX ボードと、その ESP-01 Wi-Fi モジュール。Milan Stava による移植。MB03+ インターフェース向けにも書かれていますが、そちらは未検証です。"
     network:
       en: "The ESP-01 Wi-Fi module."
       cs: "Wi-Fi modul ESP-01."
       de: "Das ESP-01-WLAN-Modul."
       ja: "ESP-01 Wi-Fi モジュール。"
     keys:
-      en: "As on the 48K; the tones on the AY."
-      cs: "Jako na 48K; tóny z AY."
-      de: "Wie beim 48K; die Töne über den AY."
-      ja: "48K 版と同じ。効果音は AY から。"
+      en: "As on the Spectrum 48K; the tones on the AY."
+      cs: "Jako na Spectru 48K; tóny z AY."
+      de: "Wie beim Spectrum 48K; die Töne über den AY."
+      ja: "Spectrum 48K 版と同じ。効果音は AY から。"
   - machine: amstrad-cpc
+    guide: https://github.com/MZPico/BomberNet/blob/main/docs/setup/amstrad-cpc.md
     name: "Amstrad CPC"
     files:
       - { path: bombernet-amstrad-cpc.dsk, label: "disk image" }
@@ -186,6 +190,7 @@ ports:
       de: "Cursortasten und Leertaste (oder Copy); W A S D und E; zwei Joysticks; ESC verlässt ein Match."
       ja: "カーソルキーとスペース (または Copy)、W A S D と E、ジョイスティック 2 本。ESC で対戦から抜けます。"
   - machine: atari-xl
+    guide: https://github.com/MZPico/BomberNet/blob/main/docs/setup/atari-xl.md
     name: "Atari XL/XE"
     files:
       - { path: bombernet-atari-xl.xex, label: ".xex" }
@@ -210,6 +215,7 @@ ports:
       de: "Das Netzwerkspiel wurde noch nicht an einem echten FujiNet ausprobiert: im Emulator läuft ein Match 5 bis 18 % langsamer, und ein Raum mit einem Atari läuft im Tempo des Atari. Berichte von echter Hardware sind willkommen."
       ja: "ネットワーク対戦は実機の FujiNet では未検証です。エミュレーターでは対戦が 5〜18 % 遅くなり、Atari のいるルームは Atari のペースで進みます。実機での報告を歓迎します。"
   - machine: c64
+    guide: https://github.com/MZPico/BomberNet/blob/main/docs/setup/c64.md
     name: "Commodore 64"
     files:
       - { path: bombernet-c64.d64, label: "disk image" }
@@ -230,6 +236,7 @@ ports:
       de: "Cursortasten und Leertaste (oder Return); W A S D und E; Joysticks in Port 1 und 2; RUN/STOP verlässt ein Match."
       ja: "カーソルキーとスペース (または Return)、W A S D と E、ポート 1・2 のジョイスティック。RUN/STOP で対戦から抜けます。"
   - machine: amiga
+    guide: https://github.com/MZPico/BomberNet/blob/main/docs/setup/amiga.md
     name: "Amiga"
     files:
       - { path: bombernet-amiga.adf, label: "bootable floppy" }
@@ -250,6 +257,7 @@ ports:
       de: "Cursortasten und Leertaste (oder Return); W A S D und E; Joysticks in beiden Ports; ESC verlässt ein Match."
       ja: "カーソルキーとスペース (または Return)、W A S D と E、両ポートのジョイスティック。ESC で対戦から抜けます。"
   - machine: atari-st
+    guide: https://github.com/MZPico/BomberNet/blob/main/docs/setup/atari-st.md
     name: "Atari ST"
     files:
       - { path: bombernet-atari-st.st, label: "bootable floppy" }
@@ -270,10 +278,11 @@ ports:
       de: "Cursortasten und Leertaste (oder Return); W A S D und E; Joysticks; ESC verlässt ein Match."
       ja: "カーソルキーとスペース (または Return)、W A S D と E、ジョイスティック。ESC で対戦から抜けます。"
   - machine: pc-dos
+    guide: https://github.com/MZPico/BomberNet/blob/main/docs/setup/pc-dos.md
     name: "IBM PC (DOS)"
     files:
       - { path: bombernet-pc-dos.exe, label: "program" }
-      - { path: bombernet-pc-dos.img, label: "bootable floppy" }
+      - { path: bombernet-pc-dos.img, label: "floppy image" }
     needs:
       en: "Any PC from an 8088 up, DOS 3 or FreeDOS; CGA, EGA or VGA; PC speaker, AdLib or Sound Blaster. BOMBER /? lists the switches."
       cs: "Jakékoli PC od 8088 výš, DOS 3 nebo FreeDOS; CGA, EGA nebo VGA; PC speaker, AdLib nebo Sound Blaster. BOMBER /? vypíše přepínače."

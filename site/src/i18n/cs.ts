@@ -130,6 +130,7 @@ export const cs: Ui = {
     portNetwork: 'Síťová hra',
     portKeys: 'Klávesy',
     portLimits: 'Poznámky',
+    portGuide: 'Návod k nastavení ↗',
     portsJump: '⬇ Všechny platformy',
     machines: (n: number) => `${n} ${n >= 5 ? 'platforem' : 'platformy'}`,
     version: (v: string) => `verze ${v}`,

@@ -130,6 +130,7 @@ export const de: Ui = {
     portNetwork: 'Netzwerkspiel',
     portKeys: 'Tasten',
     portLimits: 'Hinweise',
+    portGuide: 'Einrichtung ↗',
     portsJump: '⬇ Alle Plattformen',
     machines: (n: number) => `${n} Plattformen`,
     version: (v: string) => `Version ${v}`,

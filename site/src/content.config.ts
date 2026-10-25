@@ -93,6 +93,7 @@ const titles = defineCollection({
           machine: z.string(),
           name: z.string(),
           play: z.boolean().optional(),
+          guide: z.string().optional(),
           files: z.array(z.object({ path: z.string(), label: z.string().optional(), size: z.number().int() })),
           needs: localized.optional(),
           network: localized.optional(),

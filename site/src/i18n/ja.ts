@@ -130,6 +130,7 @@ export const ja: Ui = {
     portNetwork: 'ネットワーク対戦',
     portKeys: '操作',
     portLimits: '補足',
+    portGuide: 'セットアップガイド ↗',
     portsJump: '⬇ すべてのプラットフォーム',
     machines: (n: number) => `${n} プラットフォーム`,
     version: (v: string) => `バージョン ${v}`,
