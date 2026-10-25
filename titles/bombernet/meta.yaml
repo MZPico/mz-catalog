@@ -25,25 +25,25 @@ extras:
     screenshots: [zx-01-title.png, zx-02-game.png]
     note:
       en: >-
-        BomberNet 0.2.0 on a ZX Spectrum 48K or larger. Network play needs a Spectranet or a
+        BomberNet 0.3.0 on a ZX Spectrum 48K or larger. Network play needs a Spectranet or a
         Spectranext: a Spectrum joins the same rooms as MZ-800s and this browser player. Start
         the tape with LOAD "" (on a Spectranext, choose 48 BASIC first). Keys: Q A O P and Space,
         the Sinclair joystick keys, or a Kempston, Fuller or Cursor joystick. Also runs in the
         FuseX emulator.
       cs: >-
-        BomberNet 0.2.0 pro ZX Spectrum 48K a větší. Síťová hra potřebuje Spectranet nebo
+        BomberNet 0.3.0 pro ZX Spectrum 48K a větší. Síťová hra potřebuje Spectranet nebo
         Spectranext: Spectrum se připojí do stejných místností jako MZ-800 a tento přehrávač v
         prohlížeči. Pásku spustíte příkazem LOAD "" (na Spectranextu nejdřív zvolte 48 BASIC).
         Ovládání: Q A O P a mezerník, klávesy joysticků Sinclair nebo joystick Kempston, Fuller
         či Cursor. Běží i v emulátoru FuseX.
       de: >-
-        BomberNet 0.2.0 für den ZX Spectrum 48K oder größer. Für das Netzwerkspiel braucht es ein
+        BomberNet 0.3.0 für den ZX Spectrum 48K oder größer. Für das Netzwerkspiel braucht es ein
         Spectranet oder einen Spectranext: Ein Spectrum tritt denselben Räumen bei wie MZ-800 und
         dieser Browser-Player. Das Band mit LOAD "" starten (beim Spectranext zuerst 48 BASIC
         wählen). Steuerung: Q A O P und Leertaste, die Sinclair-Joystick-Tasten oder ein Kempston-,
         Fuller- oder Cursor-Joystick. Läuft auch im Emulator FuseX.
       ja: >-
-        ZX Spectrum 48K 以上で動く BomberNet 0.2.0 です。ネットワーク対戦には Spectranet か
+        ZX Spectrum 48K 以上で動く BomberNet 0.3.0 です。ネットワーク対戦には Spectranet か
         Spectranext が必要で、MZ-800 やこのブラウザープレイヤーと同じルームに参加できます。テープは
         LOAD "" で起動します(Spectranext では先に 48 BASIC を選択)。操作は Q A O P とスペース、
         Sinclair ジョイスティックのキー、または Kempston・Fuller・Cursor ジョイスティック。FuseX
