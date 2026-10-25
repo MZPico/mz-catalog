@@ -20,7 +20,7 @@ genre: [game]
 files:
   - path: bombernet.mzf
     kind: standard
-    note: "The Sharp MZ-800 build (the MZ-700 plays locally); online rooms need an MZPico with the NET extension, or a Unicard with the NET firmware and a relay of your own."
+    note: "The Sharp MZ-800 build (the MZ-700 plays locally); online rooms need an MZPico with a Pico W and Wi-Fi enabled, or a Unicard with the NET firmware and a relay of your own."
 description:
   en: |
     Hudson Soft's 1983 Bomber Man for the Sharp MZ-700, taken apart and rebuilt as one
@@ -119,10 +119,10 @@ ports:
       de: "Ein Sharp MZ-800; ein MZPico lädt es direkt aus diesem Katalog. Der MZ-700 spielt ohne Netz."
       ja: "Sharp MZ-800。MZPico ならこのカタログから直接読み込めます。MZ-700 ではローカルプレイのみ。"
     network:
-      en: "An MZPico with the NET extension; or a Unicard with the NET firmware, on a home network with a relay of your own."
-      cs: "MZPico s rozšířením NET; nebo Unicard s firmwarem NET v domácí síti s vlastním relay serverem."
-      de: "Ein MZPico mit der NET-Erweiterung; oder eine Unicard mit der NET-Firmware im Heimnetz mit eigenem Relay."
-      ja: "NET 拡張つきの MZPico。または NET ファームウェアの Unicard を家庭内ネットワークで自前のリレーと共に。"
+      en: "An MZPico built on a Raspberry Pi Pico W, with Wi-Fi enabled in its configuration; or a Unicard with the NET firmware, on a home network with a relay of your own."
+      cs: "MZPico postavené na Raspberry Pi Pico W se zapnutou Wi-Fi v jeho konfiguraci; nebo Unicard s firmwarem NET v domácí síti s vlastním relay serverem."
+      de: "Ein MZPico auf Basis eines Raspberry Pi Pico W mit in seiner Konfiguration aktiviertem WLAN; oder eine Unicard mit der NET-Firmware im Heimnetz mit eigenem Relay."
+      ja: "Raspberry Pi Pico W 搭載の MZPico で、その設定で Wi-Fi を有効にしたもの。または NET ファームウェアの Unicard と、家庭内ネットワーク上の自前のリレー。"
     keys:
       en: "Cursor keys and Space (or CR); W A S D and E; MZ-800 joysticks, MZ-1X03; BREAK leaves a match."
       cs: "Kurzorové klávesy a mezerník (nebo CR); W A S D a E; joysticky MZ-800, MZ-1X03; BREAK opustí zápas."

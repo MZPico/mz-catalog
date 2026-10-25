@@ -24,7 +24,7 @@ const shots = d.screenshots;
 const ports = d.ports ?? [];                 // the same title on other machines: a card each, with its downloads
 const localized = (v: string | Record<string, string | undefined>) => (typeof v === 'string' ? v : v[lang] ?? v.en ?? '');
 const isDisk = (f: { path: string }) => f.path.toLowerCase().endsWith('.dsk');
-const hasTape = d.files.some((f) => !isDisk(f));
+const hasTape = !d.web && d.files.some((f) => !isDisk(f));   // a title played natively in the browser: no tape, no MZF download up top
 const summary = t.title.summary(d.title, machineLabel[d.machine], d.genre.join(', '), d.year);
 
 // Social/AI preview: the 1200x630 card built by tools/og/build-og.py from the
@@ -96,7 +96,7 @@ const breadcrumbLd = {
       {d.files.length === 1 ? (
         <>
           {d.machine !== 'mz-1500' && <a class="btn primary" href={playHref(d, p, `?file=${d.files[0].path}`)}>{t.title.play}</a>}
-          <a class="btn" href={`/files/${d.slug}/${d.files[0].path}`} download>{isDisk(d.files[0]) ? t.title.downloadDisk : t.title.download}</a>
+          {!d.web && <a class="btn" href={`/files/${d.slug}/${d.files[0].path}`} download>{isDisk(d.files[0]) ? t.title.downloadDisk : t.title.download}</a>}
           {ports.length > 0 && <a class="btn" href="#machines">{t.title.portsJump}</a>}
           {hasTape && <button class="btn" type="button" id="tape-toggle" aria-expanded="false" aria-controls="tape-panel">{t.title.tapeAudio}</button>}
         </>
@@ -114,7 +114,7 @@ const breadcrumbLd = {
       )}
     </div>
 
-    {d.machine !== 'mz-1500' && (
+    {d.machine !== 'mz-1500' && !d.web && (
       <div class="continue" id="continue" hidden data-pagefind-ignore data-slug={d.slug} data-lang={lang}
         data-play={playHref(d, p)} data-multi={d.files.length > 1 ? '1' : ''}
         data-ui={JSON.stringify({ label: t.title.continue, saved: t.title.continueSaved })}></div>
