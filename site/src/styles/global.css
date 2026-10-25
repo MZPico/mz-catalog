@@ -452,3 +452,19 @@ body.pseudo-fs-on { overflow: hidden; }
 .extra h2 { margin-top: 0; }
 .extra .actionbar { align-items: center; }
 .extra .shots { margin-top: 0.9rem; }
+
+/* the same title on other machines (ports[]): a card each */
+.ports-intro { color: var(--muted); max-width: 70ch; margin: 0 0 0.9rem; }
+.ports { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1rem; list-style: none; padding: 0; margin: 0; }
+.port { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: 0.6rem; }
+.port.browser { border-color: var(--green); box-shadow: 0 0 0 1px rgb(61 220 132 / 0.25) inset; }
+.port h3 { margin: 0; font-family: var(--pixel); font-weight: 400; font-size: 0.9rem; letter-spacing: 0.02em; color: var(--text); }
+.port.browser h3 { color: var(--green); }
+.port dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 0.3rem 0.8rem; font-size: 0.9rem; }
+.port dt { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; padding-top: 0.1rem; }
+.port dd { margin: 0; }
+.port .actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: auto; padding-top: 0.5rem; }
+.port .actions .btn .meta { font-size: 0.78rem; margin-left: 0.4rem; }
+.ports-foot { margin: 1rem 0 0; font-size: 0.9rem; }
+.tag.multi { border-color: var(--amber); color: var(--amber); text-decoration: none; }
+.tag.multi:hover { background: var(--surface-2); }

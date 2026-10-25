@@ -56,9 +56,9 @@ export default function catalog() {
             await cp(path.join(t.dir, f.path), path.join(out, 'files', t.slug, f.path));
             files++;
           }
-          for (const x of t.extras) {             // other machines' builds: download only, not in manifest.json
+          for (const x of t.ports) for (const f of x.files) {   // other machines' builds: download only, not in manifest.json
             await mkdir(path.join(out, 'files', t.slug), { recursive: true });
-            await cp(path.join(t.dir, x.path), path.join(out, 'files', t.slug, x.path));
+            await cp(path.join(t.dir, f.path), path.join(out, 'files', t.slug, f.path));
             files++;
           }
           for (const s of t.screenshots) {

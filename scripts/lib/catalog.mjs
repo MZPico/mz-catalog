@@ -122,13 +122,17 @@ export async function readTitle(slug) {
     const header = f.path.toLowerCase().endsWith('.mzf') ? parseMzfHeader(buf) : null;
     files.push({ ...f, size: buf.length, crc32: crc32Hex(buf), header });
   }
-  const extras = [];
-  for (const x of meta.extras ?? []) {
-    const buf = await readFile(path.join(dir, x.path));
-    extras.push({ ...x, size: buf.length });
+  const ports = [];                          // the same title on other machines (ports[]): download only, never in manifest.json
+  for (const x of meta.ports ?? []) {
+    const pf = [];
+    for (const f of x.files ?? []) {
+      const buf = await readFile(path.join(dir, f.path));
+      pf.push({ ...f, size: buf.length });
+    }
+    ports.push({ ...x, files: pf });
   }
   const screenshots = await listScreenshots(dir);
-  return { slug, dir, meta, files, extras, screenshots };
+  return { slug, dir, meta, files, ports, screenshots };
 }
 
 /** Read the whole catalog, sorted by slug. */

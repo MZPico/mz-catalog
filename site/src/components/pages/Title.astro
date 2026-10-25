@@ -17,11 +17,8 @@ const hex4 = (n: number) => '$' + n.toString(16).toUpperCase().padStart(4, '0');
 const kb = (n: number) => (n / 1024).toFixed(1) + ' KB';
 const description = typeof d.description === 'string' ? d.description : d.description?.[lang] ?? d.description?.en;
 const paragraphs = (description ?? '').trim().split(/\n\s*\n/).filter(Boolean);
-// builds for other machines (download only) and the screenshots that belong to them
-const extras = d.extras ?? [];
-const extraShots = new Set(extras.flatMap((x) => x.screenshots ?? []));
-const shots = d.screenshots.filter((s) => !extraShots.has(s));
-const extraMachine: Record<string, string> = { 'zx-spectrum': 'ZX Spectrum' };
+const shots = d.screenshots;
+const ports = d.ports ?? [];                 // the same title on other machines: a card each, with its downloads
 const localized = (v: string | Record<string, string | undefined>) => (typeof v === 'string' ? v : v[lang] ?? v.en ?? '');
 const isDisk = (f: { path: string }) => f.path.toLowerCase().endsWith('.dsk');
 const hasTape = d.files.some((f) => !isDisk(f));
@@ -77,7 +74,7 @@ const breadcrumbLd = {
   <article data-pagefind-body>
     <div class="title-head">
       <h1>{d.title}</h1>
-      <span class="meta">{[d.year, d.publisher].filter(Boolean).join(' · ')}</span>
+      <span class="meta">{[d.version && t.title.version(d.version), d.year, d.publisher].filter(Boolean).join(' · ')}</span>
       {d.original && (
         <span class="meta original">{t.title.original}: {[d.original.title, d.original.publisher, d.original.year].filter(Boolean).join(', ')}{d.port === 'zx-spectrum' && ' (ZX Spectrum)'}</span>
       )}
@@ -86,7 +83,8 @@ const breadcrumbLd = {
       <a class:list={['badge', d.machine]} href={p(`/machines/${d.machine}/`)} data-pagefind-filter="machine">{machineLabel[d.machine]}</a>
       {d.mode && <span class="tag" title={t.title.modeTitle}>{d.mode === 'native' ? t.title.modeNative : t.title.mode700}</span>}
       {d.port === 'zx-spectrum' && <span class="tag zx" title={t.title.portTitle}>{t.title.portZx}</span>}
-              {d.network && <span class="tag net" title={t.title.networkTitle}>{t.title.network}</span>}
+      {ports.length > 1 && <a class="tag multi" href="#machines" title={t.title.portsIntro}>{t.title.machines(ports.length)}</a>}
+      {d.network && <span class="tag net" title={t.title.networkTitle}>{t.title.network}</span>}
       {d.genre.map((g) => <span class="tag" data-pagefind-filter="genre">{g}</span>)}
       {d.language && <span class="tag" title={t.title.languageTitle}>{languageName(d.language)}</span>}
     </div>
@@ -96,6 +94,7 @@ const breadcrumbLd = {
         <>
           {d.machine !== 'mz-1500' && <a class="btn primary" href={playHref(d, p, `?file=${d.files[0].path}`)}>{t.title.play}</a>}
           <a class="btn" href={`/files/${d.slug}/${d.files[0].path}`} download>{isDisk(d.files[0]) ? t.title.downloadDisk : t.title.download}</a>
+          {ports.length > 0 && <a class="btn" href="#machines">{t.title.portsJump}</a>}
           {hasTape && <button class="btn" type="button" id="tape-toggle" aria-expanded="false" aria-controls="tape-panel">{t.title.tapeAudio}</button>}
         </>
       ) : (
@@ -213,23 +212,32 @@ const breadcrumbLd = {
       </div>
       </details>
     </section>
-    {extras.map((x) => (
-      <section class="extra" data-machine={x.machine}>
-        <h2>{t.title.alsoFor(extraMachine[x.machine])}</h2>
-        <p>{localized(x.note)}</p>
-        <div class="actionbar" data-pagefind-ignore>
-          <a class="btn" href={`/files/${d.slug}/${x.path}`} download>{t.title.downloadTap}</a>
-          <span class="meta mono">{x.path} · {Math.round(x.size / 1024)} KB</span>
-        </div>
-        {(x.screenshots ?? []).length > 0 && (
-          <ul class="shots">
-            {(x.screenshots ?? []).map((s, i) => (
-              <li><img src={`/screenshots/${d.slug}/${s}`} alt={t.title.extraShotAlt(d.title, extraMachine[x.machine], i + 1)} loading="lazy" /></li>
-            ))}
-          </ul>
-        )}
+    {ports.length > 0 && (
+      <section class="ports-section" id="machines">
+        <h2>{t.title.ports}</h2>
+        <p class="ports-intro">{t.title.portsIntro}</p>
+        <ul class="ports">
+          {ports.map((x) => (
+            <li class:list={['port', x.machine, { browser: x.play }]} id={`port-${x.machine}`}>
+              <h3>{x.name}</h3>
+              <dl>
+                {x.needs && <><dt>{t.title.portNeeds}</dt><dd>{localized(x.needs)}</dd></>}
+                {x.network && <><dt>{t.title.portNetwork}</dt><dd>{localized(x.network)}</dd></>}
+                {x.keys && <><dt>{t.title.portKeys}</dt><dd>{localized(x.keys)}</dd></>}
+                {x.limits && <><dt>{t.title.portLimits}</dt><dd>{localized(x.limits)}</dd></>}
+              </dl>
+              <div class="actions" data-pagefind-ignore>
+                {x.play && <a class="btn primary" href={playHref(d, p)}>{t.title.play}</a>}
+                {x.files.map((f) => (
+                  <a class="btn" href={`/files/${d.slug}/${f.path}`} download title={f.path}>⬇ {f.label ?? f.path.replace(/^.*\./, '.')}<span class="meta">{Math.round(f.size / 1024)} KB</span></a>
+                ))}
+              </div>
+            </li>
+          ))}
+        </ul>
+        {d.release && <p class="ports-foot"><a href={d.release}>{t.title.release}</a></p>}
       </section>
-    ))}
+    )}
   </article>
 </Base>
 

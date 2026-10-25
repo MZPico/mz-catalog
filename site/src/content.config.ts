@@ -14,6 +14,11 @@ const mzfHeader = z.object({
   execAddress: z.number().int(),
 });
 
+const localized = z.union([
+  z.string(),
+  z.object({ en: z.string(), cs: z.string().optional(), de: z.string().optional(), ja: z.string().optional() }),
+]);
+
 const file = z.object({
   path: z.string(),
   kind: z.enum(['standard', 'turbo', 'alt-dump', 'disk']),
@@ -33,7 +38,7 @@ const titles = defineCollection({
         for (const t of catalog) {
           const data = await parseData({
             id: t.slug,
-            data: { ...t.meta, slug: t.slug, files: t.files, extras: t.extras, screenshots: t.screenshots },
+            data: { ...t.meta, slug: t.slug, files: t.files, ports: t.ports, screenshots: t.screenshots },
           });
           store.set({ id: t.slug, data });
         }
@@ -81,21 +86,23 @@ const titles = defineCollection({
       })
       .optional(),
     source: z.string().optional(),
-    // builds for other machines, download only (never in manifest.json)
-    extras: z
+    // the same title on other machines (ports[]), download only (never in manifest.json)
+    ports: z
       .array(
         z.object({
-          path: z.string(),
-          machine: z.enum(['zx-spectrum']),
-          note: z.union([
-            z.string(),
-            z.object({ en: z.string(), cs: z.string().optional(), de: z.string().optional(), ja: z.string().optional() }),
-          ]),
-          screenshots: z.array(z.string()).optional(),
-          size: z.number().int(),
+          machine: z.string(),
+          name: z.string(),
+          play: z.boolean().optional(),
+          files: z.array(z.object({ path: z.string(), label: z.string().optional(), size: z.number().int() })),
+          needs: localized.optional(),
+          network: localized.optional(),
+          keys: localized.optional(),
+          limits: localized.optional(),
         }),
       )
       .optional(),
+    version: z.string().optional(),
+    release: z.string().optional(),
     screenshots: z.array(z.string()),
   }),
 });

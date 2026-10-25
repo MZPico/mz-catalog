@@ -1,12 +1,14 @@
 title: "BomberNet"
-web: false
+web: true
 network: true
+version: "0.3.0"
+release: https://github.com/MZPico/BomberNet/releases/tag/v0.3.0
 play: /bombernet/                       # the game compiled to WebAssembly (BomberNet c/platform/web), not the emulated MZ-800
 spotlight:
-  en: "The first Sharp MZ game with network play. Host a room on your MZ-800 with an MZPico, or right here in the browser, and hand the four-letter code to a friend. Coop or deathmatch, up to four players, any mix of local and remote. Now also on the ZX Spectrum, in the same rooms."
-  cs: "První hra pro Sharp MZ s hraním po síti. Založte místnost na svém MZ-800 s MZPico nebo přímo tady v prohlížeči a pošlete kamarádovi čtyřpísmenný kód. Kooperace nebo deathmatch, až čtyři hráči, libovolná kombinace místních a vzdálených. Nově i na ZX Spectru, ve stejných místnostech."
-  de: "Das erste Sharp-MZ-Spiel mit Netzwerkmodus. Eröffne einen Raum auf deinem MZ-800 mit MZPico oder direkt hier im Browser und gib den Vier-Buchstaben-Code weiter. Koop oder Deathmatch, bis zu vier Spieler, lokal und übers Netz gemischt. Jetzt auch auf dem ZX Spectrum, in denselben Räumen."
-  ja: "Sharp MZ 初のネットワーク対戦ゲーム。MZPico 付きの MZ-800 か、このブラウザーでルームを作り、4 文字のコードを友達に伝えるだけ。協力プレイでもデスマッチでも、最大 4 人、ローカルとリモートの組み合わせは自由です。ZX Spectrum 版も同じルームで遊べます。"   # archive + browser play only for now; true = front page, machine pages and the card's Featured folder
+  en: "Bomberman for the classic home computers, with network play. Ten machines, from the Sharp MZ-800 and the ZX Spectrum to the Amiga, the PC and your browser, meet in one room: co-op or deathmatch, up to four players, local and remote in any mix. Based on the 1983 Bomber Man for the MZ-700."
+  cs: "Bomberman pro klasické domácí počítače, s hrou po síti. Deset strojů, od Sharpu MZ-800 a ZX Spectra po Amigu, PC a váš prohlížeč, se sejde v jedné místnosti: kooperace nebo deathmatch, až čtyři hráči, místní i vzdálení v libovolné kombinaci. Podle Bomber Mana pro MZ-700 z roku 1983."
+  de: "Bomberman für die klassischen Heimcomputer, mit Netzwerkspiel. Zehn Rechner, vom Sharp MZ-800 und ZX Spectrum bis zum Amiga, PC und deinem Browser, treffen sich in einem Raum: Koop oder Deathmatch, bis zu vier Spieler, lokal und übers Netz gemischt. Nach dem Bomber Man für den MZ-700 von 1983."
+  ja: "クラシックなホームコンピューター向けのボンバーマン、ネットワーク対戦つき。Sharp MZ-800 や ZX Spectrum から Amiga、PC、そしてブラウザーまで、10 機種が同じルームに集まります。協力プレイでもデスマッチでも、最大 4 人、ローカルとリモートの組み合わせは自由。1983 年の MZ-700 版ボンバーマンがもとになっています。"
 year: 2026
 publisher: "MZPico"
 original:
@@ -18,66 +20,278 @@ genre: [game]
 files:
   - path: bombernet.mzf
     kind: standard
-    note: "Build with network play; needs an MZPico (or this browser player) for online rooms."
-extras:
-  - path: bombernet.tap
-    machine: zx-spectrum
-    screenshots: [zx-01-title.png, zx-02-game.png]
-    note:
-      en: >-
-        BomberNet 0.3.0 on a ZX Spectrum 48K or larger. Network play needs a Spectranet or a
-        Spectranext: a Spectrum joins the same rooms as MZ-800s and this browser player. Start
-        the tape with LOAD "" (on a Spectranext, choose 48 BASIC first). Keys: Q A O P and Space,
-        the Sinclair joystick keys, or a Kempston, Fuller or Cursor joystick. Also runs in the
-        FuseX emulator.
-      cs: >-
-        BomberNet 0.3.0 pro ZX Spectrum 48K a větší. Síťová hra potřebuje Spectranet nebo
-        Spectranext: Spectrum se připojí do stejných místností jako MZ-800 a tento přehrávač v
-        prohlížeči. Pásku spustíte příkazem LOAD "" (na Spectranextu nejdřív zvolte 48 BASIC).
-        Ovládání: Q A O P a mezerník, klávesy joysticků Sinclair nebo joystick Kempston, Fuller
-        či Cursor. Běží i v emulátoru FuseX.
-      de: >-
-        BomberNet 0.3.0 für den ZX Spectrum 48K oder größer. Für das Netzwerkspiel braucht es ein
-        Spectranet oder einen Spectranext: Ein Spectrum tritt denselben Räumen bei wie MZ-800 und
-        dieser Browser-Player. Das Band mit LOAD "" starten (beim Spectranext zuerst 48 BASIC
-        wählen). Steuerung: Q A O P und Leertaste, die Sinclair-Joystick-Tasten oder ein Kempston-,
-        Fuller- oder Cursor-Joystick. Läuft auch im Emulator FuseX.
-      ja: >-
-        ZX Spectrum 48K 以上で動く BomberNet 0.3.0 です。ネットワーク対戦には Spectranet か
-        Spectranext が必要で、MZ-800 やこのブラウザープレイヤーと同じルームに参加できます。テープは
-        LOAD "" で起動します(Spectranext では先に 48 BASIC を選択)。操作は Q A O P とスペース、
-        Sinclair ジョイスティックのキー、または Kempston・Fuller・Cursor ジョイスティック。FuseX
-        エミュレーターでも動きます。
+    note: "The Sharp MZ-800 build (the MZ-700 plays locally); online rooms need an MZPico with the NET extension, or a Unicard with the NET firmware and a relay of your own."
 description:
   en: |
-    The 1983 Bomber Man rebuilt for more players. Cooperative or deathmatch for up
-    to four: two on the keyboard, two on joysticks, and over the network between
-    MZ-800s with an MZPico and this browser player. Same bricks, monsters, bonus
-    and exit as the original; player colours, a lobby with four-letter room codes
-    and lockstep play are new.
+    Hudson Soft's 1983 Bomber Man for the Sharp MZ-700, taken apart and rebuilt as one
+    game for ten machines: the Sharp MZ-800, the ZX Spectrum, the Amstrad CPC, the Atari
+    XL/XE, the Commodore 64, the Amiga, the Atari ST, the IBM PC under DOS, and the browser,
+    where it runs compiled to WebAssembly. Same bricks, monsters, bonus and exit as the
+    original; the four player colours, the lobby with its room codes and the lockstep play
+    are new, and every machine simulates the same frames, so any of them meet in one room.
 
-    Pick MODE, PLAYERS and inputs on the title with the cursor keys. HOST creates a
-    room and shows its code; JOIN asks for one. Since 0.2.0 BomberNet also runs on
-    the ZX Spectrum (below), and a Spectrum and an MZ-800 play in the same room.
-    Source and protocol: github.com/MZPico/BomberNet.
+    Co-op: one to four players clear the stages together. Deathmatch: no monsters, the
+    players start in the corners, the last one standing wins the round and the first to win
+    three rounds wins the match. Up to four people play on one machine, sharing the keyboard
+    and the joysticks, or on several machines over the network, in any mix. To play online,
+    one player chooses HOST and gets a four-letter room code; the others choose JOIN and
+    type it in. Source, documents and the releases: github.com/MZPico/BomberNet.
   cs: |
-    Bomber Man z roku 1983 přestavěný pro více hráčů. Kooperace nebo deathmatch až
-    pro čtyři: dva na klávesnici, dva na joysticích a po síti mezi MZ-800 s MZPico
-    a tímto přehrávačem v prohlížeči. Stejné cihly, příšery, bonus i východ jako v
-    originále; nové jsou barvy hráčů, lobby s čtyřpísmennými kódy místností a
-    synchronní hra.
+    Bomber Man od Hudson Softu z roku 1983 pro Sharp MZ-700, rozebraný a znovu postavený
+    jako jedna hra pro deset strojů: Sharp MZ-800, ZX Spectrum, Amstrad CPC, Atari XL/XE,
+    Commodore 64, Amiga, Atari ST, IBM PC pod DOSem a prohlížeč, kde běží přeložená do
+    WebAssembly. Stejné cihly, příšery, bonus i východ jako v originále; nové jsou čtyři
+    barvy hráčů, lobby s kódy místností a synchronní hra, a každý stroj počítá tytéž snímky,
+    takže se kterékoli z nich sejdou v jedné místnosti.
 
-    Na titulní obrazovce se kurzorovými klávesami volí MODE, PLAYERS a ovládání.
-    HOST založí místnost a ukáže její kód, JOIN si o kód řekne. Od verze 0.2.0 běží
-    BomberNet i na ZX Spectru (níže) a Spectrum s MZ-800 hrají v jedné místnosti.
-    Zdrojové kódy a protokol: github.com/MZPico/BomberNet.
+    Kooperace: jeden až čtyři hráči společně čistí úrovně. Deathmatch: bez příšer, hráči
+    začínají v rozích, poslední přeživší vyhrává kolo a kdo první vyhraje tři kola, vyhrává
+    zápas. Na jednom stroji hrají až čtyři lidé, o klávesnici a joysticky se podělí, nebo na
+    více strojích po síti, v libovolné kombinaci. Pro hru online jeden hráč zvolí HOST a
+    dostane čtyřpísmenný kód místnosti; ostatní zvolí JOIN a kód zadají. Zdrojové kódy,
+    dokumenty a vydání: github.com/MZPico/BomberNet.
+  de: |
+    Hudson Softs Bomber Man von 1983 für den Sharp MZ-700, auseinandergenommen und als ein
+    Spiel für zehn Rechner neu gebaut: Sharp MZ-800, ZX Spectrum, Amstrad CPC, Atari XL/XE,
+    Commodore 64, Amiga, Atari ST, IBM PC unter DOS und der Browser, wo es nach WebAssembly
+    übersetzt läuft. Dieselben Ziegel, Monster, Bonus und Ausgang wie im Original; neu sind
+    die vier Spielerfarben, die Lobby mit ihren Raumcodes und das Lockstep-Spiel, und jeder
+    Rechner berechnet dieselben Frames, sodass sich beliebige in einem Raum treffen.
+
+    Koop: ein bis vier Spieler räumen die Level gemeinsam. Deathmatch: keine Monster, die
+    Spieler starten in den Ecken, der letzte Überlebende gewinnt die Runde und wer zuerst
+    drei Runden gewinnt, gewinnt das Match. Bis zu vier Leute spielen an einem Rechner und
+    teilen sich Tastatur und Joysticks, oder an mehreren Rechnern übers Netz, beliebig
+    gemischt. Für ein Spiel online wählt ein Spieler HOST und bekommt einen Raumcode aus vier
+    Buchstaben; die anderen wählen JOIN und tippen ihn ein. Quelltext, Dokumente und die
+    Veröffentlichungen: github.com/MZPico/BomberNet.
+  ja: |
+    1983 年にハドソンが Sharp MZ-700 向けに出したボンバーマンを解析し、10 機種で動く 1 本の
+    ゲームとして作り直しました。Sharp MZ-800、ZX Spectrum、Amstrad CPC、Atari XL/XE、
+    Commodore 64、Amiga、Atari ST、DOS の IBM PC、そして WebAssembly に変換して動くブラウザー
+    版です。ブロック、モンスター、ボーナス、出口はオリジナルのまま。4 色のプレイヤー、ルーム
+    コードつきのロビー、ロックステップ対戦が新しく、どの機種も同じフレームを計算するので、
+    どの組み合わせでも同じルームで遊べます。
+
+    協力プレイでは 1〜4 人でステージを進みます。デスマッチにはモンスターがおらず、四隅から
+    始めて最後まで残った人がラウンドの勝者、先に 3 ラウンド取った人が勝ちです。1 台でキーボ
+    ードとジョイスティックを分け合って最大 4 人、または複数の機種でネットワーク越しに、組み
+    合わせは自由。オンラインで遊ぶには、1 人が HOST を選んで 4 文字のルームコードを受け取り、
+    ほかの人は JOIN を選んでそのコードを入力します。ソースコード、資料、リリース:
+    github.com/MZPico/BomberNet。
 controls: |
   Cursor keys — menu, player 1
   Space — start, drop a bomb (CR when a second keyboard player is set)
   W A S D + E — player 2 on the keyboard
-touch:
-  buttons:
-    - { label: "BOMB", key: "Space" }
-  extra:                                  # small, in the top corner: next to BOMB it was hit by mistake
-    - { label: "BREAK", key: "Escape" }   # the MZ's BREAK (mz800emu maps Escape to it): cancel a room code or the lobby, leave a match
-source: MZPico/BomberNet on GitHub, built from the C port of the 1983 Hudson Soft original (bomber.mzf in this catalog).
+  BREAK (ESC) — leave a match or cancel a room code
+ports:
+  - machine: browser
+    name: "Browser"
+    play: true
+    needs:
+      en: "Any phone, tablet or computer; nothing to install. Touch controls on a phone."
+      cs: "Jakýkoli telefon, tablet nebo počítač; nic se neinstaluje. Na telefonu dotykové ovládání."
+      de: "Jedes Telefon, Tablet oder jeder Computer; nichts zu installieren. Am Telefon Touch-Steuerung."
+      ja: "スマートフォン、タブレット、パソコンのどれでも。インストール不要。スマートフォンではタッチ操作。"
+    network:
+      en: "Built in: the same rooms as every other machine."
+      cs: "Vestavěná: stejné místnosti jako všechny ostatní stroje."
+      de: "Eingebaut: dieselben Räume wie alle anderen Rechner."
+      ja: "内蔵。ほかの機種と同じルームに参加できます。"
+    keys:
+      en: "Cursor keys and Space; W A S D and E for a second player; gamepads; ESC leaves a match."
+      cs: "Kurzorové klávesy a mezerník; W A S D a E pro druhého hráče; gamepady; ESC opustí zápas."
+      de: "Cursortasten und Leertaste; W A S D und E für einen zweiten Spieler; Gamepads; ESC verlässt ein Match."
+      ja: "カーソルキーとスペース、2 人目は W A S D と E、ゲームパッドも可。ESC で対戦から抜けます。"
+    limits:
+      en: "Shows your own player without the network's input delay (run-ahead)."
+      cs: "Vlastního hráče ukazuje bez síťového zpoždění vstupu (předbíhání)."
+      de: "Zeigt den eigenen Spieler ohne die Eingabeverzögerung des Netzes (Run-ahead)."
+      ja: "自分のプレイヤーはネットワークの入力遅延なしに表示されます (先行実行)。"
+  - machine: mz-800
+    name: "Sharp MZ-800"
+    files:
+      - { path: bombernet.mzf, label: ".mzf" }
+    needs:
+      en: "A Sharp MZ-800; an MZPico loads it straight from this catalog. The MZ-700 plays locally."
+      cs: "Sharp MZ-800; MZPico ho nahraje přímo z tohoto katalogu. Na MZ-700 se hraje bez sítě."
+      de: "Ein Sharp MZ-800; ein MZPico lädt es direkt aus diesem Katalog. Der MZ-700 spielt ohne Netz."
+      ja: "Sharp MZ-800。MZPico ならこのカタログから直接読み込めます。MZ-700 ではローカルプレイのみ。"
+    network:
+      en: "An MZPico with the NET extension; or a Unicard with the NET firmware, on a home network with a relay of your own."
+      cs: "MZPico s rozšířením NET; nebo Unicard s firmwarem NET v domácí síti s vlastním relay serverem."
+      de: "Ein MZPico mit der NET-Erweiterung; oder eine Unicard mit der NET-Firmware im Heimnetz mit eigenem Relay."
+      ja: "NET 拡張つきの MZPico。または NET ファームウェアの Unicard を家庭内ネットワークで自前のリレーと共に。"
+    keys:
+      en: "Cursor keys and Space (or CR); W A S D and E; MZ-800 joysticks, MZ-1X03; BREAK leaves a match."
+      cs: "Kurzorové klávesy a mezerník (nebo CR); W A S D a E; joysticky MZ-800, MZ-1X03; BREAK opustí zápas."
+      de: "Cursortasten und Leertaste (oder CR); W A S D und E; MZ-800-Joysticks, MZ-1X03; BREAK verlässt ein Match."
+      ja: "カーソルキーとスペース (または CR)、W A S D と E、MZ-800 ジョイスティック、MZ-1X03。BREAK で対戦から抜けます。"
+  - machine: zx-spectrum-48k
+    name: "ZX Spectrum 48K"
+    files:
+      - { path: bombernet.tap, label: ".tap" }
+    needs:
+      en: "A ZX Spectrum 48K or larger; LOAD \"\" (on a Spectranext choose 48 BASIC first). Also runs in FuseX."
+      cs: "ZX Spectrum 48K nebo větší; LOAD \"\" (na Spectranextu nejdřív zvolte 48 BASIC). Běží i ve FuseX."
+      de: "Ein ZX Spectrum 48K oder größer; LOAD \"\" (beim Spectranext zuerst 48 BASIC wählen). Läuft auch in FuseX."
+      ja: "ZX Spectrum 48K 以上。LOAD \"\" で起動 (Spectranext では先に 48 BASIC を選択)。FuseX でも動きます。"
+    network:
+      en: "A Spectranet or a Spectranext."
+      cs: "Spectranet nebo Spectranext."
+      de: "Ein Spectranet oder ein Spectranext."
+      ja: "Spectranet または Spectranext。"
+    keys:
+      en: "Q A O P and Space (M when two share the keyboard); the Sinclair keys 6 to 0 and 1 to 5; Kempston, Fuller or Cursor joystick; BREAK leaves a match."
+      cs: "Q A O P a mezerník (M, když se o klávesnici dělí dva); klávesy Sinclair 6 až 0 a 1 až 5; joystick Kempston, Fuller nebo Cursor; BREAK opustí zápas."
+      de: "Q A O P und Leertaste (M, wenn sich zwei die Tastatur teilen); die Sinclair-Tasten 6 bis 0 und 1 bis 5; Kempston-, Fuller- oder Cursor-Joystick; BREAK verlässt ein Match."
+      ja: "Q A O P とスペース (2 人でキーボードを使うときは M)、Sinclair キー 6〜0 と 1〜5、Kempston・Fuller・Cursor ジョイスティック。BREAK で対戦から抜けます。"
+  - machine: zx-spectrum-128k
+    name: "ZX Spectrum 128K with an ESP-01"
+    files:
+      - { path: bombernet-zx-spectrum-128k-esp01.tap, label: ".tap" }
+    needs:
+      en: "A 128K Spectrum with an eLeMeNt ZX or an MB03+ and its ESP-01 Wi-Fi module. Milan Stava's port."
+      cs: "128K Spectrum s eLeMeNt ZX nebo MB03+ a jeho Wi-Fi modulem ESP-01. Port Milana Stavy."
+      de: "Ein 128K-Spectrum mit eLeMeNt ZX oder MB03+ und dessen ESP-01-WLAN-Modul. Milan Stavas Portierung."
+      ja: "eLeMeNt ZX または MB03+ と ESP-01 Wi-Fi モジュールを備えた 128K Spectrum。Milan Stava による移植。"
+    network:
+      en: "The ESP-01 Wi-Fi module."
+      cs: "Wi-Fi modul ESP-01."
+      de: "Das ESP-01-WLAN-Modul."
+      ja: "ESP-01 Wi-Fi モジュール。"
+    keys:
+      en: "As on the 48K; the tones on the AY."
+      cs: "Jako na 48K; tóny z AY."
+      de: "Wie beim 48K; die Töne über den AY."
+      ja: "48K 版と同じ。効果音は AY から。"
+  - machine: amstrad-cpc
+    name: "Amstrad CPC"
+    files:
+      - { path: bombernet-amstrad-cpc.dsk, label: "disk image" }
+      - { path: bombernet-amstrad-cpc.cpc, label: "program" }
+    needs:
+      en: "A CPC 464 or larger, 64 KB; run the program from the disk."
+      cs: "CPC 464 nebo větší, 64 KB; program se spouští z disku."
+      de: "Ein CPC 464 oder größer, 64 KB; das Programm von der Diskette starten."
+      ja: "CPC 464 以上、64 KB。ディスクからプログラムを起動します。"
+    network:
+      en: "An M4 board."
+      cs: "Karta M4."
+      de: "Eine M4-Karte."
+      ja: "M4 ボード。"
+    keys:
+      en: "Cursor keys and Space (or Copy); W A S D and E; two joysticks; ESC leaves a match."
+      cs: "Kurzorové klávesy a mezerník (nebo Copy); W A S D a E; dva joysticky; ESC opustí zápas."
+      de: "Cursortasten und Leertaste (oder Copy); W A S D und E; zwei Joysticks; ESC verlässt ein Match."
+      ja: "カーソルキーとスペース (または Copy)、W A S D と E、ジョイスティック 2 本。ESC で対戦から抜けます。"
+  - machine: atari-xl
+    name: "Atari XL/XE"
+    files:
+      - { path: bombernet-atari-xl.xex, label: ".xex" }
+    needs:
+      en: "An Atari XL/XE with 64 KB; load the .xex from a disk or a FujiNet."
+      cs: "Atari XL/XE s 64 KB; .xex se nahrává z disku nebo z FujiNetu."
+      de: "Ein Atari XL/XE mit 64 KB; die .xex von Diskette oder vom FujiNet laden."
+      ja: "64 KB の Atari XL/XE。.xex をディスクか FujiNet から読み込みます。"
+    network:
+      en: "A FujiNet."
+      cs: "FujiNet."
+      de: "Ein FujiNet."
+      ja: "FujiNet。"
+    keys:
+      en: "Arrow keys and Shift; two joysticks; ESC leaves a match."
+      cs: "Šipky a Shift; dva joysticky; ESC opustí zápas."
+      de: "Pfeiltasten und Shift; zwei Joysticks; ESC verlässt ein Match."
+      ja: "矢印キーと Shift、ジョイスティック 2 本。ESC で対戦から抜けます。"
+    limits:
+      en: "The network has not been tried on a real FujiNet yet: in the emulator a match runs 5 to 18 % slow, and a room with an Atari runs at the Atari's pace. Reports from real hardware are welcome."
+      cs: "Síťová hra zatím nebyla vyzkoušena na skutečném FujiNetu: v emulátoru běží zápas o 5 až 18 % pomaleji a místnost s Atari jede tempem Atari. Zprávy ze skutečného hardwaru vítány."
+      de: "Das Netzwerkspiel wurde noch nicht an einem echten FujiNet ausprobiert: im Emulator läuft ein Match 5 bis 18 % langsamer, und ein Raum mit einem Atari läuft im Tempo des Atari. Berichte von echter Hardware sind willkommen."
+      ja: "ネットワーク対戦は実機の FujiNet では未検証です。エミュレーターでは対戦が 5〜18 % 遅くなり、Atari のいるルームは Atari のペースで進みます。実機での報告を歓迎します。"
+  - machine: c64
+    name: "Commodore 64"
+    files:
+      - { path: bombernet-c64.d64, label: "disk image" }
+      - { path: bombernet-c64.prg, label: "program" }
+    needs:
+      en: "Any Commodore 64, PAL or NTSC."
+      cs: "Jakýkoli Commodore 64, PAL i NTSC."
+      de: "Jeder Commodore 64, PAL oder NTSC."
+      ja: "Commodore 64 (PAL / NTSC どちらも)。"
+    network:
+      en: "A WiC64, or an Ultimate 64 / Ultimate-II+ with its network."
+      cs: "WiC64, nebo Ultimate 64 / Ultimate-II+ s jeho sítí."
+      de: "Ein WiC64 oder ein Ultimate 64 / Ultimate-II+ mit dessen Netzwerk."
+      ja: "WiC64、または Ultimate 64 / Ultimate-II+ のネットワーク機能。"
+    keys:
+      en: "Cursor keys and Space (or Return); W A S D and E; joysticks in ports 1 and 2; RUN/STOP leaves a match."
+      cs: "Kurzorové klávesy a mezerník (nebo Return); W A S D a E; joysticky v portech 1 a 2; RUN/STOP opustí zápas."
+      de: "Cursortasten und Leertaste (oder Return); W A S D und E; Joysticks in Port 1 und 2; RUN/STOP verlässt ein Match."
+      ja: "カーソルキーとスペース (または Return)、W A S D と E、ポート 1・2 のジョイスティック。RUN/STOP で対戦から抜けます。"
+  - machine: amiga
+    name: "Amiga"
+    files:
+      - { path: bombernet-amiga.adf, label: "bootable floppy" }
+      - { path: bombernet-amiga, label: "program" }
+    needs:
+      en: "Any Amiga with Kickstart 2.04 or later, 512 KB of chip RAM (1 MB in all recommended); the floppy boots."
+      cs: "Jakákoli Amiga s Kickstartem 2.04 a novějším, 512 KB chip RAM (doporučen 1 MB celkem); disketa je bootovací."
+      de: "Jeder Amiga mit Kickstart 2.04 oder neuer, 512 KB Chip-RAM (1 MB insgesamt empfohlen); die Diskette bootet."
+      ja: "Kickstart 2.04 以降の Amiga、チップ RAM 512 KB (合計 1 MB 推奨)。フロッピーから起動できます。"
+    network:
+      en: "Any TCP/IP stack with bsdsocket.library (Roadshow, AmiTCP, Miami); WinUAE and FS-UAE bring their own."
+      cs: "Jakýkoli TCP/IP stack s bsdsocket.library (Roadshow, AmiTCP, Miami); WinUAE a FS-UAE mají vlastní."
+      de: "Jeder TCP/IP-Stack mit bsdsocket.library (Roadshow, AmiTCP, Miami); WinUAE und FS-UAE bringen einen mit."
+      ja: "bsdsocket.library 対応の TCP/IP スタック (Roadshow、AmiTCP、Miami)。WinUAE と FS-UAE には内蔵されています。"
+    keys:
+      en: "Cursor keys and Space (or Return); W A S D and E; joysticks in both ports; ESC leaves a match."
+      cs: "Kurzorové klávesy a mezerník (nebo Return); W A S D a E; joysticky v obou portech; ESC opustí zápas."
+      de: "Cursortasten und Leertaste (oder Return); W A S D und E; Joysticks in beiden Ports; ESC verlässt ein Match."
+      ja: "カーソルキーとスペース (または Return)、W A S D と E、両ポートのジョイスティック。ESC で対戦から抜けます。"
+  - machine: atari-st
+    name: "Atari ST"
+    files:
+      - { path: bombernet-atari-st.st, label: "bootable floppy" }
+      - { path: bombernet-atari-st.prg, label: "program" }
+    needs:
+      en: "An ST, STE, Mega ST or Mega STE with 1 MB and a colour monitor; the floppy boots. Also runs in Hatari."
+      cs: "ST, STE, Mega ST nebo Mega STE s 1 MB a barevným monitorem; disketa je bootovací. Běží i v Hatari."
+      de: "Ein ST, STE, Mega ST oder Mega STE mit 1 MB und Farbmonitor; die Diskette bootet. Läuft auch in Hatari."
+      ja: "1 MB とカラーモニターの ST、STE、Mega ST、Mega STE。フロッピーから起動できます。Hatari でも動きます。"
+    network:
+      en: "A Wi-Fi modem on the serial port (an ESP8266 with Hayes commands)."
+      cs: "Wi-Fi modem na sériovém portu (ESP8266 s příkazy Hayes)."
+      de: "Ein WLAN-Modem am seriellen Port (ein ESP8266 mit Hayes-Befehlen)."
+      ja: "シリアルポートの Wi-Fi モデム (Hayes コマンド対応の ESP8266)。"
+    keys:
+      en: "Cursor keys and Space (or Return); W A S D and E; joysticks; ESC leaves a match."
+      cs: "Kurzorové klávesy a mezerník (nebo Return); W A S D a E; joysticky; ESC opustí zápas."
+      de: "Cursortasten und Leertaste (oder Return); W A S D und E; Joysticks; ESC verlässt ein Match."
+      ja: "カーソルキーとスペース (または Return)、W A S D と E、ジョイスティック。ESC で対戦から抜けます。"
+  - machine: pc-dos
+    name: "IBM PC (DOS)"
+    files:
+      - { path: bombernet-pc-dos.exe, label: "program" }
+      - { path: bombernet-pc-dos.img, label: "bootable floppy" }
+    needs:
+      en: "Any PC from an 8088 up, DOS 3 or FreeDOS; CGA, EGA or VGA; PC speaker, AdLib or Sound Blaster. BOMBER /? lists the switches."
+      cs: "Jakékoli PC od 8088 výš, DOS 3 nebo FreeDOS; CGA, EGA nebo VGA; PC speaker, AdLib nebo Sound Blaster. BOMBER /? vypíše přepínače."
+      de: "Jeder PC ab 8088, DOS 3 oder FreeDOS; CGA, EGA oder VGA; PC-Lautsprecher, AdLib oder Sound Blaster. BOMBER /? listet die Schalter."
+      ja: "8088 以降の PC、DOS 3 または FreeDOS。CGA、EGA、VGA 対応。PC スピーカー、AdLib、Sound Blaster。BOMBER /? でスイッチ一覧。"
+    network:
+      en: "Ethernet with a DOS packet driver, or a Wi-Fi modem on COM1 or COM2."
+      cs: "Ethernet s DOSovým packet driverem, nebo Wi-Fi modem na COM1 či COM2."
+      de: "Ethernet mit einem DOS-Packet-Driver oder ein WLAN-Modem an COM1 oder COM2."
+      ja: "DOS パケットドライバー経由のイーサネット、または COM1/COM2 の Wi-Fi モデム。"
+    keys:
+      en: "Cursor keys and Space (or Return); W A S D and E; two game-port joysticks; ESC leaves a match, Alt+X quits."
+      cs: "Kurzorové klávesy a mezerník (nebo Return); W A S D a E; dva joysticky v game portu; ESC opustí zápas, Alt+X ukončí program."
+      de: "Cursortasten und Leertaste (oder Return); W A S D und E; zwei Joysticks am Gameport; ESC verlässt ein Match, Alt+X beendet."
+      ja: "カーソルキーとスペース (または Return)、W A S D と E、ゲームポートのジョイスティック 2 本。ESC で対戦から抜け、Alt+X で終了。"
+    limits:
+      en: "An XT at 4.77 MHz plays in plain lockstep, a little slower in a network match; from a 286 up the run-ahead hides the input delay."
+      cs: "XT na 4,77 MHz hraje v prostém lockstepu, v síťovém zápase o něco pomaleji; od 286 výš předbíhání skryje zpoždění vstupu."
+      de: "Ein XT mit 4,77 MHz spielt im einfachen Lockstep, im Netzwerk-Match etwas langsamer; ab einem 286 verbirgt das Run-ahead die Eingabeverzögerung."
+      ja: "4.77 MHz の XT は通常のロックステップで動き、ネットワーク対戦では少し遅くなります。286 以上では先行実行が入力遅延を隠します。"
+source: MZPico/BomberNet on GitHub, built from the C port of the 1983 Hudson Soft original (bomber.mzf, the MZ-700 tape).

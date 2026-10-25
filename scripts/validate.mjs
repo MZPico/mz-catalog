@@ -80,14 +80,13 @@ async function checkTitle(slug) {
     }
   }
 
-  // --- builds for other machines (extras[]): listed files must exist
+  // --- the same title on other machines (ports[]): their files must exist, once
   const extras = new Set();
-  for (const x of meta.extras ?? []) {
-    if (extras.has(x.path) || listed.has(x.path)) fail(slug, `extras[]: "${x.path}" listed twice`);
-    extras.add(x.path);
-    if (!(await exists(path.join(dir, x.path)))) fail(slug, `extras[]: "${x.path}" does not exist`);
-    for (const s of x.screenshots ?? []) {
-      if (!(await exists(path.join(dir, 'screenshots', s)))) fail(slug, `extras[]: screenshot "${s}" does not exist`);
+  for (const x of meta.ports ?? []) {
+    for (const f of x.files ?? []) {
+      if (extras.has(f.path)) fail(slug, `ports[]: "${f.path}" listed twice`);
+      extras.add(f.path);
+      if (!(await exists(path.join(dir, f.path)))) fail(slug, `ports[]: "${f.path}" does not exist`);
     }
   }
 
@@ -100,11 +99,11 @@ async function checkTitle(slug) {
       fail(slug, `unexpected directory "${name}" (only screenshots/ is allowed)`);
       continue;
     }
+    if (extras.has(name)) continue;          // another machine's file (ports[])
     if (/\.(mzf|dsk)$/i.test(name)) {
       if (!listed.has(name)) fail(slug, `"${name}" is not listed in meta.yaml files[]`);
       continue;
     }
-    if (extras.has(name)) continue;
     fail(slug, `unexpected file "${name}"`);
   }
 

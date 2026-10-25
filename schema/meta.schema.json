@@ -143,13 +143,22 @@
       "maxLength": 2000,
       "description": "Keys / joystick usage."
     },
-    "extras": {
+    "ports": {
       "type": "array",
       "minItems": 1,
-      "description": "Builds of the title for other machines (e.g. a ZX Spectrum tape), offered for download on the title page. Not MZ files: never in manifest.json, so MZPico cards do not see them.",
-      "items": {
-        "$ref": "#/$defs/extra"
-      }
+      "description": "The same title on other machines (a multiplatform game): one entry per machine, with its downloads. Not in manifest.json.",
+      "items": { "$ref": "#/$defs/port" }
+    },
+    "version": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "The release the files are from (shown by the title)."
+    },
+    "release": {
+      "type": "string",
+      "pattern": "^https://",
+      "maxLength": 300,
+      "description": "The release's page (notes, checksums), linked from the machines section."
     },
     "source": {
       "type": "string",
@@ -265,48 +274,47 @@
     }
   ],
   "$defs": {
-    "extra": {
+    "localized": {
+      "description": "English, or a per-language map (en required).",
+      "oneOf": [
+        { "type": "string", "minLength": 1, "maxLength": 600 },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["en"],
+          "properties": {
+            "en": { "type": "string", "maxLength": 600 },
+            "cs": { "type": "string", "maxLength": 600 },
+            "de": { "type": "string", "maxLength": 600 },
+            "ja": { "type": "string", "maxLength": 600 }
+          }
+        }
+      ]
+    },
+    "port": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "path",
-        "machine",
-        "note"
-      ],
+      "required": ["machine", "name"],
       "properties": {
-        "path": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*\\.tap$",
-          "description": "File name inside the title folder (lowercase .tap extension)."
-        },
-        "machine": {
-          "enum": [
-            "zx-spectrum"
-          ],
-          "description": "Machine this build runs on."
-        },
-        "note": {
-          "description": "What it needs and how to start it: English, or a per-language map (en required).",
-          "oneOf": [
-            { "type": "string", "maxLength": 1000 },
-            {
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["en"],
-              "properties": {
-                "en": { "type": "string", "maxLength": 1000 },
-                "cs": { "type": "string", "maxLength": 1000 },
-                "de": { "type": "string", "maxLength": 1000 },
-                "ja": { "type": "string", "maxLength": 1000 }
-              }
-            }
-          ]
-        },
-        "screenshots": {
+        "machine": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$", "description": "An id for the machine (anchors, styling)." },
+        "name": { "type": "string", "minLength": 1, "maxLength": 60, "description": "The machine as shown." },
+        "play": { "type": "boolean", "description": "This machine is the browser: the title's play link instead of a download." },
+        "files": {
           "type": "array",
-          "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
-          "description": "Files in screenshots/ that show this build; they appear with it, not in the title's gallery."
-        }
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path"],
+            "properties": {
+              "path": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$", "description": "File name inside the title folder." },
+              "label": { "type": "string", "maxLength": 40, "description": "What it is: '.tap', 'bootable floppy'; the extension when absent." }
+            }
+          }
+        },
+        "needs": { "$ref": "#/$defs/localized" },
+        "network": { "$ref": "#/$defs/localized" },
+        "keys": { "$ref": "#/$defs/localized" },
+        "limits": { "$ref": "#/$defs/localized" }
       }
     },
     "file": {
