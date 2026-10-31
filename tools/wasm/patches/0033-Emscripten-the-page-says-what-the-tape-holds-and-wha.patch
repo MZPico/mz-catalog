@@ -1,0 +1,306 @@
+From 285098f1b74427ce5bd29cadc7f4611ab3fb9418 Mon Sep 17 00:00:00 2001
+From: Martin Matyas <martin.matyas@tietoevry.com>
+Date: Sat, 31 Oct 2026 14:10:11 +0100
+Subject: [PATCH 33/33] Emscripten: the page says what the tape holds, and what
+ to run
+
+The ROM's tape load opened a file chooser over the screen when nothing was
+set, which in a browser is a dialog nobody asked for and nothing useful to
+pick from. In kiosk mode there is no chooser any more: the host page names
+the MZF (cmthack_set_autofile), and with nothing named the load breaks the
+way an empty deck would.
+
+Two media ops carry that from the page: TAPE sets what the tape load finds,
+RUN_MZF resets into an MZF and runs it, the same path --run-mzf takes, so a
+program can be started in a machine that is already running.
+---
+ src/emulator/hw-generic/cmt/cmthack.c         |  21 ++-
+ src/emulator/hw-generic/cmt/cmthack.h         |   1 +
+ src/emulator/mzarch/mzarch.c                  |  24 ++-
+ ...-the-page-can-change-while-the-machi.patch | 156 ++++++++++++++++++
+ 4 files changed, 198 insertions(+), 4 deletions(-)
+ create mode 100644 tools/wasm/patches/0030-Emscripten-media-the-page-can-change-while-the-machi.patch
+
+diff --git a/src/emulator/hw-generic/cmt/cmthack.c b/src/emulator/hw-generic/cmt/cmthack.c
+index a319eb9..7e0ab04 100644
+--- a/src/emulator/hw-generic/cmt/cmthack.c
++++ b/src/emulator/hw-generic/cmt/cmthack.c
+@@ -51,6 +51,7 @@
+ #include "baseui/baseui.h"
+ #include "baseui/baseui_filechooser.h"
+ #include "libs/sdlapp/sdlapp_options.h"
++#include "libs/sdlapp/sdlapp_options.h"
+ #include "libs/generic_driver/generic_driver.h"
+ #include "generic_driver/memory_driver.h"
+ #include "libs/mzf/mzf.h"
+@@ -152,6 +153,18 @@ void cmthack_result(en_LOADRET result)
+  * Pozadavek na precteni headeru z CMT
+  *
+  */
++/* The embedding page can answer the ROM's tape request itself: it puts an MZF
++ * where the machine can read it and names it here, so no chooser is needed.
++ * --cmthack-autofile does the same for scripted runs; this one can change
++ * while the machine runs. */
++static char *g_cmthack_autofile = NULL;
++
++void cmthack_set_autofile(const char *filepath)
++{
++    g_free(g_cmthack_autofile);
++    g_cmthack_autofile = (filepath && *filepath) ? g_strdup(filepath) : NULL;
++}
++
+ void cmthack_load_file(void)
+ {
+     iface_audio_pause_emulation(1);
+@@ -161,9 +174,13 @@ void cmthack_load_file(void)
+ 
+     /* --cmthack-autofile <path>: answer the ROM's tape request with this file
+      * instead of opening the chooser (headless automation / scripted runs). */
+-    const char *autofile = sdlapp_option_value("--cmthack-autofile");
++    const char *autofile = g_cmthack_autofile ? g_cmthack_autofile : sdlapp_option_value("--cmthack-autofile");
++    /* kiosk: the host page decides what the tape holds — never a file chooser
++     * over the screen; with nothing set the load just breaks, as an empty
++     * tape deck would. */
+     char *filename = autofile ? g_strdup(autofile)
+-                              : baseui_filechooser_open_file_wait(_("Select a MZF File"), ".mzf, .m12, .*", NULL, NULL, g_cmthack.last_filename, NULL);
++                   : sdlapp_option_present("--kiosk") ? NULL
++                   : baseui_filechooser_open_file_wait(_("Select a MZF File"), ".mzf, .m12, .*", NULL, NULL, g_cmthack.last_filename, NULL);
+ 
+     if (filename == NULL)
+     {
+diff --git a/src/emulator/hw-generic/cmt/cmthack.h b/src/emulator/hw-generic/cmt/cmthack.h
+index d35b4cf..094cc81 100644
+--- a/src/emulator/hw-generic/cmt/cmthack.h
++++ b/src/emulator/hw-generic/cmt/cmthack.h
+@@ -53,6 +53,7 @@ extern "C" {
+     extern void cmthack_exit ( void );
+ 
+     extern void cmthack_load_file ( void );
++    extern void cmthack_set_autofile ( const char *filepath );
+     extern void cmthack_load_mzf_filename ( const char *filename );
+     extern void cmthack_read_mzf_body ( void );
+ 
+diff --git a/src/emulator/mzarch/mzarch.c b/src/emulator/mzarch/mzarch.c
+index 4ecd273..7edc30a 100644
+--- a/src/emulator/mzarch/mzarch.c
++++ b/src/emulator/mzarch/mzarch.c
+@@ -1066,10 +1066,14 @@ static uint8_t mzarch_debug_dasm_read(uint16_t addr, void *user_data)
+     return memory_read_byte(addr);
+ }
+ 
++/* The program to run after a reset: --run-mzf from the command line, or what
++ * the embedding page asked for last (MZWASM_MEDIA_RUN_MZF), which wins. */
++static char g_mzarch_run_mzf[512];
++
+ /* CLI option --run-mzf: po resetu automaticky spustit zadaný MZF. */
+ static void mzarch_rerun_mzf_after_reset(void)
+ {
+-    const char *mzf_path = sdlapp_option_value("--run-mzf");
++    const char *mzf_path = g_mzarch_run_mzf[0] ? g_mzarch_run_mzf : sdlapp_option_value("--run-mzf");
+     if (mzf_path)
+     {
+         g_print("CLI --run-mzf: %s\n", mzf_path);
+@@ -1124,6 +1128,8 @@ enum {
+     MZWASM_MEDIA_QD_MOUNT,       /* path (empty = eject) */
+     MZWASM_MEDIA_QD_PROTECT,     /* arg = 0/1 */
+     MZWASM_MEDIA_RESET,          /* arg = 1 to run the --run-mzf program again */
++    MZWASM_MEDIA_TAPE,           /* path = the MZF the ROM's tape load reads (empty = empty deck) */
++    MZWASM_MEDIA_RUN_MZF,        /* path = an MZF to reset into and run, as --run-mzf does */
+ };
+ 
+ static volatile int g_mzwasm_media_op = MZWASM_MEDIA_NONE;
+@@ -1133,7 +1139,7 @@ static char g_mzwasm_media_path[MZWASM_MEDIA_PATH_MAX];
+ 
+ EMSCRIPTEN_KEEPALIVE int mz_wasm_media_request(int op, int arg, const char *path)
+ {
+-    if (op <= MZWASM_MEDIA_NONE || op > MZWASM_MEDIA_RESET) return 2;
++    if (op <= MZWASM_MEDIA_NONE || op > MZWASM_MEDIA_RUN_MZF) return 2;
+     if (__atomic_load_n(&g_mzwasm_media_status, __ATOMIC_SEQ_CST) == 1) return 1;
+     g_mzwasm_media_arg = arg;
+     g_mzwasm_media_path[0] = 0;
+@@ -1180,6 +1186,20 @@ static void mzarch_wasm_media_service(int op)
+             g_mzarch_main.reset_request = true;
+             APP_MUTEX_UNLOCK(g_mzarch_main.reset_request_mutex);
+             break;
++        case MZWASM_MEDIA_TAPE:
++            cmthack_set_autofile(g_mzwasm_media_path);
++            break;
++        case MZWASM_MEDIA_RUN_MZF:
++            /* The page wrote the file into MEMFS first; from here it is the
++             * same path the --run-mzf bootstrap takes after a reset. */
++            strncpy(g_mzarch_run_mzf, g_mzwasm_media_path, sizeof(g_mzarch_run_mzf) - 1);
++            g_mzarch_run_mzf[sizeof(g_mzarch_run_mzf) - 1] = 0;
++            cmthack_set_autofile(g_mzwasm_media_path);
++            APP_MUTEX_LOCK(g_mzarch_main.reset_request_mutex);
++            g_mzarch_main.rerun_mzf_request = true;
++            g_mzarch_main.reset_request = true;
++            APP_MUTEX_UNLOCK(g_mzarch_main.reset_request_mutex);
++            break;
+         default:
+             ok = 0;
+             break;
+diff --git a/tools/wasm/patches/0030-Emscripten-media-the-page-can-change-while-the-machi.patch b/tools/wasm/patches/0030-Emscripten-media-the-page-can-change-while-the-machi.patch
+new file mode 100644
+index 0000000..e0d3165
+--- /dev/null
++++ b/tools/wasm/patches/0030-Emscripten-media-the-page-can-change-while-the-machi.patch
+@@ -0,0 +1,156 @@
++From f6f0f90a64c34553363021bb460b6508c5c14a88 Mon Sep 17 00:00:00 2001
++From: Martin Matyas <martin.matyas@tietoevry.com>
++Date: Sat, 31 Oct 2026 12:51:13 +0100
++Subject: [PATCH] Emscripten: media the page can change while the machine runs
++MIME-Version: 1.0
++Content-Type: text/plain; charset=UTF-8
++Content-Transfer-Encoding: 8bit
++
++The desktop build mounts a disk from its menus without restarting; the
++browser build had no way to do it, so the page could only rebuild the ini
++and start over, losing the session — wrong for a game that asks for disk
++2, or for writing to a disk from BASIC.
++
++mz_wasm_media_request(op, arg, path) + mz_wasm_media_status() take the
++request and the emulation thread carries it out between two instructions,
++the same safe point the snapshots use: mount or eject a floppy in drives
++0-3, mount or eject a Quick Disk, set its write protection, reset (with
++or without re-running the --run-mzf program). mz_wasm_fdd_path() reports
++what is in a drive. qdisk_open_image() gains the declaration it was
++missing; nothing else changes, and the native build is untouched.
++
++Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
++---
++ src/emulator/hw-generic/qdisk/qdisk.h |  2 +
++ src/emulator/mzarch/mzarch.c          | 87 +++++++++++++++++++++++++++
++ 2 files changed, 89 insertions(+)
++
++diff --git a/src/emulator/hw-generic/qdisk/qdisk.h b/src/emulator/hw-generic/qdisk/qdisk.h
++index b75cc61..5689334 100644
++--- a/src/emulator/hw-generic/qdisk/qdisk.h
+++++ b/src/emulator/hw-generic/qdisk/qdisk.h
++@@ -289,6 +289,8 @@ extern "C"
++     void qdisk_ui_mount(void);
++     void qdisk_umount(void);
++     void qdisk_set_write_protected(int value);
+++    /** Mount a QD image by path (the file chooser path calls this too). */
+++    void qdisk_open_image(char *filepath);
++     void qdisk_create_image(char *filename);
++     void qdisk_activate_unicard_boot_loader(void);
++     void qdisk_deactivate_unicard_boot_loader(void);
++diff --git a/src/emulator/mzarch/mzarch.c b/src/emulator/mzarch/mzarch.c
++index 0a65e56..4ecd273 100644
++--- a/src/emulator/mzarch/mzarch.c
+++++ b/src/emulator/mzarch/mzarch.c
++@@ -34,7 +34,10 @@ static void mzarch_rerun_mzf_after_reset(void);
++ #include "audio.h"
++ 
++ #if CFG_HWEXT_HAVE_FDC
+++#include <string.h>
+++
++ #include "hw-generic/fdc/fdc.h"
+++#include "hw-generic/qdisk/qdisk.h"
++ #endif
++ 
++ #if CFG_HWEXT_HAVE_IDE8
++@@ -1106,6 +1109,84 @@ EMSCRIPTEN_KEEPALIVE int mz_wasm_restart(void)
++  * Status: 0 idle, 1 pending, 2 done, negative = -en_SNAPSHOT_RESULT. */
++ #include "snapshot/snapshot.h"
++ 
+++/* Media the page can change while the machine runs, the way the menus do it in
+++ * the desktop build: a disk swapped in drive 1 because the game asked for disk
+++ * 2, a Quick Disk put in, a drive emptied. Mounting touches state the emulation
+++ * thread is reading, so the page leaves a request here and the emulation thread
+++ * carries it out between two instructions — the same safe point the snapshots
+++ * use. The page calls mz_wasm_media_request() and polls mz_wasm_media_status():
+++ * 0 idle, 1 pending, 2 done, -1 refused. */
+++#define MZWASM_MEDIA_PATH_MAX 256
+++
+++enum {
+++    MZWASM_MEDIA_NONE = 0,
+++    MZWASM_MEDIA_FDD_MOUNT,      /* arg = drive 0..3, path (empty = eject) */
+++    MZWASM_MEDIA_QD_MOUNT,       /* path (empty = eject) */
+++    MZWASM_MEDIA_QD_PROTECT,     /* arg = 0/1 */
+++    MZWASM_MEDIA_RESET,          /* arg = 1 to run the --run-mzf program again */
+++};
+++
+++static volatile int g_mzwasm_media_op = MZWASM_MEDIA_NONE;
+++static volatile int g_mzwasm_media_status = 0;
+++static int g_mzwasm_media_arg = 0;
+++static char g_mzwasm_media_path[MZWASM_MEDIA_PATH_MAX];
+++
+++EMSCRIPTEN_KEEPALIVE int mz_wasm_media_request(int op, int arg, const char *path)
+++{
+++    if (op <= MZWASM_MEDIA_NONE || op > MZWASM_MEDIA_RESET) return 2;
+++    if (__atomic_load_n(&g_mzwasm_media_status, __ATOMIC_SEQ_CST) == 1) return 1;
+++    g_mzwasm_media_arg = arg;
+++    g_mzwasm_media_path[0] = 0;
+++    if (path) {
+++        strncpy(g_mzwasm_media_path, path, MZWASM_MEDIA_PATH_MAX - 1);
+++        g_mzwasm_media_path[MZWASM_MEDIA_PATH_MAX - 1] = 0;
+++    };
+++    __atomic_store_n(&g_mzwasm_media_status, 1, __ATOMIC_SEQ_CST);
+++    __atomic_store_n(&g_mzwasm_media_op, op, __ATOMIC_SEQ_CST);
+++    return 0;
+++}
+++
+++EMSCRIPTEN_KEEPALIVE int mz_wasm_media_status(void)
+++{
+++    return __atomic_load_n(&g_mzwasm_media_status, __ATOMIC_SEQ_CST);
+++}
+++
+++/** What is in drive 0..3 right now, so the page can show it after a reload. */
+++EMSCRIPTEN_KEEPALIVE const char *mz_wasm_fdd_path(int drive)
+++{
+++    const char *path = (drive >= 0 && drive < 4) ? fdc_get_dsk_filepath(&g_fdc[FDC0], (unsigned) drive) : NULL;
+++    return path ? path : "";
+++}
+++
+++/* Emulation thread, between instructions. */
+++static void mzarch_wasm_media_service(int op)
+++{
+++    int ok = 1;
+++    switch (op) {
+++        case MZWASM_MEDIA_FDD_MOUNT:
+++            if (g_mzwasm_media_arg < 0 || g_mzwasm_media_arg > 3) ok = 0;
+++            else fdc_mount_dskfile(&g_fdc[FDC0], (unsigned) g_mzwasm_media_arg, g_mzwasm_media_path);
+++            break;
+++        case MZWASM_MEDIA_QD_MOUNT:
+++            if (g_mzwasm_media_path[0]) qdisk_open_image(g_mzwasm_media_path);
+++            else qdisk_umount();
+++            break;
+++        case MZWASM_MEDIA_QD_PROTECT:
+++            qdisk_set_write_protected(g_mzwasm_media_arg ? 1 : 0);
+++            break;
+++        case MZWASM_MEDIA_RESET:
+++            APP_MUTEX_LOCK(g_mzarch_main.reset_request_mutex);
+++            g_mzarch_main.rerun_mzf_request = g_mzwasm_media_arg ? true : false;
+++            g_mzarch_main.reset_request = true;
+++            APP_MUTEX_UNLOCK(g_mzarch_main.reset_request_mutex);
+++            break;
+++        default:
+++            ok = 0;
+++            break;
+++    };
+++    __atomic_store_n(&g_mzwasm_media_status, ok ? 2 : -1, __ATOMIC_SEQ_CST);
+++}
+++
++ #define MZWASM_SNAP_SAVE_PATH "/mzwasm-save.mzs"
++ #define MZWASM_SNAP_LOAD_PATH "/mzwasm-load.mzs"
++ 
++@@ -1174,6 +1255,12 @@ void mzarch_main(void)
++             int op = __atomic_exchange_n(&g_mzwasm_snap_request, 0, __ATOMIC_SEQ_CST);
++             if (op) mzarch_wasm_snapshot_service(op);
++         };
+++
+++        if (__builtin_expect(g_mzwasm_media_op != MZWASM_MEDIA_NONE, 0))
+++        {
+++            int op = __atomic_exchange_n(&g_mzwasm_media_op, MZWASM_MEDIA_NONE, __ATOMIC_SEQ_CST);
+++            if (op) mzarch_wasm_media_service(op);
+++        };
++ #endif
++ 
++         g_mzarch_main.instruction_addr = g_mzarch_main.cpu->pc;
++-- 
++2.43.0
++
+-- 
+2.43.0
+

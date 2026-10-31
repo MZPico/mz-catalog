@@ -104,7 +104,7 @@ const ui = {
     import { load, actionsFor, catalogIndex, formatSize, type LoadedFile } from '../../lib/mz/workbench';
     import { setStrings, charactersPanel } from '../../lib/mz/panels';
     import { listFiles, rememberFile, forgetFile, forgetAll } from '../../lib/mz/store';
-    import { boot, running, reset as resetMachine, mountFloppy, ejectFloppy, mountQd, protectQd, setMuted, writeFile, readBack } from '../../lib/mz/emulator';
+    import { boot, running, reset as resetMachine, mountFloppy, ejectFloppy, mountQd, protectQd, runMzf, setMuted, writeFile, readBack } from '../../lib/mz/emulator';
     import { defaults, presets, toIni, mediaOf, argsOf, mediaPath, type Machine } from '../../lib/mz/machine';
 
     const drop = document.getElementById('drop')!;
@@ -154,6 +154,9 @@ const ui = {
       if (!current) return;
       const groups: Record<string, string[]> = {};
       for (const a of actionsFor(current)) (groups[a.group] ??= []).push(a.id);
+      // Straight into the machine in the middle: a program to run, a disk to put in.
+      const intoMachine = { mzf: 'emu-run', dsk: 'emu-drive', mzq: 'emu-qd' }[current.kind as string];
+      if (intoMachine) (groups.use ??= []).unshift(intoMachine);
       // A dump the catalog knows can be played straight away.
       if (current.catalog) (groups.use ??= []).push('play');
       const order = ['inspect', 'convert', 'use', 'share'] as const;
@@ -161,10 +164,15 @@ const ui = {
         <div class="wb-group"><span class="wb-glabel">${esc(ui['group' + g[0].toUpperCase() + g.slice(1)])}</span>
           ${groups[g].map((id) => id === 'play'
             ? `<a class="btn secondary" href="${esc(ui.playPath + current!.catalog!.slug)}/">${esc(ui.actPlay)}</a>`
+            : id.startsWith('emu-')
+            ? `<button class="btn primary" type="button" data-emu="${esc(id)}">${esc(ui[id === 'emu-run' ? 'actRun' : id === 'emu-drive' ? 'actDrive' : 'actQd'])}</button>`
             : `<button class="btn secondary${openAction === id ? ' active' : ''}" type="button" data-act="${esc(id)}">${esc(label(id))}</button>`).join('')}
         </div>`).join('');
       for (const b of $('wb-actions').querySelectorAll<HTMLButtonElement>('button[data-act]')) {
         b.addEventListener('click', () => run(b.dataset.act!));
+      }
+      for (const b of $('wb-actions').querySelectorAll<HTMLButtonElement>('button[data-emu]')) {
+        b.addEventListener('click', () => sendToMachine(b.dataset.emu!));
       }
       if (openAction) run(openAction, true);
     }
@@ -374,6 +382,23 @@ const ui = {
         return;
       }
       if (path === 'qdisk.writeProtected') await protectQd(machine.qdisk.writeProtected);
+    }
+
+    /** The chosen file into the running machine: a program runs, a disk goes in. */
+    async function sendToMachine(what: string) {
+      if (!current) return;
+      const file = current;
+      if (what === 'emu-run') machine.program = file.id;
+      if (what === 'emu-drive') { machine.fdc.connected = true; machine.fdc.drives[0].file = file.id; }
+      if (what === 'emu-qd') { machine.qdisk.connected = true; machine.qdisk.file = file.id; }
+      saveMachine(); renderMachine();
+      if (!running()) { startMachine(); return; }
+      writeFile(mediaPath(file.id), file.bytes);
+      if (what === 'emu-run') await runMzf(mediaPath(file.id));
+      else if (what === 'emu-drive') await applyLive('fdc.drives.0.file');
+      else await applyLive('qdisk.file');
+      ($('canvas') as HTMLElement).focus();   // the keyboard belongs to the machine again
+      track('tool-machine');
     }
 
     /** A disk the machine has written to, back into the file list. */

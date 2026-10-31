@@ -1,7 +1,7 @@
 From 85aaf1127cc57c552cdc68d7dedd5a38678f0d97 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Wed, 2 Sep 2026 00:36:59 +0200
-Subject: [PATCH 25/25] Emscripten: export mz_wasm_total_screens for the page's
+Subject: [PATCH 25/33] Emscripten: export mz_wasm_total_screens for the page's
  pace indicator
 
 ---

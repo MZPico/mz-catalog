@@ -1,0 +1,44 @@
+From 45725d750fa7375c4ba24edd6f3c4e76f7c710c7 Mon Sep 17 00:00:00 2001
+From: Martin Matyas <martin.matyas@tietoevry.com>
+Date: Tue, 29 Sep 2026 20:22:24 +0200
+Subject: [PATCH 31/33] MZ800EMU_REALTIME=1: headless runs paced at real speed
+ by the monotonic clock
+
+Headless (--mcp-pipe) no audio device paces the emulation, and at normal
+speed every 20 ms frame waited up to a second for audio that never plays
+(1.9 % of real time). With MZ800EMU_REALTIME=1 each frame is paced by the
+monotonic clock instead, for tests that need real time (BomberNet network
+latency measurements).
+---
+ src/iface/iface_audio.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/src/iface/iface_audio.c b/src/iface/iface_audio.c
+index f8ab2bf..27f9b1a 100644
+--- a/src/iface/iface_audio.c
++++ b/src/iface/iface_audio.c
+@@ -374,6 +374,21 @@ void iface_audio_exit(void)
+  */
+ void iface_audio_20ms_sync(void)
+ {
++    /* MZ800EMU_REALTIME=1 (headless testy, napr. mereni sitove latence):
++     * bez audio zarizeni by emulaci nic nesynchronizovalo, proto kazdy
++     * 20ms frame srovname podle monotonnich hodin. */
++    static int realtime = -1;
++    static gint64 next_us = 0;
++    if (realtime < 0) realtime = getenv("MZ800EMU_REALTIME") && getenv("MZ800EMU_REALTIME")[0] == '1';
++    if (realtime)
++    {
++        gint64 now = g_get_monotonic_time();
++        if (next_us == 0 || now - next_us > 200000) next_us = now;   /* first frame, or after a pause */
++        next_us += 20000;
++        if (next_us > now) g_usleep((gulong)(next_us - now));
++        return;
++    };
++
+ #ifndef MZ800EMU_CFG_AUDIO_DISABLED
+     // Oznamime, ze mame pripraveny dalsi audio frame
+     APP_MUTEX_LOCK(g_iface_audio.mutex);
+-- 
+2.43.0
+

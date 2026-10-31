@@ -17,7 +17,7 @@ export interface BootOptions {
 }
 
 /** What the build lets the page change while the machine runs (patch 0030). */
-export const MEDIA = { fddMount: 1, qdMount: 2, qdProtect: 3, reset: 4 } as const;
+export const MEDIA = { fddMount: 1, qdMount: 2, qdProtect: 3, reset: 4, tape: 5, runMzf: 6 } as const;
 
 type Emu = {
   canvas: HTMLCanvasElement;
@@ -117,6 +117,10 @@ export const mountFloppy = (drive: number, path: string) => media(MEDIA.fddMount
 export const ejectFloppy = (drive: number) => media(MEDIA.fddMount, drive, '');
 export const mountQd = (path: string) => media(MEDIA.qdMount, 0, path);
 export const protectQd = (on: boolean) => media(MEDIA.qdProtect, on ? 1 : 0, '');
+/** The MZF the ROM's own tape load reads; '' leaves the deck empty. */
+export const setTape = (path: string) => media(MEDIA.tape, 0, path);
+/** Reset into an MZF and run it, the way the machine starts with --run-mzf. */
+export const runMzf = (path: string) => media(MEDIA.runMzf, 0, path);
 /** Reset the machine; `rerun` starts the --run-mzf program again. */
 export const reset = (rerun = false) => media(MEDIA.reset, rerun ? 1 : 0, '');
 

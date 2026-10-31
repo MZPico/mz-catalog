@@ -1,0 +1,176 @@
+From 601c4d14def6dfba679b194adfa0bb5e88884585 Mon Sep 17 00:00:00 2001
+From: Martin Matyas <martin.matyas@gmail.com>
+Date: Tue, 15 Sep 2026 09:28:13 +0200
+Subject: [PATCH 30/33] Unicard: MZPico explorer extensions so the MZPico
+ menu/explorer run in the emulator
+
+In [UNICARD] mzpico_mode: LISTVOL (0x90, "sd:"), GETCONFIG (0x92, [menu]
+records served as a record stream - status bit 2 while the output lasts),
+WIFISTATUS (0x93), SETSORT (0x96, bit 1 = launchable files only), MOUNTS
+(0x98); "sd:"/"flash:" volume prefixes map onto the SD root; READDIR hides
+the emulator's runtime dir, '@' images and mzpico.sav. MZPICO_DEBUG=1
+traces the extension commands. Used to capture the v0.4.0 screenshots
+headless over the MCP pipe.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+---
+ src/emulator/hw-generic/unicard/unicard.c    |  8 ++++
+ src/emulator/hw-generic/unicard/unimgr.c     | 20 ++++++++-
+ src/emulator/hw-generic/unicard/unimgr_net.c | 43 +++++++++++++++++++-
+ src/emulator/hw-generic/unicard/unimgr_net.h |  2 +
+ 4 files changed, 70 insertions(+), 3 deletions(-)
+
+diff --git a/src/emulator/hw-generic/unicard/unicard.c b/src/emulator/hw-generic/unicard/unicard.c
+index 1101ac1..c9c089b 100644
+--- a/src/emulator/hw-generic/unicard/unicard.c
++++ b/src/emulator/hw-generic/unicard/unicard.c
+@@ -993,6 +993,14 @@ static char* unicard_normalize_emu_path ( const char *emu_path, int *escape_dete
+ 
+     if ( !emu_path || emu_path[0] == 0x00 ) return naked;
+ 
++    /* MZPico volume prefixes: "sd:/x" and "flash:/x" both map onto the SD
++     * root (the MZPico menu/explorer address every path this way). */
++    if ( g_unicard_mzpico_mode ) {
++        if ( !g_ascii_strncasecmp ( emu_path, "sd:", 3 ) ) emu_path += 3;
++        else if ( !g_ascii_strncasecmp ( emu_path, "flash:", 6 ) ) emu_path += 6;
++        if ( emu_path[0] == 0x00 ) return naked;
++    }
++
+     /* Pre-sanitization: backslash -> forward slash. Reálná Unicarta
+      * separátor backslash nezná, ale guest SW může omylem poslat
+      * Windows-style cestu. Pro účely detekce traversal je nutné mít
+diff --git a/src/emulator/hw-generic/unicard/unimgr.c b/src/emulator/hw-generic/unicard/unimgr.c
+index 859a2ed..195050b 100644
+--- a/src/emulator/hw-generic/unicard/unimgr.c
++++ b/src/emulator/hw-generic/unicard/unimgr.c
+@@ -326,7 +326,7 @@ st_UNIMGR g_unimgr;
+ 
+ /* MZPico NET extension glue (unimgr_net.c): output staging, async state,
+  * and the vendor error code reported in status byte 2. */
+-static uint8_t g_net_out[64];
++static uint8_t g_net_out[256];
+ static int g_net_async = 0;
+ static uint8_t g_net_err = 0;
+ 
+@@ -352,6 +352,7 @@ static void unimgr_net_finish ( int r, int len ) {
+ 
+ static void unimgr_net_do_exec ( void ) {
+     int len = 0;
++    g_unimgr_mzpico_stream = 0;
+     int r = unimgr_net_exec ( g_unimgr.cmd, g_unimgr.buf_byte, g_net_out, &len );
+     if ( r == -1 ) {
+         g_net_async = 1;
+@@ -780,7 +781,21 @@ static void do_cmdREADDIR ( en_UNIMGR_CMDSTATE cmd_phase ) {
+         g_unimgr.cmd = cmdREADDIR;
+         st_UNICARD_FILINFO finfo;
+         int eof = 0;
+-        g_unimgr.ff_res = unicard_dir_read_filinfo ( &g_unimgr.dir, &finfo, &eof );
++        for ( ;; ) {
++            g_unimgr.ff_res = unicard_dir_read_filinfo ( &g_unimgr.dir, &finfo, &eof );
++            if ( FR_OK != g_unimgr.ff_res || eof || !g_unicard_mzpico_mode ) break;
++            /* MZPico explorer view: hide the emulator's runtime dir, the
++             * embedded '@' images and the explorer's own state file; with
++             * SETSORT bit 1 keep only directories and launchable files */
++            const char *nm = finfo.lfn_strlen ? finfo.lfname : finfo.fname;
++            const char *dot = strrchr ( nm, '.' );
++            int dir = finfo.fattrib & 0x10;
++            int launchable = dir || ( dot && ( !g_ascii_strcasecmp ( dot, ".mzf" ) || !g_ascii_strcasecmp ( dot, ".m12" ) ||
++                                             !g_ascii_strcasecmp ( dot, ".dsk" ) || !g_ascii_strcasecmp ( dot, ".mzq" ) ) );
++            if ( nm[0] == '@' || nm[0] == '.' || !g_ascii_strcasecmp ( nm, "unicard" ) || !g_ascii_strcasecmp ( nm, "mzpico.sav" ) ) continue;
++            if ( ( g_unimgr_mzpico_sort & 0x02 ) && !launchable ) continue;
++            break;
++        }
+         if ( FR_OK != g_unimgr.ff_res ) {
+             g_unimgr.sts_err = UNIMGR_STS_ERROR;
+             g_unimgr.cmd_phase = UNIMGR_CMDSTATE_DONE;
+@@ -1429,6 +1444,7 @@ static uint8_t unimgr_read_STATUS ( void ) {
+             if ( UNIMGR_CMDSTATE_PARAMRQ == g_unimgr.cmd_phase ) ret |= 0x01; // 0. bit - BUSY(paramRQ)=1
+ 
+             if ( UNIMGR_CMDSTATE_DOUTRQ == g_unimgr.cmd_phase ) ret |= 0x02; // 1. bit - CMD_OUTPUT=1
++            if ( g_unimgr_mzpico_stream && UNIMGR_CMDSTATE_DOUTRQ == g_unimgr.cmd_phase ) ret |= 0x04; // MZPico GETCONFIG record stream
+ 
+             if ( EXIT_SUCCESS == unicard_dir_is_open ( &g_unimgr.dir ) ) ret |= 0x04; // 2. bit - READDIR_DATA=1
+ 
+diff --git a/src/emulator/hw-generic/unicard/unimgr_net.c b/src/emulator/hw-generic/unicard/unimgr_net.c
+index 620ef7d..4ad1ebd 100644
+--- a/src/emulator/hw-generic/unicard/unimgr_net.c
++++ b/src/emulator/hw-generic/unicard/unimgr_net.c
+@@ -389,13 +389,26 @@ static uint32_t avail_frame ( void ) {
+ 
+ /* ---------------- command interface ---------------- */
+ 
++/* MZPico management extensions used by the MZPico menu and explorer (the
++ * firmware's unicard.cpp is the reference): enough of them to run those two
++ * programs in the emulator - volume list, [menu] config records, WiFi state,
++ * listing options, current mounts. */
++int g_unimgr_mzpico_stream = 0;   /* GETCONFIG output is a record STREAM (status bit 2) */
++int g_unimgr_mzpico_sort = 0;     /* SETSORT flags: bit 1 = launchable files only */
++static uint8_t g_mzpico_wifi = 3; /* CONNECTED */
++
+ int unimgr_net_is_cmd ( uint8_t cmd ) {
+-    return g_unicard_mzpico_mode && ( cmd == cmdX_INFO || ( cmd >= cmdN_STATUS && cmd <= cmdN_RECV ) );
++    if ( getenv ( "MZPICO_DEBUG" ) && cmd >= 0x90 ) fprintf ( stderr, "MZPICO is_cmd %02x mode=%d\n", cmd, g_unicard_mzpico_mode );
++    if ( !g_unicard_mzpico_mode ) return 0;
++    if ( cmd == cmdX_INFO || ( cmd >= cmdN_STATUS && cmd <= cmdN_RECV ) ) return 1;
++    return cmd == 0x90 || cmd == 0x92 || cmd == 0x93 || cmd == 0x96 || cmd == 0x98;
+ }
+ 
+ const char *unimgr_net_param_format ( uint8_t cmd ) {
+     if ( !unimgr_net_is_cmd ( cmd ) ) return NULL;
+     switch ( cmd ) {
++        case 0x92:        return "S";                            /* GETCONFIG section */
++        case 0x96:        return "B";                            /* SETSORT flags */
+         case cmdN_CREATE: return "BBBBBBBBBBBBBBBBBBBBBBB";     /* game, build, slots, bytes, len, 16 settings */
+         case cmdN_JOIN:   return "BBBBS";                       /* game, build, code */
+         case cmdN_READY:  return "B";
+@@ -426,6 +439,34 @@ int unimgr_net_exec ( uint8_t cmd, const uint8_t *p, uint8_t *out, int *out_len
+     *out_len = 0;
+     pump ( );
+     switch ( cmd ) {
++        case 0x90: {                                             /* LISTVOL */
++            const char *v = "sd:\r";
++            memcpy ( out, v, 4 ); *out_len = 4; return 0;
++        }
++        case 0x92: {                                             /* GETCONFIG: [menu] records key[16] value[64] */
++            if ( getenv ( "MZPICO_DEBUG" ) ) fprintf ( stderr, "MZPICO GETCONFIG '%s'\n", (const char*) p );
++            static const char *cfg[][2] = { { "key_b", "Basic|@basic" }, { "key_e", "Explorer|@explorer" },
++                                            { "key_c", "CP/M|sd:/cpm/CPM.dsk" } };
++            int n = 0;
++            if ( !strcmp ( (const char*) p, "menu" ) ) {
++                for ( int i = 0; i < 3; i++ ) {
++                    memset ( out + n, 0, 80 );
++                    strncpy ( (char*) out + n, cfg[i][0], 15 );
++                    strncpy ( (char*) out + n + 16, cfg[i][1], 63 );
++                    n += 80;
++                }
++            }
++            g_unimgr_mzpico_stream = n ? 1 : 0;
++            *out_len = n; return 0;
++        }
++        case 0x93:                                               /* WIFISTATUS */
++            out[0] = g_mzpico_wifi; *out_len = 1; return 0;
++        case 0x96:                                               /* SETSORT: order left to the Z80, bit 1 filters */
++            g_unimgr_mzpico_sort = p[0]; *out_len = 0; return 0;
++        case 0x98: {                                             /* MOUNTS */
++            const char *m = "1:sd:/cpm/CPM.dsk\r2:\r3:\r4:\rQ:sd:/games/QDisk-5Z001.mzq\r";
++            int l = strlen ( m ); memcpy ( out, m, l ); *out_len = l; return 0;
++        }
+         case cmdX_INFO:
+             memset ( out, 0, 16 );
+             out[0] = 1;                  /* extensions protocol revision */
+diff --git a/src/emulator/hw-generic/unicard/unimgr_net.h b/src/emulator/hw-generic/unicard/unimgr_net.h
+index b764624..965af3a 100644
+--- a/src/emulator/hw-generic/unicard/unimgr_net.h
++++ b/src/emulator/hw-generic/unicard/unimgr_net.h
+@@ -26,6 +26,8 @@ extern "C" {
+ 
+     /* configuration (set by unicard.c from the INI) */
+     extern int g_unicard_mzpico_mode;
++    extern int g_unimgr_mzpico_stream;
++    extern int g_unimgr_mzpico_sort;   /* current MZPico output is a record stream (status bit 2) */
+     extern const char *unicard_get_net_relay ( void );   /* [UNICARD] net_relay, host:port */
+ 
+     extern void unimgr_net_reset ( void );
+-- 
+2.43.0
+

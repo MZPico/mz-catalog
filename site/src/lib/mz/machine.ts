@@ -141,5 +141,6 @@ export function mediaOf(m: Machine): string[] {
 /** The emulator's command line: a program is injected, everything else just boots. */
 export const argsOf = (m: Machine): string[] => [
   '--no-first-run-windows', '--no-save-ini', '--kiosk', '--config', '/mz800emu.ini',
-  ...(m.program ? ['--run-mzf', mediaPath(m.program)] : []),
+  // The program runs at once, and is what the ROM's own tape load finds too.
+  ...(m.program ? ['--run-mzf', mediaPath(m.program), '--cmthack-autofile', mediaPath(m.program)] : []),
 ];

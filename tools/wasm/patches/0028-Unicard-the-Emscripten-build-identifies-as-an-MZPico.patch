@@ -1,0 +1,33 @@
+From 68a7718d257a2613de7fc719d7393b7e7eb8076f Mon Sep 17 00:00:00 2001
+From: Martin Matyas <martin.matyas@gmail.com>
+Date: Fri, 11 Sep 2026 11:04:58 +0200
+Subject: [PATCH 28/33] Unicard: the Emscripten build identifies as an MZPico
+ by default (mzpico.com player)
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+---
+ src/emulator/hw-generic/unicard/unicard.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/emulator/hw-generic/unicard/unicard.c b/src/emulator/hw-generic/unicard/unicard.c
+index e4b5cd5..1101ac1 100644
+--- a/src/emulator/hw-generic/unicard/unicard.c
++++ b/src/emulator/hw-generic/unicard/unicard.c
+@@ -852,7 +852,14 @@ void unicard_init ( void ) {
+     /* MZPico NET extension (BomberNet/docs/net-protocol.md): identify as an
+      * MZPico (REVD subtype 'M', INFO) and serve the NET vendor commands; the
+      * native build reaches the relay through a TCP JSON-lines socket. */
++#ifdef __EMSCRIPTEN__
++    /* the browser build is the mzpico.com player: identify as an MZPico so
++     * NET-aware programs find the device (the link stays down until the page
++     * opens a relay socket via mz_wasm_net_link) */
++    CFGELM *elm_mzpico = cfgmodule_register_new_element ( cmod, "mzpico_mode", CFGENTYPE_BOOL, 1 );
++#else
+     CFGELM *elm_mzpico = cfgmodule_register_new_element ( cmod, "mzpico_mode", CFGENTYPE_BOOL, 0 );
++#endif
+     cfgelement_set_handlers ( elm_mzpico, (void*) &g_unicard_mzpico_mode, (void*) &g_unicard_mzpico_mode );
+     g_elm_net_relay = cfgmodule_register_new_element ( cmod, "net_relay", CFGENTYPE_TEXT, "127.0.0.1:8766" );
+ 
+-- 
+2.43.0
+
