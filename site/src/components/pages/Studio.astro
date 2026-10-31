@@ -608,7 +608,7 @@ const ui = {
       if (on && !devBox.childElementCount) {
         drawDevices = devices(devBox, {
           state: () => ({
-            fdc: { connected: machine.fdc.connected, disks: [nameOf(machine.fdc.drives[0].file), nameOf(machine.fdc.drives[1].file)] },
+            fdc: { connected: machine.fdc.connected, disks: machine.fdc.drives.map((d) => nameOf(d.file)) as [string, string, string, string] },
             qd: { connected: machine.qdisk.connected, disk: nameOf(machine.qdisk.file), writeProtected: machine.qdisk.writeProtected },
             ram: { plugged: machine.ramdisk.mr1r18.plugged, size: machine.ramdisk.mr1r18.size },
           }),

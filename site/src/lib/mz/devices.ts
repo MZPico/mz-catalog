@@ -4,6 +4,8 @@
 //
 //   MZ-1F19  the two-drive floppy unit - a cream tower with the SHARP badge
 //            and two black bays; a bay takes a disk, its lever ejects it.
+//            The controller drives four, so there are two of them, as a
+//            machine with four drives really had.
 //   MZ-1F11  the Quick Disk - cream case, crosshatched grille, BUSY lamp
 //            bottom left, EJECT key down the right edge, the cartridge
 //            sitting in the slot along the bottom.
@@ -14,11 +16,11 @@
 // Nothing here is a photograph: the catalog is Apache-2.0 and the pictures of
 // these machines are not ours to ship, so they are drawn from them instead.
 
-export type Slot = 'fdd0' | 'fdd1' | 'qd';
+export type Slot = 'fdd0' | 'fdd1' | 'fdd2' | 'fdd3' | 'qd';
 export type Device = 'fdc' | 'qdisk' | 'ramdisk';
 
 export interface DeviceState {
-  fdc: { connected: boolean; disks: [string, string] };   // '' for an empty bay
+  fdc: { connected: boolean; disks: [string, string, string, string] };   // '' for an empty bay
   qd: { connected: boolean; disk: string; writeProtected: boolean };
   ram: { plugged: boolean; size: string };
 }
@@ -37,13 +39,13 @@ const esc = (s: unknown) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;',
 /** A disk label has room for about this much. */
 const short = (name: string) => (name.length > 16 ? name.slice(0, 15) + '…' : name);
 
-const CASE = `
+const unit = (first: number) => `
   <div class="dev dev-fdd" data-dev="fdc">
     <div class="fd-case">
       <div class="fd-top"><span class="fd-badge">SHARP</span><span class="fd-vents"></span></div>
       <div class="fd-bays">
-        ${[0, 1].map((i) => `
-          <div class="fd-bay">
+        ${[first, first + 1].map((i) => `
+          <div class="fd-bay" data-bay="${i}">
             <button type="button" class="fd-face" data-slot="fdd${i}">
               <span class="fd-slot"><span class="fd-disk"><span class="fd-label"></span></span></span>
               <span class="fd-lever"></span>
@@ -54,7 +56,11 @@ const CASE = `
       </div>
     </div>
     <p class="dev-cap"><b>MZ-1F19</b> <span class="dev-what"></span></p>
-  </div>
+  </div>`;
+
+const CASE = `
+  ${unit(0)}
+  ${unit(2)}
 
   <div class="dev dev-qd" data-dev="qdisk">
     <div class="qd-case">
@@ -86,14 +92,17 @@ export function devices(host: HTMLElement, hooks: DeviceHooks): () => void {
 
   const draw = () => {
     const s = hooks.state();
-    host.querySelector('.dev-fdd')!.classList.toggle('off', !s.fdc.connected);
-    bays.forEach((bay, i) => {
-      const name = s.fdc.disks[i];
+    bays.forEach((bay) => {
+      const name = s.fdc.disks[Number(bay.dataset.bay)];
       bay.classList.toggle('loaded', !!name);
       bay.querySelector('.fd-label')!.textContent = short(name);
       bay.querySelector<HTMLElement>('.fd-face')!.title = name || hooks.strings.insert;
     });
-    find('.dev-fdd .dev-what').textContent = s.fdc.disks.filter(Boolean).join(', ') || hooks.strings.empty;
+    host.querySelectorAll<HTMLElement>('.dev-fdd').forEach((unit, i) => {
+      unit.classList.toggle('off', !s.fdc.connected);
+      unit.querySelector('.dev-what')!.textContent =
+        s.fdc.disks.slice(i * 2, i * 2 + 2).filter(Boolean).join(', ') || hooks.strings.empty;
+    });
 
     const qd = host.querySelector('.dev-qd')!;
     qd.classList.toggle('off', !s.qd.connected);

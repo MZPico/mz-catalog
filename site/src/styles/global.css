@@ -778,33 +778,33 @@ body.pseudo-fs-on { overflow: hidden; }
 
 /* MZ-1F11: the Quick Disk, grille and all. */
 .qd-case {
-  display: grid; grid-template-columns: 1.3rem 1fr 1.45rem; grid-template-rows: 1fr auto;
-  gap: 0.2rem; width: 10.4rem; padding: 0.3rem; border-radius: 4px;
+  display: grid; grid-template-columns: 1.05rem 1fr 1.2rem; grid-template-rows: 1fr auto;
+  gap: 0.15rem; width: 7.6rem; padding: 0.22rem; border-radius: 4px;
   background: linear-gradient(100deg, #efeadb, #ddd7c5); border: 1px solid #b4ad9a;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6), 0 0.2rem 0.5rem rgba(0, 0, 0, 0.35);
 }
 .qd-made {
-  grid-column: 1; grid-row: 1; align-self: start; font-size: 0.3rem; line-height: 1.2; color: #4a473d;
+  grid-column: 1; grid-row: 1; align-self: start; font-size: 0.26rem; line-height: 1.2; color: #4a473d;
   background: #e7e1cf; border: 1px solid #b9b2a0; border-radius: 1px; padding: 0.05rem 0.1rem;
 }
 .qd-grille {
   grid-column: 2; grid-row: 1 / span 2; position: relative; display: flex; align-items: flex-end;
-  height: 8.6rem; padding: 0.25rem; border: 1px solid #0a0a09; border-radius: 1px; cursor: pointer;
+  height: 5.6rem; padding: 0.18rem; border: 1px solid #0a0a09; border-radius: 1px; cursor: pointer;
   background-color: #23231f;
   background-image:
-    repeating-linear-gradient(#000 0 1px, transparent 1px 0.48rem),
-    repeating-linear-gradient(90deg, #000 0 1px, transparent 1px 0.48rem);
+    repeating-linear-gradient(#000 0 1px, transparent 1px 0.36rem),
+    repeating-linear-gradient(90deg, #000 0 1px, transparent 1px 0.36rem);
   box-shadow: inset 0 0 0.5rem rgba(0, 0, 0, 0.9);
 }
 .qd-cart {
-  position: relative; display: block; width: 100%; height: 1.45rem; border-radius: 1px;
+  position: relative; display: block; width: 100%; height: 1.1rem; border-radius: 1px;
   background: linear-gradient(#35342e, #1d1c18); border: 1px solid #4a4840;
   opacity: 0; transition: opacity 0.15s;
 }
 .dev-qd.loaded .qd-cart { opacity: 1; }
 .qd-shutter {
-  position: absolute; left: 50%; top: 0.18rem; transform: translateX(-50%);
-  width: 2.4rem; height: 0.7rem; border-radius: 1px;
+  position: absolute; left: 50%; top: 0.12rem; transform: translateX(-50%);
+  width: 1.9rem; height: 0.5rem; border-radius: 1px;
   background: linear-gradient(#cfcabb, #9b968a); border: 1px solid #6d6a60;
 }
 .qd-label {
@@ -821,7 +821,7 @@ body.pseudo-fs-on { overflow: hidden; }
 .dev-qd.loaded .qd-busy i { background: #e5533c; box-shadow: 0 0 0.25rem #e5533c; }
 .qd-eject {
   grid-column: 3; grid-row: 1 / span 2; align-self: end; justify-self: stretch;
-  height: 2.6rem; margin-bottom: 0.15rem; padding: 0; cursor: pointer;
+  height: 1.9rem; margin-bottom: 0.12rem; padding: 0; cursor: pointer;
   border: 1px solid #8f897a; border-radius: 2px;
   background: linear-gradient(90deg, #ece6d6, #cfc9b7);
   box-shadow: 0 0.1rem 0 #a09a89, inset 0 0 0 1px rgba(255, 255, 255, 0.5);
