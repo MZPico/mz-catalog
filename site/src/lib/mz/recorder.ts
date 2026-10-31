@@ -1,16 +1,16 @@
 // The MZ-821's built-in data recorder, drawn under the screen.
 //
-// The real thing (the MZ-800 with the recorder fitted) is a cream panel with a
-// tinted cassette window and a row of six piano keys in front of it, their
-// names printed on the case above them: REC, PLAY, REW, FF, STOP/EJECT and
-// PAUSE. The keys latch - PLAY stays down while the tape runs and STOP pops it
-// up again - so they do that here too.
+// The real one sits to the right of the keyboard: a cream door with a tinted
+// window, the cassette turning behind it, and underneath a recessed slot with
+// five taupe keys - STOP/EJECT, RECORD, PLAY, REWIND, FFWD, left to right -
+// each with its name and symbol printed on the case above it. There is no
+// pause key, so there is none here.
 //
-// What each key can actually do is what the emulator's deck offers: REW winds
-// back to the start (where STOP leaves the tape), and FF has nothing behind
-// it, so it is drawn dead rather than pretending.
+// What a key can do is what the emulator's deck offers: REWIND winds back to
+// the start (where STOP leaves the tape), and FFWD has nothing behind it, so
+// it is drawn dead rather than pretending.
 
-export type DeckKey = 'rec' | 'play' | 'rew' | 'ff' | 'stop' | 'pause';
+export type DeckKey = 'stop' | 'rec' | 'play' | 'rew' | 'ff';
 
 export interface DeckHooks {
   /** A key was pressed; the panel redraws itself from `state()` afterwards. */
@@ -25,17 +25,16 @@ export interface DeckHooks {
   strings: { empty: string; noFf: string };
 }
 
-const KEYS: { id: DeckKey; label: string }[] = [
-  { id: 'rec', label: 'REC' },
-  { id: 'play', label: 'PLAY' },
-  { id: 'rew', label: 'REW' },
-  { id: 'ff', label: 'FF' },
-  { id: 'stop', label: 'STOP\nEJECT' },
-  { id: 'pause', label: 'PAUSE' },
+const KEYS: { id: DeckKey; name: string; symbol: string }[] = [
+  { id: 'stop', name: 'STOP/EJECT', symbol: '■' },
+  { id: 'rec', name: 'RECORD', symbol: '●' },
+  { id: 'play', name: 'PLAY', symbol: '▶' },
+  { id: 'rew', name: 'REWIND', symbol: '◀◀' },
+  { id: 'ff', name: 'FFWD', symbol: '▶▶' },
 ];
 
-/** Which keys are held down in each deck state. */
-const DOWN: Record<number, DeckKey[]> = { 0: [], 1: [], 2: ['play'], 3: ['play', 'pause'], 4: ['rec', 'play'] };
+/** Which keys stay down in each deck state. */
+const DOWN: Record<number, DeckKey[]> = { 0: [], 1: [], 2: ['play'], 3: ['play'], 4: ['rec', 'play'] };
 
 const clock = (seconds: number): string => {
   const whole = Math.max(0, Math.floor(seconds));
@@ -45,24 +44,25 @@ const clock = (seconds: number): string => {
 /** Draw the recorder into `host` and keep it in step with the deck. */
 export function recorder(host: HTMLElement, hooks: DeckHooks): () => void {
   host.innerHTML = `
-    <div class="cmt-well">
-      <div class="cmt-window">
-        <div class="cmt-cassette">
-          <span class="cmt-hub"></span>
-          <span class="cmt-label"></span>
-          <span class="cmt-hub"></span>
+    <div class="cmt-deck">
+      <div class="cmt-door">
+        <div class="cmt-window">
+          <div class="cmt-cassette">
+            <span class="cmt-label"></span>
+            <span class="cmt-reels"><span class="cmt-hub"></span><span class="cmt-tape"></span><span class="cmt-hub"></span></span>
+          </div>
         </div>
       </div>
-      <div class="cmt-counter"><span class="cmt-time">0:00</span></div>
-    </div>
-    <div class="cmt-keys">${KEYS.map((key) => `
-      <button type="button" class="cmt-key" data-key="${key.id}" aria-label="${key.label.replace('\n', ' ')}">
-        <span class="cmt-cap"></span><span class="cmt-name">${key.label}</span>
-      </button>`).join('')}</div>`;
+      <div class="cmt-keys">${KEYS.map((key) => `
+        <button type="button" class="cmt-key" data-key="${key.id}" aria-label="${key.name}">
+          <span class="cmt-cap"></span>
+          <span class="cmt-sym">${key.symbol}</span>
+          <span class="cmt-name">${key.name}</span>
+        </button>`).join('')}</div>
+    </div>`;
 
   const label = host.querySelector('.cmt-label') as HTMLElement;
   const cassette = host.querySelector('.cmt-cassette') as HTMLElement;
-  const time = host.querySelector('.cmt-time') as HTMLElement;
 
   const draw = () => {
     const state = hooks.state();
@@ -73,8 +73,7 @@ export function recorder(host: HTMLElement, hooks: DeckHooks): () => void {
     cassette.classList.toggle('in', state > 0);
     cassette.classList.toggle('running', state === 2 || state === 4);
     host.classList.toggle('recording', state === 4);
-    label.textContent = state ? hooks.tape() : hooks.strings.empty;
-    time.textContent = clock(hooks.at());
+    label.textContent = state ? `${hooks.tape()}  ${clock(hooks.at())}` : hooks.strings.empty;
   };
 
   for (const key of host.querySelectorAll<HTMLButtonElement>('.cmt-key')) {

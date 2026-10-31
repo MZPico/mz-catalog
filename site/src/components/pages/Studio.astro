@@ -115,7 +115,7 @@ const ui = {
     import { recorder } from '../../lib/mz/recorder';
     import { listFiles, rememberFile, forgetFile, forgetAll } from '../../lib/mz/store';
     import { boot, running, frames, reset as resetMachine, mountFloppy, ejectFloppy, mountQd, protectQd, runMzf,
-      cmtInsert, cmtPlay, cmtStop, cmtPause, cmtRecord, cmtHack, cmtState, cmtPlaytime, setMuted, writeFile, readBack } from '../../lib/mz/emulator';
+      cmtInsert, cmtPlay, cmtStop, cmtRecord, cmtHack, cmtState, cmtPlaytime, setMuted, writeFile, readBack } from '../../lib/mz/emulator';
     import { defaults, presets, toIni, mediaOf, argsOf, mediaPath, type Machine } from '../../lib/mz/machine';
 
     const drop = document.getElementById('drop')!;
@@ -429,7 +429,6 @@ const ui = {
       const was = cmtState();
       if (what === 'play') await cmtPlay();
       else if (what === 'rew') await cmtStop();            // stop winds the tape back to the start
-      else if (what === 'pause') await cmtPause(was !== 3);
       else if (what === 'rec') await record();
       else if (what === 'stop') {
         await cmtStop();
