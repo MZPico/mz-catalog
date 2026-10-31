@@ -322,6 +322,12 @@ so a new format module adds its actions and the page is untouched. Today:
 A tape's CRC is looked up in `manifest.json`: a known dump links to its title
 page and offers to play it.
 
+Opened files are kept in this browser (`site/src/lib/mz/store.ts`, IndexedDB
+`mzpico` / `files`, newest 12, nothing over 16 MB) so a reload does not throw
+the work away; ✕ removes one, "Forget all" clears them. The player's saved
+positions share that database, so both modules open it at `DB_VERSION` and
+create whichever store is missing.
+
 `site/src/lib/mz/` holds the formats as plain TypeScript. The character column
 shows the machine's own glyphs: `tools/mzfont/build-display-font.py` turns the
 character generator ROM into `site/public/fonts/mz-display.woff2`, where set 1

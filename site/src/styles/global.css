@@ -535,3 +535,5 @@ body.pseudo-fs-on { overflow: hidden; }
 .wb-panel:empty { display: none; }
 .wb-panel { margin: 0.2rem 0 1.4rem; }
 .wb-later { margin-top: 2rem; }
+
+.btn.small { padding: 0.2rem 0.5rem; font-size: 0.78rem; vertical-align: middle; margin-left: 0.5rem; }

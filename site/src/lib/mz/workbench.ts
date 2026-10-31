@@ -37,10 +37,10 @@ export function detect(name: string, bytes: Uint8Array): Kind {
   return ext === 'mzf' || ext === 'mzt' || ext === 'm12' ? 'mzf' : 'bin';
 }
 
-export function load(name: string, bytes: Uint8Array): LoadedFile {
+export function load(name: string, bytes: Uint8Array, id?: string): LoadedFile {
   const kind = detect(name, bytes);
   return {
-    id: `${name}-${bytes.length}-${Math.random().toString(36).slice(2, 7)}`,
+    id: id ?? `${name}-${bytes.length}-${Math.random().toString(36).slice(2, 7)}`,
     name, bytes, kind,
     mzf: kind === 'mzf' ? readMzf(bytes) : undefined,
   };

@@ -253,7 +253,7 @@ export const de: Ui = {
       },
       {
         h2: 'In Ihrem Browser gespeichert',
-        html: `<ul><li><b>Touch-Belegung</b> (<code>mz-touch-swap</code>) — nur wenn Sie am Handy die Bildschirmsteuerung vertauschen.</li><li><b>Bewertungs-Kennung</b> (<code>mz-voter</code>) — eine Zufallszahl, die bei Ihrer ersten Bewertung entsteht, damit Sie die Bewertung später ändern können und eine Person einmal zählt. Sie verrät nichts über Sie.</li><li><b>Spielstände</b> (IndexedDB <code>mzpico</code>) — nur wenn Sie auf Speichern drücken, das automatische Speichern einschalten oder eine .mzs-Datei öffnen: ein Abbild des emulierten Rechners mit einem Bild seines Bildschirms. Löschen können Sie sie auf der Seite des Spiels. Die Einstellung zum automatischen Speichern selbst steht unter <code>mz-autosave</code>.</li></ul>Diese Daten bleiben auf Ihrem Gerät; wenn Sie die Websitedaten im Browser löschen, sind sie weg.`,
+        html: `<ul><li><b>Touch-Belegung</b> (<code>mz-touch-swap</code>) — nur wenn Sie am Handy die Bildschirmsteuerung vertauschen.</li><li><b>Bewertungs-Kennung</b> (<code>mz-voter</code>) — eine Zufallszahl, die bei Ihrer ersten Bewertung entsteht, damit Sie die Bewertung später ändern können und eine Person einmal zählt. Sie verrät nichts über Sie.</li><li><b>Spielstände</b> (IndexedDB <code>mzpico</code>) — nur wenn Sie auf Speichern drücken, das automatische Speichern einschalten oder eine .mzs-Datei öffnen: ein Abbild des emulierten Rechners mit einem Bild seines Bildschirms. Löschen können Sie sie auf der Seite des Spiels. Die Einstellung zum automatischen Speichern selbst steht unter <code>mz-autosave</code>.</li><li><b>Dateien in den Werkzeugen</b> (IndexedDB <code>mzpico</code>): Was Sie in die <a href="/de/tools/">Werkzeuge</a> ziehen, bleibt in diesem Browser, damit ein Neuladen es nicht verliert — nur die Datei selbst, sonst nichts. Dort entfernen Sie sie wieder, oder mit „Alle vergessen“.</li></ul>Diese Daten bleiben auf Ihrem Gerät; wenn Sie die Websitedaten im Browser löschen, sind sie weg.`,
       },
       {
         h2: 'Auf unserem Server gespeichert',
@@ -273,7 +273,7 @@ export const de: Ui = {
     title: 'Werkzeuge',
     h1: 'Werkzeuge',
     description: 'Werkzeuge für Sharp-MZ-Dateien: ein Bandabbild ansehen, einen Dump erkennen, Sharp-Zeichencodes umwandeln. Alles läuft in Ihrem Browser.',
-    lead: 'Bringen Sie eine Datei mit: Die Seite erkennt, was es ist, und bietet an, was sich damit machen lässt. Alles läuft in Ihrem Browser — nichts wird hochgeladen, nichts gespeichert.',
+    lead: 'Bringen Sie eine Datei mit: Die Seite erkennt, was es ist, und bietet an, was sich damit machen lässt. Alles läuft in Ihrem Browser; Dateien werden nie hochgeladen, und die geöffneten bleiben hier, damit ein Neuladen sie nicht verliert.',
     mzfTitle: 'Band-Betrachter',
     mzfLead: 'Was in einer .mzf steckt: Kopf, Adressen, Prüfsumme — und ob der Katalog diesen Dump schon kennt.',
     textTitle: 'Zeichencodes',
@@ -304,6 +304,8 @@ export const de: Ui = {
     setDisplay: 'Bildschirmcodes (Videospeicher)',
     setFile: 'Dateicode (Bandnamen, BASIC)',
     screen: 'Bildschirm, wie der MZ ihn zeichnet',
+    kept: 'Bleiben in diesem Browser, bis Sie sie entfernen. Hochgeladen wird nichts.',
+    forgetAll: 'Alle vergessen',
     yourFiles: 'Ihre Dateien',
     empty: 'Noch nichts. Ziehen Sie oben eine Datei herein — sie bleibt in Ihrem Browser.',
     remove: 'Entfernen',

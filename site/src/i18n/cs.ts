@@ -252,7 +252,7 @@ export const cs: Ui = {
       },
       {
         h2: 'Ve vašem prohlížeči',
-        html: `<ul><li><b>Rozložení dotykového ovládání</b> (<code>mz-touch-swap</code>) — jen pokud si na telefonu prohodíte ovládací prvky.</li><li><b>Identifikátor hodnocení</b> (<code>mz-voter</code>) — náhodné číslo, které vznikne, když poprvé ohodnotíte titul, abyste mohli hodnocení později změnit a aby se jeden člověk počítal jednou. Nic o vás neříká.</li><li><b>Uložené pozice</b> (IndexedDB <code>mzpico</code>) — jen když stisknete Uložit, zapnete automatické ukládání nebo otevřete soubor .mzs: snímek stavu emulovaného počítače s obrázkem obrazovky. Smažete je na stránce hry. Samotná volba automatického ukládání se pamatuje jako <code>mz-autosave</code>.</li></ul>Tato data zůstávají ve vašem zařízení; smazáním dat webu v prohlížeči zmizí.`,
+        html: `<ul><li><b>Rozložení dotykového ovládání</b> (<code>mz-touch-swap</code>) — jen pokud si na telefonu prohodíte ovládací prvky.</li><li><b>Identifikátor hodnocení</b> (<code>mz-voter</code>) — náhodné číslo, které vznikne, když poprvé ohodnotíte titul, abyste mohli hodnocení později změnit a aby se jeden člověk počítal jednou. Nic o vás neříká.</li><li><b>Uložené pozice</b> (IndexedDB <code>mzpico</code>) — jen když stisknete Uložit, zapnete automatické ukládání nebo otevřete soubor .mzs: snímek stavu emulovaného počítače s obrázkem obrazovky. Smažete je na stránce hry. Samotná volba automatického ukládání se pamatuje jako <code>mz-autosave</code>.</li><li><b>Soubory otevřené v nástrojích</b> (IndexedDB <code>mzpico</code>): co přetáhnete do <a href="/cs/tools/">Nástrojů</a>, zůstane v tomto prohlížeči, aby to obnovení stránky neztratilo — jen samotný soubor, nic jiného. Smažete je tamtéž, nebo tlačítkem „Zapomenout vše“.</li></ul>Tato data zůstávají ve vašem zařízení; smazáním dat webu v prohlížeči zmizí.`,
       },
       {
         h2: 'Na našem serveru',
@@ -272,7 +272,7 @@ export const cs: Ui = {
     title: 'Nástroje',
     h1: 'Nástroje',
     description: 'Nástroje pro soubory Sharp MZ: prohlédnout obraz pásky, poznat dump, převést znakové kódy Sharpu. Vše běží ve vašem prohlížeči.',
-    lead: 'Přineste soubor, stránka pozná, co to je, a nabídne, co se s ním dá dělat. Vše běží ve vašem prohlížeči — nic se nikam neposílá a nic se neukládá.',
+    lead: 'Přineste soubor, stránka pozná, co to je, a nabídne, co se s ním dá dělat. Vše běží ve vašem prohlížeči; soubory se nikam neposílají a ty otevřené tu zůstanou, aby je obnovení stránky neztratilo.',
     mzfTitle: 'Prohlížeč pásky',
     mzfLead: 'Co je uvnitř .mzf: hlavička, adresy, kontrolní součet — a jestli katalog tenhle dump už zná.',
     textTitle: 'Znakové kódy',
@@ -303,6 +303,8 @@ export const cs: Ui = {
     setDisplay: 'Kódy obrazovky (videopaměť)',
     setFile: 'Kód souborů (jména pásek, BASIC)',
     screen: 'Obrazovka tak, jak ji kreslí MZ',
+    kept: 'Zůstávají v tomto prohlížeči, dokud je neodeberete. Nikam se neposílají.',
+    forgetAll: 'Zapomenout vše',
     yourFiles: 'Vaše soubory',
     empty: 'Zatím nic. Přetáhněte soubor nahoru — zůstane ve vašem prohlížeči.',
     remove: 'Odebrat',

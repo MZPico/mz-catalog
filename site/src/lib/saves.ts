@@ -16,16 +16,21 @@ export interface SaveRecord {
   thumb?: string;         // data: URL of the screen at save time
 }
 
+import { DB_VERSION } from './mz/store';
+
 const DB = 'mzpico';
 const STORE = 'saves';
 
 function open(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    // Version 2: a database of that name without the store (opened by something
-    // else first) gets it on upgrade instead of failing every transaction.
-    const req = indexedDB.open(DB, 2);
+    // One database for the whole site; the workbench keeps its files in the same
+    // one (site/src/lib/mz/store.ts), so the version lives there and both create
+    // whatever store is missing rather than failing every transaction.
+    const req = indexedDB.open(DB, DB_VERSION);
     req.onupgradeneeded = () => {
-      if (!req.result.objectStoreNames.contains(STORE)) req.result.createObjectStore(STORE, { keyPath: 'key' });
+      const db = req.result;
+      if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE, { keyPath: 'key' });
+      if (!db.objectStoreNames.contains('files')) db.createObjectStore('files', { keyPath: 'id' });
     };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);

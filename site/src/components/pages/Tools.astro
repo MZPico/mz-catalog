@@ -28,9 +28,10 @@ const ui = {
     </div>
 
     <section class="wb-files" aria-live="polite">
-      <h2>{tt.yourFiles}</h2>
+      <h2>{tt.yourFiles} <button class="btn ghost small" type="button" id="forget" hidden>{tt.forgetAll}</button></h2>
       <ul id="filelist" class="wb-list"></ul>
       <p class="meta" id="noFiles">{tt.empty}</p>
+      <p class="meta" id="keptNote" hidden>{tt.kept}</p>
     </section>
 
     <section id="workbench" hidden>
@@ -59,6 +60,7 @@ const ui = {
   <script>
     import { load, actionsFor, catalogIndex, formatSize, type LoadedFile } from '../../lib/mz/workbench';
     import { setStrings, charactersPanel } from '../../lib/mz/panels';
+    import { listFiles, rememberFile, forgetFile, forgetAll } from '../../lib/mz/store';
 
     const drop = document.getElementById('drop')!;
     const ui = JSON.parse(drop.dataset.ui!) as Record<string, any>;
@@ -76,6 +78,8 @@ const ui = {
     function renderList() {
       const list = $('filelist');
       $('noFiles').hidden = files.length > 0;
+      $('keptNote').hidden = files.length === 0;
+      $('forget').hidden = files.length === 0;
       list.innerHTML = files.map((f) => {
         const known = f.catalog ? ` · <a href="${esc(ui.titlePath + f.catalog.slug)}/">${esc(f.catalog.title)}</a>` : '';
         return `<li class="${f === current ? 'on' : ''}" data-id="${esc(f.id)}">
@@ -92,6 +96,7 @@ const ui = {
         li.querySelector('.wb-pick')!.addEventListener('click', () => select(file));
         li.querySelector('.wb-close')!.addEventListener('click', () => {
           files.splice(files.indexOf(file), 1);
+          forgetFile(file.id);
           if (current === file) { current = files[0] ?? null; openAction = ''; }
           renderList(); renderActions();
         });
@@ -150,6 +155,8 @@ const ui = {
         files.unshift(file);
         select(file);
         track('tool-open');
+        // Kept in this browser, so a reload does not throw the work away.
+        rememberFile({ id: file.id, name: file.name, bytes: file.bytes, ts: Date.now() });
         if (file.mzf) {
           file.catalog = (await catalogIndex()).get(file.mzf.crc32) ?? null;
           renderList(); renderActions();
@@ -166,6 +173,23 @@ const ui = {
       target.addEventListener('drop', (e) => { e.preventDefault(); add((e as DragEvent).dataTransfer?.files ?? null); });
       target.addEventListener('dragover', (e) => e.preventDefault());
     }
+
+    // Whatever was open last time, back as it was.
+    (async () => {
+      for (const stored of await listFiles()) files.push(load(stored.name, stored.bytes, stored.id));
+      if (!files.length) return;
+      select(files[0]);
+      const index = await catalogIndex();
+      for (const file of files) if (file.mzf) file.catalog = index.get(file.mzf.crc32) ?? null;
+      renderList(); renderActions();
+    })();
+
+    $('forget').addEventListener('click', () => {
+      files.length = 0; current = null; openAction = '';
+      forgetAll();
+      $('wb-panel').innerHTML = '';
+      renderList(); renderActions();
+    });
 
     // The one tool that needs no file.
     const charBtn = $<HTMLButtonElement>('act-characters');
