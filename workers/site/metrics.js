@@ -206,6 +206,7 @@ const BOTS = [
   ['ai-live', /Perplexity-User/i, 'Perplexity (user asked)'],
   ['ai-live', /MistralAI-User/i, 'Mistral (user asked)'],
   ['ai-search', /OAI-SearchBot/i, 'OpenAI search'],
+  ['ai-train', /OAI-AdsBot/i, 'OpenAI ads'],
   ['ai-search', /Claude-SearchBot/i, 'Claude search'],
   ['ai-search', /PerplexityBot/i, 'Perplexity'],
   ['ai-train', /GPTBot/i, 'GPTBot (OpenAI)'],
@@ -231,7 +232,7 @@ const BOTS = [
   ['search', /Amzn-SearchBot/i, 'Amazon search'],
   ['search', /Qwantbot/i, 'Qwant'],
   ['search', /Baiduspider|PetalBot|Sogou|NaverBot|Yeti\//i, 'other search'],
-  ['seo', /AhrefsBot|SemrushBot|MJ12bot|DotBot|DataForSeoBot|BLEXBot|serpstatbot|SeekportBot/i, 'SEO tools'],
+  ['seo', /AhrefsBot|SemrushBot|MJ12bot|DotBot|DataForSeoBot|BLEXBot|serpstatbot|SeekportBot|QlyzeBot/i, 'SEO tools'],
   ['social', /facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot|TelegramBot|WhatsApp|redditbot/i, 'link previews'],
   // Looking for something to break into, not for the catalog. Named so they stop
   // counting as readers: TLM-Audit-Scanner alone fetched 1775 pages in three days.
