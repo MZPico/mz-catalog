@@ -707,3 +707,152 @@ body.pseudo-fs-on { overflow: hidden; }
   position: absolute; left: 50%; bottom: 1.5rem; transform: translateX(-50%);
   font-size: 0.42rem; line-height: 1; color: #4b4537; pointer-events: none; white-space: nowrap;
 }
+
+/* The peripherals, drawn from their photographs the way the keyboard and the
+   recorder are. Each one is a picture you can use: a bay or a grille takes a
+   disk, a lever or the EJECT key throws it out, the RAM card is its own
+   switch. Unplugged hardware greys out but stays where it is. */
+.devices { display: grid; justify-items: center; gap: 0.9rem; margin: 0.2rem 0 0.7rem; }
+.devices[hidden] { display: none; }
+.dev { position: relative; width: fit-content; max-width: 100%; }
+.dev.off { filter: grayscale(0.75) brightness(0.62); opacity: 0.6; }
+.dev-cap { margin: 0.25rem 0 0; font-size: 0.7rem; color: var(--muted); text-align: center; }
+.dev-cap b { color: var(--text); font-weight: 600; }
+.dev-what { display: inline-block; max-width: 11rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
+/* The list that drops out of a slot. */
+.dev-menu {
+  position: absolute; z-index: 5; left: 50%; top: 60%; transform: translateX(-50%);
+  min-width: 11rem; max-width: 15rem; display: grid; gap: 1px; padding: 0.2rem;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+  box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.45); font-size: 0.78rem;
+}
+.dev-menu button {
+  text-align: left; background: none; border: 0; border-radius: 4px; color: inherit; font: inherit;
+  padding: 0.22rem 0.4rem; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.dev-menu button:hover { background: var(--line); }
+.dev-menu .meta { margin: 0.2rem 0.35rem; }
+
+/* MZ-1F19: the two-drive floppy tower. */
+.fd-case {
+  width: 9.6rem; padding: 0.3rem; border-radius: 4px;
+  background: linear-gradient(100deg, #efeadb, #d9d3c1); border: 1px solid #b4ad9a;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6), 0 0.2rem 0.5rem rgba(0, 0, 0, 0.35);
+}
+.fd-top { display: flex; align-items: center; justify-content: space-between; padding: 0.2rem 0.2rem 0.4rem; }
+.fd-badge { font-size: 0.46rem; font-weight: 700; letter-spacing: 0.12em; color: #3c3a33; }
+.fd-vents { width: 2.6rem; height: 0.5rem; background: repeating-linear-gradient(90deg, #c2bcaa 0 1px, transparent 1px 4px); }
+.fd-bays { display: flex; gap: 0.25rem; }
+.fd-bay { position: relative; flex: 1; }
+.fd-face {
+  display: block; width: 100%; padding: 0.55rem 0.35rem 1.6rem; border: 1px solid #0a0a09; border-radius: 2px;
+  background: linear-gradient(#1b1b19, #0e0e0c); cursor: pointer;
+  box-shadow: inset 0 0.1rem 0.4rem rgba(0, 0, 0, 0.9);
+}
+.fd-slot {
+  display: block; height: 1.3rem; border-radius: 1px; padding: 0.12rem;
+  background: #050505; border: 1px solid #2a2a26; box-shadow: inset 0 0.1rem 0.2rem #000;
+}
+.fd-disk {
+  display: block; height: 100%; border-radius: 1px; background: linear-gradient(#2b2b2b, #1a1a1a);
+  border: 1px solid #3a3a38; opacity: 0; transition: opacity 0.15s;
+}
+.fd-bay.loaded .fd-disk { opacity: 1; }
+.fd-label {
+  display: block; margin: 0.12rem 0.1rem; padding: 0 0.1rem; border-radius: 1px;
+  background: #ded8c6; color: #2b291f; font-family: var(--mono); font-size: 0.4rem; line-height: 1.35;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.fd-lever {
+  position: absolute; left: 0.5rem; bottom: 0.5rem; width: 1rem; height: 0.42rem; border-radius: 1px;
+  background: linear-gradient(#e9e3d3, #c7c1b0); border: 1px solid #8f897a; cursor: pointer;
+  transition: transform 0.15s;
+}
+.fd-bay.loaded .fd-lever { transform: rotate(90deg) translateX(0.28rem); }
+.fd-led {
+  position: absolute; right: 0.5rem; bottom: 0.6rem; width: 0.3rem; height: 0.18rem; border-radius: 1px;
+  background: #3a1410;
+}
+.fd-bay.loaded .fd-led { background: #e5533c; box-shadow: 0 0 0.3rem #e5533c; }
+.fd-no { position: absolute; right: 0.4rem; top: 0.12rem; font-size: 0.4rem; color: #6e6a60; pointer-events: none; }
+
+/* MZ-1F11: the Quick Disk, grille and all. */
+.qd-case {
+  display: grid; grid-template-columns: 1.3rem 1fr 1.45rem; grid-template-rows: 1fr auto;
+  gap: 0.2rem; width: 10.4rem; padding: 0.3rem; border-radius: 4px;
+  background: linear-gradient(100deg, #efeadb, #ddd7c5); border: 1px solid #b4ad9a;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6), 0 0.2rem 0.5rem rgba(0, 0, 0, 0.35);
+}
+.qd-made {
+  grid-column: 1; grid-row: 1; align-self: start; font-size: 0.3rem; line-height: 1.2; color: #4a473d;
+  background: #e7e1cf; border: 1px solid #b9b2a0; border-radius: 1px; padding: 0.05rem 0.1rem;
+}
+.qd-grille {
+  grid-column: 2; grid-row: 1 / span 2; position: relative; display: flex; align-items: flex-end;
+  height: 8.6rem; padding: 0.25rem; border: 1px solid #0a0a09; border-radius: 1px; cursor: pointer;
+  background-color: #23231f;
+  background-image:
+    repeating-linear-gradient(#000 0 1px, transparent 1px 0.48rem),
+    repeating-linear-gradient(90deg, #000 0 1px, transparent 1px 0.48rem);
+  box-shadow: inset 0 0 0.5rem rgba(0, 0, 0, 0.9);
+}
+.qd-cart {
+  position: relative; display: block; width: 100%; height: 1.45rem; border-radius: 1px;
+  background: linear-gradient(#35342e, #1d1c18); border: 1px solid #4a4840;
+  opacity: 0; transition: opacity 0.15s;
+}
+.dev-qd.loaded .qd-cart { opacity: 1; }
+.qd-shutter {
+  position: absolute; left: 50%; top: 0.18rem; transform: translateX(-50%);
+  width: 2.4rem; height: 0.7rem; border-radius: 1px;
+  background: linear-gradient(#cfcabb, #9b968a); border: 1px solid #6d6a60;
+}
+.qd-label {
+  position: absolute; left: 0.2rem; right: 0.2rem; bottom: 0.12rem; padding: 0 0.1rem; border-radius: 1px;
+  background: #ded8c6; color: #2b291f; font-family: var(--mono); font-size: 0.38rem; line-height: 1.4;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.qd-busy {
+  grid-column: 1; grid-row: 2; display: flex; flex-direction: column; align-items: center; gap: 0.1rem;
+  background: #e7e1cf; border: 1px solid #b9b2a0; border-radius: 1px; padding: 0.12rem 0;
+  font-size: 0.3rem; letter-spacing: 0.04em; color: #4a473d;
+}
+.qd-busy i { width: 0.35rem; height: 0.2rem; border-radius: 1px; background: #3a1410; }
+.dev-qd.loaded .qd-busy i { background: #e5533c; box-shadow: 0 0 0.25rem #e5533c; }
+.qd-eject {
+  grid-column: 3; grid-row: 1 / span 2; align-self: end; justify-self: stretch;
+  height: 2.6rem; margin-bottom: 0.15rem; padding: 0; cursor: pointer;
+  border: 1px solid #8f897a; border-radius: 2px;
+  background: linear-gradient(90deg, #ece6d6, #cfc9b7);
+  box-shadow: 0 0.1rem 0 #a09a89, inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+.qd-eject span { display: block; writing-mode: vertical-rl; font-size: 0.34rem; letter-spacing: 0.1em; color: #4a473d; }
+.qd-eject.down { transform: translateY(0.1rem); box-shadow: inset 0 0.08rem 0.18rem rgba(0, 0, 0, 0.4); }
+
+/* MR1R18: the RAM disk card, its own switch. */
+.ram-card {
+  display: block; width: 13rem; padding: 0.55rem 0.4rem 0.4rem; cursor: pointer;
+  border: 1px solid #1c3a22; border-radius: 2px;
+  background: linear-gradient(#2f6b3f, #255834);
+  box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.35);
+}
+.ram-edge {
+  display: block; height: 0.5rem; margin: -0.35rem -0.2rem 0.35rem; border-radius: 1px;
+  background: repeating-linear-gradient(90deg, #d9b257 0 0.22rem, #2f6b3f 0.22rem 0.34rem);
+}
+.ram-chips { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.25rem 0.3rem; }
+.ram-chips i {
+  display: block; height: 1.3rem; width: 0.62rem; margin: 0 auto; border-radius: 1px;
+  background:
+    repeating-linear-gradient(#c9c2ab 0 0.08rem, transparent 0.08rem 0.2rem) left / 0.09rem 100% no-repeat,
+    repeating-linear-gradient(#c9c2ab 0 0.08rem, transparent 0.08rem 0.2rem) right / 0.09rem 100% no-repeat,
+    linear-gradient(90deg, #1b1e21, #2b2f33);
+  border: 1px solid #0c0e10; box-shadow: inset 0 0.1rem 0 rgba(255, 255, 255, 0.08);
+}
+.ram-silk { display: block; margin-top: 0.3rem; font-family: var(--mono); font-size: 0.42rem; letter-spacing: 0.08em; color: #cfe3d2; }
+.ram-silk b { color: #fff; }
+
+.wb-rhead { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.wb-rhead .wb-h { margin: 0; }
+.wb-rhead .btn { font-size: 0.72rem; padding: 0.1rem 0.4rem; }
+.wb-rhead .btn.active { border-color: var(--accent); color: var(--accent); }
