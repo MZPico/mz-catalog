@@ -5,7 +5,8 @@
 //   MZ-1F19  the two-drive floppy unit - a cream tower with the SHARP badge
 //            and two black bays; a bay takes a disk, its lever ejects it.
 //            The controller drives four, so there are two of them, as a
-//            machine with four drives really had.
+//            machine with four drives really had, and the bays carry the
+//            letters A to D the system knows them by.
 //   MZ-1F11  the Quick Disk - cream case, crosshatched grille, BUSY lamp
 //            bottom left, EJECT key down the right edge, the cartridge
 //            sitting in the slot along the bottom.
@@ -51,7 +52,7 @@ const unit = (first: number) => `
               <span class="fd-lever"></span>
               <span class="fd-led"></span>
             </button>
-            <span class="fd-no">${i}</span>
+            <span class="fd-no">${'ABCD'[i]}</span>
           </div>`).join('')}
       </div>
     </div>
