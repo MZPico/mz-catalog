@@ -1,7 +1,7 @@
 From 68a7718d257a2613de7fc719d7393b7e7eb8076f Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@gmail.com>
 Date: Fri, 11 Sep 2026 11:04:58 +0200
-Subject: [PATCH 28/34] Unicard: the Emscripten build identifies as an MZPico
+Subject: [PATCH 28/35] Unicard: the Emscripten build identifies as an MZPico
  by default (mzpico.com player)
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>

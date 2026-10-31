@@ -18,7 +18,7 @@ export interface BootOptions {
 
 /** What the build lets the page change while the machine runs (patch 0030). */
 export const MEDIA = { fddMount: 1, qdMount: 2, qdProtect: 3, reset: 4, tape: 5, runMzf: 6,
-  cmtInsert: 7, cmtControl: 8, cmtHack: 9 } as const;
+  cmtInsert: 7, cmtControl: 8, cmtHack: 9, cmtRecord: 10 } as const;
 
 type Emu = {
   canvas: HTMLCanvasElement;
@@ -130,6 +130,8 @@ export const cmtInsert = (path: string, play = false) => media(MEDIA.cmtInsert, 
 export const cmtPlay = () => media(MEDIA.cmtControl, 1, '');
 export const cmtStop = () => media(MEDIA.cmtControl, 0, '');
 export const cmtPause = (on: boolean) => media(MEDIA.cmtControl, on ? 2 : 3, '');
+/** Put a blank tape in and record onto it: what the machine SAVEs lands there. */
+export const cmtRecord = (path: string) => media(MEDIA.cmtRecord, 0, path);
 /** The instant load: on, the ROM's tape load is answered from the file. */
 export const cmtHack = (on: boolean) => media(MEDIA.cmtHack, on ? 1 : 0, '');
 /** The deck right now: 0 empty, 1 stopped, 2 playing, 3 paused, 4 recording. */

@@ -1,7 +1,7 @@
 From 5f53ff009365b5b150a6e22cce327cce2c403a15 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@gmail.com>
 Date: Mon, 14 Sep 2026 16:22:01 +0200
-Subject: [PATCH 29/34] NET: a frame is complete when the slots named in the
+Subject: [PATCH 29/35] NET: a frame is complete when the slots named in the
  start message (mask) have sent input, not every slot of the room (rooms with
  several players per device have fewer devices than slots)
 

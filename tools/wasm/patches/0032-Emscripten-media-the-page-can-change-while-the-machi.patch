@@ -1,7 +1,7 @@
 From f6f0f90a64c34553363021bb460b6508c5c14a88 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Sat, 31 Oct 2026 12:51:13 +0100
-Subject: [PATCH 32/34] Emscripten: media the page can change while the machine
+Subject: [PATCH 32/35] Emscripten: media the page can change while the machine
  runs
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8

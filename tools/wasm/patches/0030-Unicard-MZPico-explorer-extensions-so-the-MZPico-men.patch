@@ -1,7 +1,7 @@
 From 601c4d14def6dfba679b194adfa0bb5e88884585 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@gmail.com>
 Date: Tue, 15 Sep 2026 09:28:13 +0200
-Subject: [PATCH 30/34] Unicard: MZPico explorer extensions so the MZPico
+Subject: [PATCH 30/35] Unicard: MZPico explorer extensions so the MZPico
  menu/explorer run in the emulator
 
 In [UNICARD] mzpico_mode: LISTVOL (0x90, "sd:"), GETCONFIG (0x92, [menu]

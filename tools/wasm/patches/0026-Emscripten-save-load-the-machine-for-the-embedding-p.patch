@@ -1,7 +1,7 @@
 From b81aded107a1740183ed97d8fe6d0968c4c67adb Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Thu, 10 Sep 2026 17:01:19 +0200
-Subject: [PATCH 26/34] Emscripten: save/load the machine for the embedding
+Subject: [PATCH 26/35] Emscripten: save/load the machine for the embedding
  page (mz_wasm_snapshot_*)
 
 The page asks with mz_wasm_snapshot_request(1=save, 2=load) and polls

@@ -367,6 +367,8 @@ export const cs: Ui = {
     deckPaused: 'pauza',
     actTape: 'Vložit do magnetofonu',
     tapeHint: 'Počítač čte pásku jako doopravdy: nejdřív mu řekněte, ať nahrává (LOAD v BASICu, L v monitoru), pak stiskněte Přehrát.',
+    recorder: 'Magnetofon',
+    noFastForward: 'Rychlé převíjení vpřed se neemuluje.',
     yourFiles: 'Vaše soubory',
     empty: 'Zatím nic. Přetáhněte soubor nahoru — zůstane ve vašem prohlížeči.',
     remove: 'Odebrat',

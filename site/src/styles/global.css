@@ -650,3 +650,45 @@ body.pseudo-fs-on { overflow: hidden; }
 .kb-key.down, .kb-key.held { transform: translateY(0.08em); box-shadow: inset 0 0.1em 0.2em rgba(0, 0, 0, 0.45); }
 .kb-key.held { background: linear-gradient(#f3c98a, #d9a35c); }  /* latched: SHIFT, CTRL */
 @media (max-width: 560px) { .mzkbd { padding: 0.35rem; } }
+
+/* The MZ-821's built-in data recorder: a cream panel with a tinted cassette
+   window and six piano keys, their names printed on the case above them. */
+.mzcmt {
+  container-type: inline-size;
+  display: flex; align-items: center; gap: 1rem;
+  background: linear-gradient(#e7e1d0, #d6d0be); border: 1px solid #b3ac99;
+  border-radius: 6px; padding: 0.55rem 0.7rem; margin: 0.5rem 0 0.4rem;
+}
+.cmt-well { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 0.6rem; }
+.cmt-window {
+  flex: 1 1 auto; min-width: 0; height: 2.6rem; display: flex; align-items: center;
+  background: linear-gradient(#2b312c, #141816);
+  border: 1px solid #0c0e0d; border-radius: 4px; padding: 0.25rem 0.4rem;
+}
+.cmt-cassette {
+  flex: 1 1 auto; min-width: 0; display: flex; align-items: center; justify-content: space-between;
+  gap: 0.5rem; padding: 0 0.5rem; height: 100%; border-radius: 3px;
+  background: rgba(220, 214, 196, 0.06); opacity: 0.4;
+}
+.cmt-cassette.in { opacity: 1; background: rgba(220, 214, 196, 0.14); }
+.cmt-hub { flex: 0 0 auto; width: 1.1rem; height: 1.1rem; border-radius: 50%; border: 0.17rem dashed #cbd4cd; }
+.cmt-cassette.running .cmt-hub { animation: cmt-spin 1.4s linear infinite; }
+@keyframes cmt-spin { to { transform: rotate(360deg); } }
+.cmt-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--mono); font-size: 0.72rem; color: #dde4dd; }
+.cmt-counter { flex: 0 0 auto; background: #151715; border: 1px solid #0c0e0d; border-radius: 3px; padding: 0.2rem 0.45rem; font-family: var(--mono); font-size: 0.78rem; color: #e0c98a; }
+.cmt-keys { flex: 0 0 auto; display: flex; gap: 0.25rem; }
+.cmt-key { display: flex; flex-direction: column-reverse; align-items: center; gap: 0.22rem; padding: 0; border: 0; background: none; cursor: pointer; }
+.cmt-cap {
+  width: 2.3rem; height: 1.5rem; border-radius: 2px 2px 4px 4px;
+  background: linear-gradient(#f0ebdb, #cdc6b2); border: 1px solid #a9a28f;
+  box-shadow: 0 0.15rem 0 #b0a894, inset 0 0.1rem 0 rgba(255, 255, 255, 0.6);
+}
+.cmt-key.down .cmt-cap { transform: translateY(0.15rem); box-shadow: inset 0 0.1rem 0.15rem rgba(0, 0, 0, 0.3); background: linear-gradient(#d9d2bf, #bfb8a4); }
+.mzcmt.recording .cmt-key[data-key='rec'] .cmt-cap { background: linear-gradient(#e2907f, #c04d39); }
+.cmt-key.dead { cursor: default; }
+.cmt-key.dead .cmt-cap { opacity: 0.55; }
+.cmt-name { font-family: var(--mono); font-size: 0.5rem; font-weight: 700; letter-spacing: 0.04em; line-height: 1.05; text-align: center; white-space: pre-line; color: #4b4537; }
+@media (max-width: 560px) {
+  .mzcmt { flex-wrap: wrap; gap: 0.5rem; }
+  .cmt-cap { width: 1.9rem; }
+}

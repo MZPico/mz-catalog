@@ -367,6 +367,8 @@ export const ja: Ui = {
     deckPaused: '一時停止',
     actTape: 'テープに入れる',
     tapeHint: '実機と同じようにテープを読みます。まず読み込みを指示し（BASIC なら LOAD、モニターなら L）、それから再生を押してください。',
+    recorder: 'データレコーダー',
+    noFastForward: '早送りはエミュレートしていません。',
     yourFiles: 'あなたのファイル',
     empty: 'まだありません。上にファイルをドロップしてください。ブラウザー内に留まります。',
     remove: '削除',

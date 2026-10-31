@@ -368,6 +368,8 @@ export const de: Ui = {
     deckPaused: 'Pause',
     actTape: 'Aufs Band legen',
     tapeHint: 'Der Rechner liest das Band wie ein echtes: erst laden lassen (LOAD im BASIC, L im Monitor), dann Abspielen drücken.',
+    recorder: 'Rekorder',
+    noFastForward: 'Vorspulen wird nicht emuliert.',
     yourFiles: 'Ihre Dateien',
     empty: 'Noch nichts. Ziehen Sie oben eine Datei herein — sie bleibt in Ihrem Browser.',
     remove: 'Entfernen',

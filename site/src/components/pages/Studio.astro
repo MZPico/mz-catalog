@@ -51,10 +51,13 @@ const ui = {
         <button type="button" class="btn secondary small" id="emu-mute">{t.play.mute}</button>
         <button type="button" class="btn secondary small" id="emu-fs">{t.play.fullscreen}</button>
         <button type="button" class="btn secondary small" id="emu-kbd" aria-pressed="true">{tt.keyboard}</button>
+        <button type="button" class="btn secondary small" id="emu-cmt" aria-pressed="true">{tt.recorder}</button>
         <span class="meta" id="emu-status"></span>
       </div>
       <!-- The machine's own keyboard, for the keys a PC has nowhere sensible. -->
       <div id="mzkbd" class="mzkbd" aria-label={tt.keyboard}></div>
+      <!-- The built-in data recorder of the MZ-821. -->
+      <div id="mzcmt" class="mzcmt" aria-label={tt.recorder}></div>
     </section>
 
     <aside class="wb-left">
@@ -109,9 +112,10 @@ const ui = {
     import { load, actionsFor, catalogIndex, formatSize, type LoadedFile } from '../../lib/mz/workbench';
     import { setStrings, charactersPanel } from '../../lib/mz/panels';
     import { keyboard } from '../../lib/mz/keyboard';
+    import { recorder } from '../../lib/mz/recorder';
     import { listFiles, rememberFile, forgetFile, forgetAll } from '../../lib/mz/store';
     import { boot, running, frames, reset as resetMachine, mountFloppy, ejectFloppy, mountQd, protectQd, runMzf,
-      cmtInsert, cmtPlay, cmtStop, cmtHack, cmtState, cmtPlaytime, setMuted, writeFile, readBack } from '../../lib/mz/emulator';
+      cmtInsert, cmtPlay, cmtStop, cmtPause, cmtRecord, cmtHack, cmtState, cmtPlaytime, setMuted, writeFile, readBack } from '../../lib/mz/emulator';
     import { defaults, presets, toIni, mediaOf, argsOf, mediaPath, type Machine } from '../../lib/mz/machine';
 
     const drop = document.getElementById('drop')!;
@@ -418,23 +422,57 @@ const ui = {
       }
     }
 
-    /** The tape deck's own buttons. */
+    /** The tape deck's own buttons, from the panel or the machine list. */
+    let recording = '';
     async function deck(what: string) {
       if (!running()) return;
+      const was = cmtState();
       if (what === 'play') await cmtPlay();
-      else if (what === 'stop') await cmtStop();
-      else { await cmtInsert(''); machine.tape.file = ''; saveMachine(); renderMachine(); }
+      else if (what === 'rew') await cmtStop();            // stop winds the tape back to the start
+      else if (what === 'pause') await cmtPause(was !== 3);
+      else if (what === 'rec') await record();
+      else if (what === 'stop') {
+        await cmtStop();
+        if (was === 4) await takeTape();                   // what the machine saved, into the file list
+      } else {
+        // STOP/EJECT: a second press on a tape that is already stopped.
+        if (was > 1) { await cmtStop(); if (was === 4) await takeTape(); }
+        else { await cmtInsert(''); machine.tape.file = ''; saveMachine(); renderMachine(); }
+      }
       showDeck();
     }
 
-    /** What the deck is doing, next to its buttons. */
+    /** REC: a fresh tape in the deck, for the machine to SAVE onto. */
+    async function record() {
+      await cmtInsert('');
+      recording = `tape-${new Date().toISOString().slice(11, 19).replace(/:/g, '')}.mzf`;
+      if (!(await cmtRecord(mediaPath(recording)))) { recording = ''; return; }
+      machine.tape.file = ''; saveMachine(); renderMachine();
+    }
+
+    /** The recorded tape, out of the machine and into YOUR FILES. */
+    async function takeTape() {
+      if (!recording) return;
+      const bytes = readBack(mediaPath(recording));
+      recording = '';
+      if (!bytes?.length) return;
+      const file = load('recorded.mzf', new Uint8Array(bytes));
+      files.unshift(file);
+      rememberFile({ id: file.id, name: file.name, bytes: file.bytes, ts: Date.now() });
+      file.catalog = (await catalogIndex()).get(file.mzf?.crc32 ?? -1) ?? null;
+      select(file);
+    }
+
+    /** What the deck is doing, next to its buttons and on the recorder. */
+    let drawDeck: (() => void) | null = null;
     function showDeck() {
       const box = document.getElementById('cmt-state');
-      if (!box) return;
       const state = running() ? cmtState() : 0;
-      const name = [mui.deckEmpty, mui.deckStopped, mui.deckPlaying, mui.deckPaused, 'REC'][state] ?? '';
-      const at = state >= 2 ? ` · ${cmtPlaytime().toFixed(0)} s` : '';
-      box.textContent = name + at;
+      if (box) {
+        const name = [mui.deckEmpty, mui.deckStopped, mui.deckPlaying, mui.deckPaused, 'REC'][state] ?? '';
+        box.textContent = name + (state >= 2 ? ` · ${cmtPlaytime().toFixed(0)} s` : '');
+      }
+      drawDeck?.();
     }
     setInterval(showDeck, 700);
 
@@ -525,6 +563,28 @@ const ui = {
     };
     kbdBtn.addEventListener('click', () => showKeyboard(kbdBox.hidden));
     showKeyboard(localStorage.getItem('mz-kbd') !== '0');
+
+    // The data recorder, the same way.
+    const cmtBox = $('mzcmt');
+    const cmtBtn = $<HTMLButtonElement>('emu-cmt');
+    const showRecorder = (on: boolean) => {
+      cmtBox.hidden = !on;
+      cmtBtn.setAttribute('aria-pressed', String(on));
+      cmtBtn.classList.toggle('active', on);
+      try { localStorage.setItem('mz-cmt', on ? '1' : '0'); } catch { /* private mode */ }
+      if (on && !cmtBox.childElementCount) {
+        drawDeck = recorder(cmtBox, {
+          press: (key) => deck(key),
+          state: () => (running() ? cmtState() : 0),
+          at: () => cmtPlaytime(),
+          tape: () => fileById(machine.tape.file)?.name ?? (recording || ui.deckStopped),
+          strings: { empty: ui.deckEmpty, noFf: ui.noFastForward },
+        });
+      }
+      drawDeck?.();
+    };
+    cmtBtn.addEventListener('click', () => showRecorder(cmtBox.hidden));
+    showRecorder(localStorage.getItem('mz-cmt') !== '0');
 
     $('emu-fs').addEventListener('click', () => {
       const frame = $('emu-frame') as HTMLElement & { webkitRequestFullscreen?: () => void };

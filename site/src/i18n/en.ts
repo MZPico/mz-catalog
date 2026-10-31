@@ -368,6 +368,8 @@ export const en = {
     deckPaused: 'paused',
     actTape: 'Put on tape',
     tapeHint: 'The machine reads the tape as it would a real one: tell it to load (LOAD in BASIC, L in the monitor), then press Play.',
+    recorder: 'Recorder',
+    noFastForward: 'Fast forward is not emulated.',
     yourFiles: 'Your files',
     empty: 'No file yet. Drop one above — it stays in your browser.',
     remove: 'Remove',
