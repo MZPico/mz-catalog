@@ -588,16 +588,7 @@ body.pseudo-fs-on { overflow: hidden; }
 .emu-screen:fullscreen { aspect-ratio: 704 / 464; }
 .emu-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; margin: 0.4rem 0 0; font-size: 0.85rem; }
 
-/* Hardware, dense: one line per device where it fits. */
-.machine { display: grid; gap: 0.3rem; margin: 0.4rem 0 0.5rem; }
-.machine .m-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.55rem; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 0.35rem 0.5rem; font-size: 0.78rem; }
-.machine .m-row > summary { min-width: 100%; font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; cursor: pointer; list-style-position: inside; }
-.machine .m-row > summary::marker { color: var(--line); }
-.machine .m-row:not([open]) { padding: 0.25rem 0.5rem; }
-.machine .m-row hr { width: 100%; border: 0; border-top: 1px solid var(--line); margin: 0.05rem 0; }
-.machine label { display: flex; align-items: center; gap: 0.25rem; }
-.machine .deck { display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; }
-.machine select { font: inherit; max-width: 10.5rem; padding: 0.12rem 0.28rem; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 5px; }
+/* The preset row above the devices. */
 .machine-apply { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.7rem; font-size: 0.82rem; margin: 0 0 0.4rem; }
 .machine-apply select { font: inherit; padding: 0.15rem 0.3rem; background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 5px; }
 
@@ -712,13 +703,16 @@ body.pseudo-fs-on { overflow: hidden; }
    recorder are. Each one is a picture you can use: a bay or a grille takes a
    disk, a lever or the EJECT key throws it out, the RAM card is its own
    switch. Unplugged hardware greys out but stays where it is. */
-.devices { display: grid; justify-items: center; gap: 0.9rem; margin: 0.2rem 0 0.7rem; }
+.devices { display: grid; grid-template-columns: repeat(auto-fill, minmax(7.4rem, 1fr)); justify-items: center; align-items: start; gap: 0.9rem 0.4rem; margin: 0.2rem 0 0.7rem; }
+.dev.wide { grid-column: 1 / -1; }
+.dev[hidden] { display: none; }
 .devices[hidden] { display: none; }
 .dev { position: relative; width: fit-content; max-width: 100%; }
 .dev.off { filter: grayscale(0.75) brightness(0.62); opacity: 0.6; }
 .dev-cap { margin: 0.25rem 0 0; font-size: 0.7rem; color: var(--muted); text-align: center; }
 .dev-cap b { color: var(--text); font-weight: 600; }
-.dev-what { display: inline-block; max-width: 11rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
+.dev-what { overflow-wrap: anywhere; }
+.dev-cap { max-width: 13rem; }
 /* The list that drops out of a slot. */
 .dev-menu {
   position: absolute; z-index: 5; left: 50%; top: 60%; transform: translateX(-50%);
@@ -731,6 +725,8 @@ body.pseudo-fs-on { overflow: hidden; }
   padding: 0.22rem 0.4rem; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .dev-menu button:hover { background: var(--line); }
+.dev-menu button i { font-style: normal; margin-right: 0.35rem; color: var(--muted); }
+.dev-menu hr { border: 0; border-top: 1px solid var(--line); margin: 0.15rem 0; }
 .dev-menu .meta { margin: 0.2rem 0.35rem; }
 
 /* MZ-1F19: the two-drive floppy tower. */
@@ -831,7 +827,7 @@ body.pseudo-fs-on { overflow: hidden; }
 
 /* MR1R18: the RAM disk card, its own switch. */
 .ram-card {
-  display: block; width: 13rem; padding: 0.55rem 0.4rem 0.4rem; cursor: pointer;
+  display: block; width: 13rem; padding: 0.55rem 0.4rem 0.4rem; cursor: pointer; text-align: center;
   border: 1px solid #1c3a22; border-radius: 2px;
   background: linear-gradient(#2f6b3f, #255834);
   box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.35);
@@ -856,3 +852,72 @@ body.pseudo-fs-on { overflow: hidden; }
 .wb-rhead .wb-h { margin: 0; }
 .wb-rhead .btn { font-size: 0.72rem; padding: 0.1rem 0.4rem; }
 .wb-rhead .btn.active { border-color: var(--accent); color: var(--accent); }
+
+/* Which devices are on show. */
+.dev-strip { display: flex; flex-wrap: wrap; gap: 0.2rem; margin: 0.1rem 0 0.4rem; }
+.dev-strip button {
+  font: inherit; font-size: 0.66rem; padding: 0.08rem 0.4rem; border-radius: 999px; cursor: pointer;
+  background: var(--surface); color: var(--muted); border: 1px solid var(--line);
+}
+.dev-strip button[aria-pressed='true'] { color: var(--text); border-color: var(--accent); }
+.dev-strip[hidden] { display: none; }
+
+/* The program chip under the screen. */
+.emu-prog { display: inline-flex; align-items: center; gap: 0.3rem; margin-left: auto; }
+.emu-prog[hidden] { display: none; }
+.emu-prog .wb-close { background: none; border: 0; color: var(--muted); cursor: pointer; line-height: 1; }
+
+/* A power rocker, on the top panel of what has one. */
+.dev-power {
+  width: 1rem; height: 0.55rem; padding: 0; border-radius: 2px; cursor: pointer;
+  background: #d9d3c1; border: 1px solid #8f897a; position: relative;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+.dev-power i { position: absolute; top: 0.08rem; bottom: 0.08rem; left: 0.08rem; width: 0.38rem; border-radius: 1px; background: #8f897a; transition: left 0.12s, background 0.12s; }
+.dev-power.on i { left: calc(100% - 0.46rem); background: #3fb950; box-shadow: 0 0 0.25rem #3fb950; }
+.fd-top .dev-power { margin-left: 0.3rem; }
+.qd-case .dev-power { grid-column: 3; grid-row: 1; align-self: start; justify-self: center; width: 0.9rem; }
+
+/* The smaller boards: Pezik pair, memory extension, the MZPico. */
+.ram-peziks { display: flex; gap: 0.35rem; margin-top: 0.35rem; }
+.ram-card.small { width: 6.3rem; padding: 0.45rem 0.3rem 0.3rem; }
+.ram-card.small .ram-chips { grid-template-columns: repeat(4, 1fr); }
+.ram-card.small .ram-chips i { height: 0.95rem; width: 0.5rem; }
+.ram-card.small .ram-silk, .ram-card.mem .ram-silk { font-size: 0.38rem; margin-top: 0.2rem; }
+.ram-card.off, .ram-card.small.off { filter: grayscale(0.75) brightness(0.62); opacity: 0.6; }
+.dev-ram.off .ram-card { filter: none; opacity: 1; }        /* the rail greys the whole device, not twice */
+.dev-ram.off .ram-card, .dev-ram.off .ram-card.small { filter: none; opacity: 1; }
+.ram-size, .mem-type, .pico-silk b { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 0.12em; }
+.ram-card.mem { width: 7.2rem; padding: 0.5rem 0.35rem 0.35rem; background: linear-gradient(#2a4f74, #223f5e); border-color: #16304a; }
+.ram-card.mem .ram-edge { background: repeating-linear-gradient(90deg, #d9b257 0 0.22rem, #2a4f74 0.22rem 0.34rem); }
+.ram-card.mem .ram-chips { grid-template-columns: repeat(8, 1fr); gap: 0.2rem; }
+.ram-card.mem .ram-chips i { height: 0.9rem; width: 0.46rem; }
+.mem-flash { display: block; height: 0.55rem; width: 2.4rem; margin: 0.3rem auto 0; background: linear-gradient(90deg, #1b1e21, #2b2f33); border: 1px solid #0c0e10; border-radius: 1px; }
+.ram-card.pico { width: 7.2rem; padding: 0.5rem 0.35rem 0.3rem; background: linear-gradient(#1f7a5a, #176247); border-color: #0f4531; }
+.ram-card.pico .ram-edge { background: repeating-linear-gradient(90deg, #d9b257 0 0.22rem, #1f7a5a 0.22rem 0.34rem); }
+.pico-module { display: flex; align-items: center; gap: 0.2rem; width: 5.2rem; height: 1.6rem; margin: 0 auto; padding: 0.2rem; background: linear-gradient(#5b2d8e, #46216f); border: 1px solid #2c1247; border-radius: 2px; }
+.pico-usb { width: 0.7rem; height: 0.5rem; background: #c9c9c9; border: 1px solid #777; border-radius: 1px; }
+.pico-chip { width: 0.9rem; height: 0.9rem; background: #111; border: 1px solid #000; border-radius: 1px; }
+.pico-chip.small { width: 0.55rem; height: 0.55rem; }
+.pico-sd { display: block; width: 1.4rem; height: 0.5rem; margin: 0.3rem 0 0 0.2rem; background: #c9c9c9; border: 1px solid #777; border-radius: 1px; }
+.pico-silk { font-size: 0.5rem; font-weight: 700; letter-spacing: 0.02em; text-align: right; }
+
+/* Pairs: hard disks, joysticks, the speaker and its second chip. */
+.pair { display: flex; gap: 0.5rem; align-items: flex-end; justify-content: center; }
+.hdd { position: relative; display: block; width: 3.4rem; height: 2.6rem; padding: 0.25rem; cursor: pointer; border: 1px solid #5c5f66; border-radius: 2px; background: linear-gradient(#8e939b, #6e737b); box-shadow: 0 0.15rem 0.4rem rgba(0, 0, 0, 0.35); }
+.hdd-lid { display: block; height: 100%; border: 1px solid #a9adb4; border-radius: 1px; background: linear-gradient(135deg, #b9bdc4, #9a9fa6); }
+.hdd-label { display: block; margin: 0.25rem 0.2rem 0; padding: 0.05rem 0.1rem; background: #e9e6da; color: #2b291f; font-family: var(--mono); font-size: 0.36rem; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hdd-led { position: absolute; right: 0.4rem; bottom: 0.38rem; width: 0.25rem; height: 0.25rem; border-radius: 50%; background: #3a1410; }
+.hdd:not(.off) .hdd-led { background: #e5533c; box-shadow: 0 0 0.25rem #e5533c; }
+.hdd.off { filter: grayscale(0.75) brightness(0.7); opacity: 0.65; }
+.joy { display: flex; flex-direction: column; align-items: center; padding: 0; border: 0; background: none; cursor: pointer; }
+.joy-stick { display: block; width: 0.32rem; height: 1.6rem; background: linear-gradient(90deg, #333, #111); border-radius: 2px; position: relative; }
+.joy-stick i { position: absolute; top: -0.5rem; left: 50%; transform: translateX(-50%); width: 0.75rem; height: 0.75rem; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ff8b7b, #b2291a); }
+.joy-base { position: relative; display: flex; align-items: center; justify-content: center; width: 3rem; height: 1.3rem; margin-top: -0.1rem; border-radius: 3px 3px 5px 5px; background: linear-gradient(#2c2c2c, #151515); border: 1px solid #000; box-shadow: 0 0.15rem 0.35rem rgba(0, 0, 0, 0.4); }
+.joy-base b { position: absolute; left: 0.3rem; top: 0.3rem; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ff8b7b, #b2291a); }
+.joy-base em { font-style: normal; font-family: var(--mono); font-size: 0.42rem; color: #bbb; margin-left: 0.6rem; }
+.joy.off { filter: grayscale(0.9) brightness(0.6); opacity: 0.55; }
+.snd-speaker { width: 4.4rem; height: 3rem; padding: 0.25rem; cursor: pointer; border: 1px solid #b4ad9a; border-radius: 3px; background: linear-gradient(100deg, #efeadb, #ddd7c5); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6), 0 0.15rem 0.4rem rgba(0, 0, 0, 0.35); }
+.snd-grille { display: block; height: 100%; background-color: #b5af9c; background-image: repeating-linear-gradient(#5f5a4e 0 1px, transparent 1px 0.3rem), repeating-linear-gradient(90deg, #5f5a4e 0 1px, transparent 1px 0.3rem); border: 1px solid #8f897a; }
+.snd-chip { width: 1.7rem; height: 2.4rem; padding: 0; cursor: pointer; border: 1px solid #0c0e10; border-radius: 1px; color: #cfd3d8; font-family: var(--mono); font-size: 0.42rem; line-height: 1.2; background: repeating-linear-gradient(#c9c2ab 0 0.08rem, transparent 0.08rem 0.22rem) left / 0.12rem 100% no-repeat, repeating-linear-gradient(#c9c2ab 0 0.08rem, transparent 0.08rem 0.22rem) right / 0.12rem 100% no-repeat, linear-gradient(90deg, #1b1e21, #2b2f33); }
+.snd-chip.off { filter: grayscale(0.9) brightness(0.6); opacity: 0.55; }

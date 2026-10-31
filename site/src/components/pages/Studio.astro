@@ -53,6 +53,8 @@ const ui = {
         <button type="button" class="btn secondary small" id="emu-kbd" aria-pressed="true">{tt.keyboard}</button>
         <button type="button" class="btn secondary small" id="emu-cmt" aria-pressed="true">{tt.recorder}</button>
         <span class="meta" id="emu-status"></span>
+        <!-- The program injected at start: the one setting with no device to live on. -->
+        <span class="emu-prog meta" id="emu-prog" hidden><span></span><button type="button" class="wb-close" title={tt.remove} aria-label={tt.remove}>✕</button></span>
       </div>
       <!-- The machine's own keyboard, for the keys a PC has nowhere sensible. -->
       <div id="mzkbd" class="mzkbd" aria-label={tt.keyboard}></div>
@@ -91,18 +93,9 @@ const ui = {
         <button type="button" class="btn primary small" id="apply">{tt.applyLive}</button>
       </div>
       <!-- The hardware as it looks: a bay takes a disk, a lever throws it out. -->
-      <div class="devices" id="devices" aria-label={tt.devices}></div>
-      <div class="machine" id="machine" data-emu={emuVersion} data-ui={JSON.stringify({
-        none: tt.none, drive: tt.drive, connected: tt.connected, plugged: tt.plugged, size: tt.size, type: tt.type,
-        readonly: tt.readonly, writeProtected: tt.writeProtected, keepWrites: tt.keepWrites, discardWrites: tt.discardWrites,
-        mzpicoMode: tt.mzpicoMode, tapeSpeed: tt.tapeSpeed, tapeInverted: tt.tapeInverted, tapeBoost: tt.tapeBoost,
-        soundOn: tt.soundOn, secondPsg: tt.secondPsg, joy1: tt.joy1, joy2: tt.joy2,
-        joyNone: tt.joyNone, joyKeypad: tt.joyKeypad, joyStick: tt.joyStick, program: tt.program,
-        drives: tt.drives, qdisk: tt.qdisk, ramdisk: tt.ramdisk, memext: tt.memext, cardSection: tt.cardSection,
-        hdd: tt.hdd, tapeSection: tt.tapeSection, instantLoad: tt.instantLoad, play: tt.play, stop: tt.stop,
-        eject: tt.eject, tapeHint: tt.tapeHint, deckEmpty: tt.deckEmpty, deckStopped: tt.deckStopped,
-        deckPlaying: tt.deckPlaying, deckPaused: tt.deckPaused, soundSection: tt.soundSection, takeImage: tt.takeImage, taken: tt.taken,
-      })}></div>
+      <!-- Which devices are on show; each is a picture below, with its settings on it. -->
+      <div class="dev-strip" id="dev-strip" aria-label={tt.devices}></div>
+      <div class="devices" id="devices" data-emu={emuVersion} aria-label={tt.devices}></div>
       <p class="meta" id="apply-note">{tt.liveNote}</p>
     </aside>
 
@@ -118,7 +111,7 @@ const ui = {
     import { setStrings, charactersPanel } from '../../lib/mz/panels';
     import { keyboard } from '../../lib/mz/keyboard';
     import { recorder } from '../../lib/mz/recorder';
-    import { devices } from '../../lib/mz/devices';
+    import { devices, DEVICE_IDS, type DeviceId } from '../../lib/mz/devices';
     import { listFiles, rememberFile, forgetFile, forgetAll } from '../../lib/mz/store';
     import { boot, running, frames, reset as resetMachine, mountFloppy, ejectFloppy, mountQd, protectQd, runMzf,
       cmtInsert, cmtPlay, cmtStop, cmtRecord, cmtHack, cmtState, cmtPlaytime, setMuted, writeFile, readBack } from '../../lib/mz/emulator';
@@ -256,6 +249,7 @@ const ui = {
       const index = await catalogIndex();
       for (const file of files) if (file.mzf) file.catalog = index.get(file.mzf.crc32) ?? null;
       renderList(); renderActions();
+      renderMachine();   // the devices can name their disks now
     })();
 
     $('forget').addEventListener('click', () => {
@@ -267,122 +261,34 @@ const ui = {
 
 
     // ---------------------------------------------------------------- emulator
-    const mui = JSON.parse($('machine').dataset.ui!) as Record<string, string>;
-    const EMU_VERSION = $('machine').dataset.emu ?? '1';
+    const EMU_VERSION = $('devices').dataset.emu ?? '1';
     let machine: Machine = defaults();
     try { machine = { ...defaults(), ...JSON.parse(localStorage.getItem('mz-machine') ?? '{}') }; } catch { /* first visit */ }
     const saveMachine = () => { try { localStorage.setItem('mz-machine', JSON.stringify(machine)); } catch { /* private mode */ } };
 
     const fileById = (id: string) => files.find((f) => f.id === id) ?? null;
-    const option = (value: string, text: string, on: boolean) =>
-      `<option value="${esc(value)}"${on ? ' selected' : ''}>${esc(text)}</option>`;
-    /** Files of a kind, as a picker that always offers "empty". */
-    const picker = (kinds: string[], chosen: string) =>
-      [option('', mui.none, !chosen), ...files.filter((f) => kinds.includes(f.kind)).map((f) => option(f.id, f.name, f.id === chosen))].join('');
-    const check = (path: string, label: string, on: boolean) =>
-      `<label class="check"><input type="checkbox" data-set="${esc(path)}"${on ? ' checked' : ''}> ${esc(label)}</label>`;
-    const chooser = (path: string, label: string, options: string) =>
-      `<label>${esc(label)} <select data-set="${esc(path)}">${options}</select></label>`;
 
-    // The panel is long, so each section remembers whether it is open.
-    // The pictures above say what is in the machine, so the folds start shut.
-    const OPEN_KEY = 'mz-machine-open';
-    let openSections = new Set(['program']);
-    try {
-      const kept = JSON.parse(localStorage.getItem(OPEN_KEY) ?? 'null');
-      if (Array.isArray(kept)) openSections = new Set(kept);
-    } catch { /* first visit */ }
-    const fold = (key: string) => (openSections.has(key) ? ' open' : '');
-
-    function renderMachine() {
-      const m = machine;
-      $('machine').innerHTML = `
-        <details class="m-row" data-sect="program"${fold('program')}><summary>${esc(mui.program)}</summary>${chooser('program', '', picker(['mzf'], m.program))}</details>
-        <details class="m-row" data-sect="drives"${fold('drives')}><summary>${esc(mui.drives)}</summary>
-          ${check('fdc.connected', mui.connected, m.fdc.connected)}
-          ${m.fdc.drives.map((d, i) => `${chooser(`fdc.drives.${i}.file`, `${mui.drive} ${i}`, picker(['dsk'], d.file))}
-             ${check(`fdc.drives.${i}.readonly`, mui.readonly, d.readonly)}
-             ${chooser(`fdc.drives.${i}.storage`, '', option('cached', mui.keepWrites, d.storage === 'cached') + option('discard', mui.discardWrites, d.storage === 'discard'))}
-             ${d.file ? `<button class="btn ghost small" type="button" data-take="${i}">${esc(mui.takeImage)}</button>` : ''}`).join('<hr>')}
-        </details>
-        <details class="m-row" data-sect="qdisk"${fold('qdisk')}><summary>${esc(mui.qdisk)}</summary>
-          ${check('qdisk.connected', mui.connected, m.qdisk.connected)}
-          ${chooser('qdisk.type', mui.type, option('STANDARD', 'MZ-1F11', m.qdisk.type === 'STANDARD') + option('UNICARD', 'MZPico', m.qdisk.type === 'UNICARD'))}
-          ${chooser('qdisk.file', '', picker(['mzq', 'bin'], m.qdisk.file))}
-          ${check('qdisk.writeProtected', mui.writeProtected, m.qdisk.writeProtected)}
-        </details>
-        <details class="m-row" data-sect="ramdisk"${fold('ramdisk')}><summary>${esc(mui.ramdisk)}</summary>
-          ${check('ramdisk.mr1r18.plugged', 'MR1R18', m.ramdisk.mr1r18.plugged)}
-          ${chooser('ramdisk.mr1r18.size', mui.size, ['64K', '256K', '512K', '1M', '16M'].map((v) => option(v, v, m.ramdisk.mr1r18.size === v)).join(''))}
-          ${chooser('ramdisk.mr1r18.type', mui.type, option('SRAM', 'SRAM', m.ramdisk.mr1r18.type === 'SRAM') + option('ROM', 'ROM', m.ramdisk.mr1r18.type === 'ROM'))}
-          ${check('ramdisk.pezikE8', 'Pezik E8', m.ramdisk.pezikE8)}
-          ${check('ramdisk.pezik68', 'Pezik 68', m.ramdisk.pezik68)}
-        </details>
-        <details class="m-row" data-sect="tapeSection"${fold('tapeSection')}><summary>${esc(mui.tapeSection)}</summary>
-          ${chooser('tape.file', '', picker(['mzf', 'wav', 'tap'], m.tape.file))}
-          ${check('tape.instant', mui.instantLoad, m.tape.instant)}
-          <span class="deck">
-            <button class="btn ghost small" type="button" data-cmt="play">${esc(mui.play)}</button>
-            <button class="btn ghost small" type="button" data-cmt="stop">${esc(mui.stop)}</button>
-            <button class="btn ghost small" type="button" data-cmt="eject">${esc(mui.eject)}</button>
-            <span class="meta" id="cmt-state"></span>
-          </span>
-          ${m.tape.instant ? '' : `<span class="meta">${esc(mui.tapeHint)}</span>`}
-          ${chooser('tape.speed', mui.tapeSpeed, ['SPEED_1/1', 'SPEED_2/1', 'SPEED_3/1', 'SPEED_4/1'].map((v) => option(v, v.replace('SPEED_', ''), m.tape.speed === v)).join(''))}
-          ${check('tape.inverted', mui.tapeInverted, m.tape.inverted)}
-          ${check('tape.boost', mui.tapeBoost, m.tape.boost)}
-        </details>
-        <details class="m-row" data-sect="memext"${fold('memext')}><summary>${esc(mui.memext)}</summary>
-          ${check('memext.connected', mui.connected, m.memext.connected)}
-          ${chooser('memext.type', mui.type, option('PEHU', 'PEHU', m.memext.type === 'PEHU') + option('LUFTNER', 'Luftner', m.memext.type === 'LUFTNER'))}
-        </details>
-        <details class="m-row" data-sect="cardSection"${fold('cardSection')}><summary>${esc(mui.cardSection)}</summary>
-          ${check('card.connected', mui.connected, m.card.connected)}
-          ${check('card.mzpicoMode', mui.mzpicoMode, m.card.mzpicoMode)}
-          ${check('card.readonly', mui.readonly, m.card.readonly)}
-        </details>
-        <details class="m-row" data-sect="hdd"${fold('hdd')}><summary>${esc(mui.hdd)}</summary>
-          ${chooser('ide.hdd0', '0', picker(['bin'], m.ide.hdd0))}
-          ${chooser('ide.hdd1', '1', picker(['bin'], m.ide.hdd1))}
-        </details>
-        <details class="m-row" data-sect="soundSection"${fold('soundSection')}><summary>${esc(mui.soundSection)}</summary>
-          ${check('sound.on', mui.soundOn, m.sound.on)}
-          ${check('sound.secondPsg', mui.secondPsg, m.sound.secondPsg)}
-          ${chooser('joy.joy1', mui.joy1, (['NONE', 'NUM_KEYPAD', 'JOYSTICK'] as const).map((v) => option(v, v === 'NONE' ? mui.joyNone : v === 'NUM_KEYPAD' ? mui.joyKeypad : mui.joyStick, m.joy.joy1 === v)).join(''))}
-          ${chooser('joy.joy2', mui.joy2, (['NONE', 'NUM_KEYPAD', 'JOYSTICK'] as const).map((v) => option(v, v === 'NONE' ? mui.joyNone : v === 'NUM_KEYPAD' ? mui.joyKeypad : mui.joyStick, m.joy.joy2 === v)).join(''))}
-        </details>`;
-
-      for (const d of $('machine').querySelectorAll<HTMLDetailsElement>('details[data-sect]')) {
-        d.addEventListener('toggle', () => {
-          if (d.open) openSections.add(d.dataset.sect!); else openSections.delete(d.dataset.sect!);
-          try { localStorage.setItem(OPEN_KEY, JSON.stringify([...openSections])); } catch { /* private mode */ }
-        });
-      }
-      for (const el of $('machine').querySelectorAll<HTMLElement>('[data-set]')) {
-        el.addEventListener('change', () => {
-          const input = el as HTMLInputElement | HTMLSelectElement;
-          const value = input.type === 'checkbox' ? (input as HTMLInputElement).checked : input.value;
-          setAt(machine as unknown as Record<string, unknown>, el.dataset.set!, value);
-          // A disk in a drive is no use with the controller switched off.
-          if (value && /^fdc\.drives\.\d+\.file$/.test(el.dataset.set!) && !machine.fdc.connected) {
-            machine.fdc.connected = true; markDirty('fdc.connected');
-          }
-          if (value && el.dataset.set === 'qdisk.file' && !machine.qdisk.connected) {
-            machine.qdisk.connected = true; markDirty('qdisk.connected');
-          }
-          saveMachine();
-          markDirty(el.dataset.set!);
-          renderMachine();
-        });
-      }
-      for (const b of $('machine').querySelectorAll<HTMLButtonElement>('[data-cmt]')) {
-        b.addEventListener('click', () => deck(b.dataset.cmt!));
-      }
-      for (const b of $('machine').querySelectorAll<HTMLButtonElement>('[data-take]')) {
-        b.addEventListener('click', () => takeImage(Number(b.dataset.take)));
-      }
-      drawDevices?.();
+    /** Every setting lives on its device; this is what the devices call. */
+    function setMachine(path: string, value: unknown) {
+      setAt(machine as unknown as Record<string, unknown>, path, value);
+      // A disk in a drive is no use with the controller switched off.
+      if (value && /^fdc\.drives\.\d+\.file$/.test(path) && !machine.fdc.connected) { machine.fdc.connected = true; markDirty('fdc.connected'); }
+      if (value && path === 'qdisk.file' && !machine.qdisk.connected) { machine.qdisk.connected = true; markDirty('qdisk.connected'); }
+      saveMachine();
+      markDirty(path);
+      renderMachine();
     }
+
+    /** The pictures follow the machine; the program chip under the screen too. */
+    function renderMachine() {
+      const prog = $('emu-prog');
+      const name = fileById(machine.program)?.name ?? '';
+      prog.hidden = !name;
+      prog.firstElementChild!.textContent = `${ui.programNote} ${name}`;
+      drawDevices?.();
+      drawDeck?.();
+    }
+    $('emu-prog').querySelector('button')!.addEventListener('click', () => setMachine('program', ''));
 
     function setAt(obj: Record<string, unknown>, path: string, value: unknown) {
       const parts = path.split('.');
@@ -476,7 +382,7 @@ const ui = {
       const box = document.getElementById('cmt-state');
       const state = running() ? cmtState() : 0;
       if (box) {
-        const name = [mui.deckEmpty, mui.deckStopped, mui.deckPlaying, mui.deckPaused, 'REC'][state] ?? '';
+        const name = [ui.deckEmpty, ui.deckStopped, ui.deckPlaying, ui.deckPaused, 'REC'][state] ?? '';
         box.textContent = name + (state >= 2 ? ` · ${cmtPlaytime().toFixed(0)} s` : '');
       }
       drawDeck?.();
@@ -513,7 +419,7 @@ const ui = {
       files.unshift(copy);
       rememberFile({ id: copy.id, name: copy.name, bytes: copy.bytes, ts: Date.now() });
       renderList(); renderMachine();
-      $('apply-note').textContent = mui.taken;
+      $('apply-note').textContent = ui.taken;
     }
 
     /** Resolves once the machine is advancing frames (or after a few seconds). */
@@ -582,10 +488,27 @@ const ui = {
       if (on && !cmtBox.childElementCount) {
         drawDeck = recorder(cmtBox, {
           press: (key) => deck(key),
-          state: () => (running() ? cmtState() : 0),
+          state: () => (running() ? cmtState() : machine.tape.file ? 1 : 0),   // chosen but not yet started: in, stopped
           at: () => cmtPlaytime(),
           tape: () => fileById(machine.tape.file)?.name ?? (recording || ui.deckStopped),
-          strings: { empty: ui.deckEmpty, noFf: ui.noFastForward },
+          settings: () => {
+            const t = machine.tape;
+            const tapes = files.filter((f) => ['mzf', 'wav', 'tap'].includes(f.kind));
+            const check = (path: string, label: string, on: boolean) => ({ check: label, on, pick: () => setMachine(path, !on) });
+            return [
+              ...(tapes.length
+                ? [{ radio: ui.none, on: !t.file, pick: () => setMachine('tape.file', '') },
+                   ...tapes.map((f) => ({ radio: f.name, on: f.id === t.file, pick: () => setMachine('tape.file', f.id) }))]
+                : [{ note: ui.noImages }]),
+              'sep' as const,
+              check('tape.instant', ui.instantLoad, t.instant),
+              ...(['SPEED_1/1', 'SPEED_2/1', 'SPEED_3/1', 'SPEED_4/1'] as const)
+                .map((v) => ({ radio: `${ui.tapeSpeed} ${v.replace('SPEED_', '')}`, on: t.speed === v, pick: () => setMachine('tape.speed', v) })),
+              check('tape.inverted', ui.tapeInverted, t.inverted),
+              check('tape.boost', ui.tapeBoost, t.boost),
+            ];
+          },
+          strings: { empty: ui.deckEmpty, noFf: ui.noFastForward, insert: ui.insert },
         });
       }
       drawDeck?.();
@@ -593,47 +516,50 @@ const ui = {
     cmtBtn.addEventListener('click', () => showRecorder(cmtBox.hidden));
     showRecorder(localStorage.getItem('mz-cmt') !== '0');
 
-    // The peripherals beside the machine: the floppy unit, the Quick Disk and
-    // the RAM disk card. Putting a disk in one is the same change the panel
-    // underneath makes, so both go through markDirty and both redraw.
+    // The peripherals beside the machine, each carrying its own settings.
+    // The strip above them shows or hides any one; the Devices switch, all.
     let drawDevices: (() => void) | null = null;
-    const nameOf = (id: string) => fileById(id)?.name ?? '';
     const devBox = $('devices');
     const devBtn = $<HTMLButtonElement>('emu-dev');
+    const SHOWN_KEY = 'mz-dev-shown';
+    let shownDevices = new Set<DeviceId>(DEVICE_IDS);
+    try {
+      const kept = JSON.parse(localStorage.getItem(SHOWN_KEY) ?? 'null');
+      if (Array.isArray(kept)) shownDevices = new Set(kept.filter((d) => (DEVICE_IDS as readonly string[]).includes(d)));
+    } catch { /* first visit */ }
+    const stripLabel: Record<DeviceId, string> = {
+      fdc: ui.drives, qdisk: ui.qdisk, ramdisk: ui.ramdisk, memext: ui.memext, card: ui.cardSection, ide: ui.hdd, joy: ui.joysticks, sound: ui.soundOn,
+    };
+    const strip = $('dev-strip');
+    strip.innerHTML = DEVICE_IDS.map((d) => `<button type="button" data-show="${d}">${esc(stripLabel[d])}</button>`).join('');
+    const drawStrip = () => {
+      for (const b of strip.querySelectorAll<HTMLButtonElement>('[data-show]')) {
+        b.setAttribute('aria-pressed', String(shownDevices.has(b.dataset.show as DeviceId)));
+      }
+    };
+    for (const b of strip.querySelectorAll<HTMLButtonElement>('[data-show]')) {
+      b.addEventListener('click', () => {
+        const d = b.dataset.show as DeviceId;
+        if (shownDevices.has(d)) shownDevices.delete(d); else shownDevices.add(d);
+        try { localStorage.setItem(SHOWN_KEY, JSON.stringify([...shownDevices])); } catch { /* private mode */ }
+        drawStrip(); drawDevices?.();
+      });
+    }
+    drawStrip();
     const showDevices = (on: boolean) => {
       devBox.hidden = !on;
+      strip.hidden = !on;
       devBtn.setAttribute('aria-pressed', String(on));
       devBtn.classList.toggle('active', on);
       try { localStorage.setItem('mz-dev', on ? '1' : '0'); } catch { /* private mode */ }
       if (on && !devBox.childElementCount) {
         drawDevices = devices(devBox, {
-          state: () => ({
-            fdc: { connected: machine.fdc.connected, disks: machine.fdc.drives.map((d) => nameOf(d.file)) as [string, string, string, string] },
-            qd: { connected: machine.qdisk.connected, disk: nameOf(machine.qdisk.file), writeProtected: machine.qdisk.writeProtected },
-            ram: { plugged: machine.ramdisk.mr1r18.plugged, size: machine.ramdisk.mr1r18.size },
-          }),
-          files: (slot) => files.filter((f) => (slot === 'qd' ? ['mzq', 'bin'] : ['dsk']).includes(f.kind))
-            .map((f) => ({ id: f.id, name: f.name })),
-          pick: (slot, id) => {
-            if (slot === 'qd') {
-              machine.qdisk.file = id;
-              if (id && !machine.qdisk.connected) { machine.qdisk.connected = true; markDirty('qdisk.connected'); }
-              saveMachine(); markDirty('qdisk.file');
-            } else {
-              const index = Number(slot.slice(3));
-              machine.fdc.drives[index].file = id;
-              if (id && !machine.fdc.connected) { machine.fdc.connected = true; markDirty('fdc.connected'); }
-              saveMachine(); markDirty(`fdc.drives.${index}.file`);
-            }
-            renderMachine();
-          },
-          plug: (device, on) => {
-            if (device === 'ramdisk') { machine.ramdisk.mr1r18.plugged = on; saveMachine(); markDirty('ramdisk.mr1r18.plugged'); }
-            else if (device === 'qdisk') { machine.qdisk.connected = on; saveMachine(); markDirty('qdisk.connected'); }
-            else { machine.fdc.connected = on; saveMachine(); markDirty('fdc.connected'); }
-            renderMachine();
-          },
-          strings: { insert: ui.insert, eject: ui.eject, empty: ui.none, noImages: ui.noImages, connected: ui.connected, plugged: ui.plugged },
+          machine: () => machine,
+          files: (kinds) => files.filter((f) => kinds.includes(f.kind)).map((f) => ({ id: f.id, name: f.name })),
+          set: setMachine,
+          take: takeImage,
+          shown: () => shownDevices,
+          strings: ui,
         });
       }
       drawDevices?.();

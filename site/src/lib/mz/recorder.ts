@@ -8,7 +8,10 @@
 //
 // What a key can do is what the emulator's deck offers: REWIND winds back to
 // the start (where STOP leaves the tape), and FFWD has nothing behind it, so
-// it is drawn dead rather than pretending.
+// it is drawn dead rather than pretending. The door is where the tape goes
+// in: click it for the tapes you have and how the deck should play them.
+
+import { popup, type Item } from './menu';
 
 export type DeckKey = 'stop' | 'rec' | 'play' | 'rew' | 'ff';
 
@@ -21,8 +24,10 @@ export interface DeckHooks {
   at(): number;
   /** What is in the deck, if anything. */
   tape(): string;
+  /** The list behind the door: tapes to put in, and how they are read. */
+  settings?: () => Item[];
   /** Wording that belongs to the visitor's language. */
-  strings: { empty: string; noFf: string };
+  strings: { empty: string; noFf: string; insert: string };
 }
 
 const KEYS: { id: DeckKey; name: string; symbol: string }[] = [
@@ -45,14 +50,14 @@ const clock = (seconds: number): string => {
 export function recorder(host: HTMLElement, hooks: DeckHooks): () => void {
   host.innerHTML = `
     <div class="cmt-deck">
-      <div class="cmt-door">
+      <button type="button" class="cmt-door" title="${hooks.strings.insert}">
         <div class="cmt-window">
           <div class="cmt-cassette">
             <span class="cmt-label"></span>
             <span class="cmt-reels"><span class="cmt-hub"></span><span class="cmt-tape"></span><span class="cmt-hub"></span></span>
           </div>
         </div>
-      </div>
+      </button>
       <div class="cmt-keys">${KEYS.map((key) => `
         <button type="button" class="cmt-key" data-key="${key.id}" aria-label="${key.name}" title="${key.name}">
           <span class="cmt-cap"></span>
@@ -79,6 +84,11 @@ export function recorder(host: HTMLElement, hooks: DeckHooks): () => void {
     const id = key.dataset.key as DeckKey;
     if (id === 'ff') { key.classList.add('dead'); key.title = `${key.title} — ${hooks.strings.noFf}`; continue; }
     key.addEventListener('click', async () => { await hooks.press(id); draw(); });
+  }
+
+  if (hooks.settings) {
+    const door = host.querySelector('.cmt-door') as HTMLElement;
+    door.addEventListener('click', () => popup(door, () => { const items = hooks.settings!(); draw(); return items; }));
   }
 
   draw();

@@ -1,49 +1,55 @@
 // The peripherals, drawn the way the keyboard and the recorder are: the real
-// machines from their photographs, in CSS, with the parts you would touch
-// actually doing something.
+// hardware from its photographs, in CSS, with the parts you would touch doing
+// what they do. Every setting the machine has lives on its device - there is
+// no second list of controls anywhere.
 //
-//   MZ-1F19  the two-drive floppy unit - a cream tower with the SHARP badge
-//            and two black bays; a bay takes a disk, its lever ejects it.
-//            The controller drives four, so there are two of them, as a
-//            machine with four drives really had, and the bays carry the
-//            letters A to D the system knows them by.
-//   MZ-1F11  the Quick Disk - cream case, crosshatched grille, BUSY lamp
-//            bottom left, EJECT key down the right edge, the cartridge
-//            sitting in the slot along the bottom.
-//   MR1R18   the RAM disk card - a green board of DIP chips with a gold edge
-//            connector. There is nothing to insert, so the card itself is the
-//            switch: click it to plug it in or pull it out.
+//   MZ-1F19  the two-drive floppy unit: cream tower, SHARP badge, two black
+//            bays. The controller drives four, so it stands twice, bays A-D.
+//            A bay takes a disk and holds that disk's options; the lever
+//            throws it out; the rocker on the top panel is the controller.
+//   MZ-1F11  the Quick Disk: grille, BUSY lamp, EJECT key down the right
+//            edge. The grille takes a cartridge, and with it write protection
+//            and whether the drive is the real one or the card pretending.
+//   MR1R18   the RAM disk card, a green board of DIP chips - and beside it the
+//            two smaller Pezik boards. A card is its own switch: click it to
+//            plug it in; the size label on the big one opens its choices.
+//   memext   the memory extension, another board, with the maker on its label.
+//   MZPico   the card itself: green board, purple Pico, SD slot.
+//   IDE8     two hard disks, each taking an image.
+//   joy      two joysticks, each of whatever kind, or none.
+//   sound    the speaker, and the second PSG beside it.
 //
 // Nothing here is a photograph: the catalog is Apache-2.0 and the pictures of
 // these machines are not ours to ship, so they are drawn from them instead.
 
-export type Slot = 'fdd0' | 'fdd1' | 'fdd2' | 'fdd3' | 'qd';
-export type Device = 'fdc' | 'qdisk' | 'ramdisk';
+import type { Machine } from './machine';
+import { popup, type Item } from './menu';
 
-export interface DeviceState {
-  fdc: { connected: boolean; disks: [string, string, string, string] };   // '' for an empty bay
-  qd: { connected: boolean; disk: string; writeProtected: boolean };
-  ram: { plugged: boolean; size: string };
-}
+export const DEVICE_IDS = ['fdc', 'qdisk', 'ramdisk', 'memext', 'card', 'ide', 'joy', 'sound'] as const;
+export type DeviceId = (typeof DEVICE_IDS)[number];
 
 export interface DeviceHooks {
-  state(): DeviceState;
-  /** What could go in that slot, as id and name. */
-  files(slot: Slot): { id: string; name: string }[];
-  /** '' empties the slot. */
-  pick(slot: Slot, id: string): void;
-  plug(device: Device, on: boolean): void;
-  strings: { insert: string; eject: string; empty: string; noImages: string; connected: string; plugged: string };
+  machine(): Machine;
+  /** Workbench files of these kinds, as id and name. */
+  files(kinds: string[]): { id: string; name: string }[];
+  /** Change one setting, by its path in the machine. */
+  set(path: string, value: unknown): void;
+  /** A floppy the machine wrote to, back into the file list. */
+  take(drive: number): void;
+  /** Which devices are on show. */
+  shown(): Set<DeviceId>;
+  strings: Record<string, string>;
 }
 
-const esc = (s: unknown) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
 /** A disk label has room for about this much. */
 const short = (name: string) => (name.length > 16 ? name.slice(0, 15) + '…' : name);
+const chips = (n: number) => '<i></i>'.repeat(n);
 
 const unit = (first: number) => `
-  <div class="dev dev-fdd" data-dev="fdc">
+  <div class="dev dev-fdd wide" data-dev="fdc">
     <div class="fd-case">
-      <div class="fd-top"><span class="fd-badge">SHARP</span><span class="fd-vents"></span></div>
+      <div class="fd-top"><span class="fd-badge">SHARP</span><span class="fd-vents"></span>
+        <button type="button" class="dev-power" data-toggle="fdc.connected"><i></i></button></div>
       <div class="fd-bays">
         ${[first, first + 1].map((i) => `
           <div class="fd-bay" data-bay="${i}">
@@ -63,6 +69,24 @@ const CASE = `
   ${unit(0)}
   ${unit(2)}
 
+
+  <div class="dev dev-ram wide" data-dev="ramdisk">
+    <button type="button" class="ram-card" data-toggle="ramdisk.mr1r18.plugged">
+      <span class="ram-edge"></span>
+      <span class="ram-chips">${chips(14)}</span>
+      <span class="ram-silk">MR1R18 <b class="ram-size" data-menu="ram"></b></span>
+    </button>
+    <div class="ram-peziks">
+      <button type="button" class="ram-card small" data-toggle="ramdisk.pezikE8">
+        <span class="ram-edge"></span><span class="ram-chips">${chips(4)}</span><span class="ram-silk">PEZIK E8</span>
+      </button>
+      <button type="button" class="ram-card small" data-toggle="ramdisk.pezik68">
+        <span class="ram-edge"></span><span class="ram-chips">${chips(4)}</span><span class="ram-silk">PEZIK 68</span>
+      </button>
+    </div>
+    <p class="dev-cap"><b>RAM disk</b> <span class="dev-what"></span></p>
+  </div>
+
   <div class="dev dev-qd" data-dev="qdisk">
     <div class="qd-case">
       <span class="qd-made">MADE IN JAPAN</span>
@@ -70,101 +94,226 @@ const CASE = `
         <span class="qd-cart"><span class="qd-shutter"></span><span class="qd-label"></span></span>
       </button>
       <span class="qd-busy"><i></i>BUSY</span>
-      <button type="button" class="qd-eject" data-eject="qd"><span>EJECT</span></button>
+      <button type="button" class="dev-power" data-toggle="qdisk.connected"><i></i></button>
+      <button type="button" class="qd-eject" data-eject="qdisk.file"><span>EJECT</span></button>
     </div>
     <p class="dev-cap"><b>MZ-1F11</b> <span class="dev-what"></span></p>
   </div>
 
-  <div class="dev dev-ram" data-dev="ramdisk">
-    <button type="button" class="ram-card" data-plug="ramdisk">
+  <div class="dev dev-pico" data-dev="card">
+    <button type="button" class="ram-card pico" data-toggle="card.connected">
       <span class="ram-edge"></span>
-      <span class="ram-chips">${'<i></i>'.repeat(14)}</span>
-      <span class="ram-silk">MR1R18 <b class="ram-size"></b></span>
+      <span class="pico-module"><i class="pico-usb"></i><i class="pico-chip"></i><i class="pico-chip small"></i></span>
+      <span class="pico-sd"></span>
+      <span class="ram-silk pico-silk">MZPico <b data-menu="card">⚙</b></span>
     </button>
-    <p class="dev-cap"><b>RAM disk</b> <span class="dev-what"></span></p>
+    <p class="dev-cap"><b>MZPico</b> <span class="dev-what"></span></p>
+  </div>
+
+  <div class="dev dev-mem" data-dev="memext">
+    <button type="button" class="ram-card mem" data-toggle="memext.connected">
+      <span class="ram-edge"></span>
+      <span class="ram-chips">${chips(8)}</span>
+      <span class="mem-flash"></span>
+      <span class="ram-silk"><b class="mem-type" data-menu="memext"></b></span>
+    </button>
+    <p class="dev-cap"><b class="cap-memext"></b> <span class="dev-what"></span></p>
+  </div>
+
+
+  <div class="dev dev-hdd" data-dev="ide">
+    <div class="pair">
+      ${[0, 1].map((i) => `
+        <button type="button" class="hdd" data-hdd="${i}">
+          <span class="hdd-lid"><span class="hdd-label"></span></span><i class="hdd-led"></i>
+        </button>`).join('')}
+    </div>
+    <p class="dev-cap"><b class="cap-hdd"></b> <span class="dev-what"></span></p>
+  </div>
+
+  <div class="dev dev-joy" data-dev="joy">
+    <div class="pair">
+      ${['joy1', 'joy2'].map((j, i) => `
+        <button type="button" class="joy" data-joy="${j}">
+          <span class="joy-stick"><i></i></span>
+          <span class="joy-base"><b></b><em>${i + 1}</em></span>
+        </button>`).join('')}
+    </div>
+    <p class="dev-cap"><b class="cap-joy"></b> <span class="dev-what"></span></p>
+  </div>
+
+  <div class="dev dev-snd" data-dev="sound">
+    <div class="pair">
+      <button type="button" class="snd-speaker" data-toggle="sound.on"><span class="snd-grille"></span></button>
+      <button type="button" class="snd-chip" data-toggle="sound.secondPsg"><span>PSG<br>2</span></button>
+    </div>
+    <p class="dev-cap"><b class="cap-sound"></b> <span class="dev-what"></span></p>
   </div>`;
 
-/** Draw the peripherals into `host`; returns the redraw the page ticks. */
+/** Walk a dotted path into the machine. */
+const get = (m: Machine, path: string): unknown =>
+  path.split('.').reduce<unknown>((node, part) => (node as Record<string, unknown>)[part], m);
+
+/** Draw the peripherals into `host`; returns the redraw the page calls after a change. */
 export function devices(host: HTMLElement, hooks: DeviceHooks): () => void {
   host.innerHTML = CASE;
-
+  const ui = hooks.strings;
   const find = <T extends HTMLElement>(sel: string) => host.querySelector(sel) as T;
-  const bays = [...host.querySelectorAll<HTMLElement>('.fd-bay')];
+  const all = (sel: string) => [...host.querySelectorAll<HTMLElement>(sel)];
+  const joyName = (t: string) => (t === 'NONE' ? ui.joyNone : t === 'NUM_KEYPAD' ? ui.joyKeypad : ui.joyStick);
+  const nameOf = (id: string, kinds: string[]) => hooks.files(kinds).find((f) => f.id === id)?.name ?? '';
+
+  find('.cap-memext').textContent = ui.memext;
+  find('.cap-hdd').textContent = ui.hdd;
+  find('.cap-joy').textContent = ui.joysticks;
+  find('.cap-sound').textContent = ui.soundOn;
+  for (const b of all('.dev-power')) b.title = ui.connected;
 
   const draw = () => {
-    const s = hooks.state();
-    bays.forEach((bay) => {
-      const name = s.fdc.disks[Number(bay.dataset.bay)];
+    const m = hooks.machine();
+    const shown = hooks.shown();
+    for (const dev of all('.dev')) dev.hidden = !shown.has(dev.dataset.dev as DeviceId);
+
+    // the floppy units
+    for (const bay of all('.fd-bay')) {
+      const name = nameOf(m.fdc.drives[Number(bay.dataset.bay)].file, ['dsk']);
       bay.classList.toggle('loaded', !!name);
       bay.querySelector('.fd-label')!.textContent = short(name);
-      bay.querySelector<HTMLElement>('.fd-face')!.title = name || hooks.strings.insert;
-    });
-    host.querySelectorAll<HTMLElement>('.dev-fdd').forEach((unit, i) => {
-      unit.classList.toggle('off', !s.fdc.connected);
-      unit.querySelector('.dev-what')!.textContent =
-        s.fdc.disks.slice(i * 2, i * 2 + 2).filter(Boolean).join(', ') || hooks.strings.empty;
-    });
-
-    const qd = host.querySelector('.dev-qd')!;
-    qd.classList.toggle('off', !s.qd.connected);
-    qd.classList.toggle('loaded', !!s.qd.disk);
-    qd.querySelector('.qd-label')!.textContent = short(s.qd.disk);
-    find('.qd-grille').title = s.qd.disk || hooks.strings.insert;
-    find('.dev-qd .dev-what').textContent = s.qd.disk || hooks.strings.empty;
-
-    const ram = host.querySelector('.dev-ram')!;
-    ram.classList.toggle('off', !s.ram.plugged);
-    ram.querySelector('.ram-size')!.textContent = s.ram.size;
-    find('.ram-card').title = hooks.strings.plugged;
-    find('.dev-ram .dev-what').textContent = s.ram.plugged ? s.ram.size : hooks.strings.empty;
-  };
-
-  /** The little list that drops out of a slot when you click it. */
-  const chooser = (anchor: HTMLElement, slot: Slot) => {
-    host.querySelector('.dev-menu')?.remove();
-    const choices = hooks.files(slot);
-    const box = document.createElement('div');
-    box.className = 'dev-menu';
-    box.innerHTML = choices.length
-      ? `<button type="button" data-id="">${esc(hooks.strings.empty)}</button>` +
-        choices.map((f) => `<button type="button" data-id="${esc(f.id)}">${esc(f.name)}</button>`).join('')
-      : `<p class="meta">${esc(hooks.strings.noImages)}</p>`;
-    anchor.closest('.dev')!.append(box);
-    for (const b of box.querySelectorAll<HTMLButtonElement>('button')) {
-      b.addEventListener('click', () => { box.remove(); hooks.pick(slot, b.dataset.id!); draw(); });
+      bay.querySelector<HTMLElement>('.fd-face')!.title = name || ui.insert;
     }
-    // Anywhere else puts it away again.
-    setTimeout(() => document.addEventListener('pointerdown', function away(e) {
-      if (box.contains(e.target as Node)) return;
-      box.remove(); document.removeEventListener('pointerdown', away);
-    }), 0);
+    all('.dev-fdd').forEach((u, i) => {
+      u.classList.toggle('off', !m.fdc.connected);
+      u.querySelector('.dev-what')!.textContent =
+        m.fdc.drives.slice(i * 2, i * 2 + 2).map((d) => nameOf(d.file, ['dsk'])).filter(Boolean).join(', ') || ui.none;
+    });
+    for (const p of all('[data-toggle]')) p.classList.toggle('on', !!get(m, p.dataset.toggle!));
+
+    // the quick disk
+    const qd = find('.dev-qd');
+    const qdName = nameOf(m.qdisk.file, ['mzq', 'bin']);
+    qd.classList.toggle('off', !m.qdisk.connected);
+    qd.classList.toggle('loaded', !!qdName);
+    find('.qd-label').textContent = short(qdName);
+    find('.qd-grille').title = qdName || ui.insert;
+    find('.dev-qd .dev-what').textContent = (qdName || ui.none) + (m.qdisk.type === 'UNICARD' ? ` · ${ui.viaCard}` : '');
+
+    // the ram cards
+    const r = m.ramdisk;
+    find('.dev-ram').classList.toggle('off', !r.mr1r18.plugged && !r.pezikE8 && !r.pezik68);
+    find('.ram-size').textContent = `${r.mr1r18.size} ${r.mr1r18.type}`;
+    find('.dev-ram .dev-what').textContent =
+      [r.mr1r18.plugged && `${r.mr1r18.size} ${r.mr1r18.type}`, r.pezikE8 && 'Pezik E8', r.pezik68 && 'Pezik 68'].filter(Boolean).join(', ') || ui.none;
+
+    find('.dev-mem').classList.toggle('off', !m.memext.connected);
+    find('.mem-type').textContent = m.memext.type === 'PEHU' ? 'PEHU' : 'LUFTNER';
+    find('.dev-mem .dev-what').textContent = m.memext.connected ? (m.memext.type === 'PEHU' ? 'PEHU' : 'Luftner') : ui.none;
+
+    find('.dev-pico').classList.toggle('off', !m.card.connected);
+    find('.dev-pico .dev-what').textContent = m.card.connected
+      ? [m.card.mzpicoMode ? 'MZPico' : 'Unicard', m.card.readonly && ui.readonly].filter(Boolean).join(' · ') : ui.none;
+
+    // hard disks, joysticks, sound
+    const hdds = [m.ide.hdd0, m.ide.hdd1].map((id) => nameOf(id, ['bin']));
+    all('.hdd').forEach((h, i) => {
+      h.classList.toggle('off', !hdds[i]);
+      h.querySelector('.hdd-label')!.textContent = short(hdds[i]) || `HDD ${i}`;
+      h.title = hdds[i] || ui.insert;
+    });
+    find('.dev-hdd').classList.toggle('off', !hdds[0] && !hdds[1]);
+    find('.dev-hdd .dev-what').textContent = hdds.filter(Boolean).join(', ') || ui.none;
+
+    all('.joy').forEach((j) => {
+      const type = m.joy[j.dataset.joy as 'joy1' | 'joy2'];
+      j.classList.toggle('off', type === 'NONE');
+      j.title = joyName(type);
+    });
+    find('.dev-joy').classList.toggle('off', m.joy.joy1 === 'NONE' && m.joy.joy2 === 'NONE');
+    find('.dev-joy .dev-what').textContent = [m.joy.joy1, m.joy.joy2].filter((t) => t !== 'NONE').map(joyName).join(', ') || ui.joyNone;
+
+    find('.dev-snd').classList.toggle('off', !m.sound.on);
+    find('.snd-chip').classList.toggle('off', !m.sound.secondPsg);
+    find('.snd-chip').title = ui.secondPsg;
+    find('.dev-snd .dev-what').textContent = m.sound.on ? (m.sound.secondPsg ? '2 × PSG' : 'PSG') : ui.none;
   };
 
-  for (const el of host.querySelectorAll<HTMLElement>('[data-slot]')) {
-    el.addEventListener('click', () => chooser(el, el.dataset.slot as Slot));
+  // ---- the lists each clickable part opens
+  const fileItems = (path: string, kinds: string[]): Item[] => {
+    const current = get(hooks.machine(), path) as string;
+    const choices = hooks.files(kinds);
+    if (!choices.length) return [{ note: ui.noImages }];
+    return [
+      { radio: ui.none, on: !current, pick: () => hooks.set(path, '') },
+      ...choices.map((f) => ({ radio: f.name, on: f.id === current, pick: () => hooks.set(path, f.id) })),
+    ];
+  };
+  const check = (path: string, label: string): Item =>
+    ({ check: label, on: !!get(hooks.machine(), path), pick: () => hooks.set(path, !get(hooks.machine(), path)) });
+  const radio = (path: string, value: string, label: string): Item =>
+    ({ radio: label, on: get(hooks.machine(), path) === value, pick: () => hooks.set(path, value) });
+
+  const menus: Record<string, () => Item[]> = {
+    ram: () => [
+      ...(['64K', '256K', '512K', '1M', '16M'] as const).map((v) => radio('ramdisk.mr1r18.size', v, v)),
+      'sep', radio('ramdisk.mr1r18.type', 'SRAM', 'SRAM'), radio('ramdisk.mr1r18.type', 'ROM', 'ROM'),
+    ],
+    memext: () => [radio('memext.type', 'PEHU', 'PEHU'), radio('memext.type', 'LUFTNER', 'Luftner')],
+    card: () => [check('card.mzpicoMode', ui.mzpicoMode), check('card.readonly', ui.readonly)],
+    qd: () => {
+      const m = hooks.machine();
+      return [
+        ...fileItems('qdisk.file', ['mzq', 'bin']), 'sep',
+        check('qdisk.writeProtected', ui.writeProtected), 'sep',
+        radio('qdisk.type', 'STANDARD', 'MZ-1F11'), radio('qdisk.type', 'UNICARD', ui.viaCard),
+        ...(m.qdisk.file ? ['sep' as const, { action: ui.eject, pick: () => hooks.set('qdisk.file', '') }] : []),
+      ];
+    },
+  };
+  const bayMenu = (i: number) => (): Item[] => {
+    const d = hooks.machine().fdc.drives[i];
+    return [
+      ...fileItems(`fdc.drives.${i}.file`, ['dsk']), 'sep',
+      check(`fdc.drives.${i}.readonly`, ui.readonly),
+      { check: ui.keepWrites, on: d.storage === 'cached', pick: () => hooks.set(`fdc.drives.${i}.storage`, d.storage === 'cached' ? 'discard' : 'cached') },
+      ...(d.file ? ['sep' as const, { action: ui.takeImage, pick: () => hooks.take(i) }, { action: ui.eject, pick: () => hooks.set(`fdc.drives.${i}.file`, '') }] : []),
+    ];
+  };
+  const hddMenu = (i: number) => () => fileItems(`ide.hdd${i}`, ['bin']);
+  const joyMenu = (j: string) => () => (['NONE', 'NUM_KEYPAD', 'JOYSTICK'] as const).map((t) => radio(`joy.${j}`, t, joyName(t)));
+
+  const open = (el: HTMLElement, build: () => Item[]) => popup(el, () => { const items = build(); draw(); return items; });
+
+  // ---- wiring
+  for (const el of all('[data-slot]')) {
+    const slot = el.dataset.slot!;
+    el.addEventListener('click', () => open(el, slot === 'qd' ? menus.qd : bayMenu(Number(slot.slice(3)))));
   }
-  for (const el of host.querySelectorAll<HTMLElement>('[data-eject]')) {
+  for (const el of all('[data-menu]')) {
+    el.addEventListener('click', (e) => { e.stopPropagation(); open(el, menus[el.dataset.menu!]); });
+  }
+  for (const el of all('[data-hdd]')) el.addEventListener('click', () => open(el, hddMenu(Number(el.dataset.hdd))));
+  for (const el of all('[data-joy]')) el.addEventListener('click', () => open(el, joyMenu(el.dataset.joy!)));
+  for (const el of all('[data-toggle]')) {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      hooks.set(el.dataset.toggle!, !get(hooks.machine(), el.dataset.toggle!));
+      draw();
+    });
+  }
+  for (const el of all('[data-eject]')) {
     el.addEventListener('click', (e) => {
       e.stopPropagation();
       el.classList.add('down');
       setTimeout(() => el.classList.remove('down'), 160);
-      hooks.pick(el.dataset.eject as Slot, '');
-      draw();
-    });
-  }
-  for (const el of host.querySelectorAll<HTMLElement>('[data-plug]')) {
-    el.addEventListener('click', () => {
-      const device = el.dataset.plug as Device;
-      hooks.plug(device, !(device === 'ramdisk' ? hooks.state().ram.plugged : hooks.state().qd.connected));
+      hooks.set(el.dataset.eject!, '');
       draw();
     });
   }
   // The lever on a loaded bay throws the disk out instead of opening the list.
-  for (const bay of bays) {
+  for (const bay of all('.fd-bay')) {
     bay.querySelector('.fd-lever')!.addEventListener('click', (e) => {
       if (!bay.classList.contains('loaded')) return;
       e.stopPropagation();
-      hooks.pick(bay.querySelector<HTMLElement>('[data-slot]')!.dataset.slot as Slot, '');
+      hooks.set(`fdc.drives.${bay.dataset.bay}.file`, '');
       draw();
     });
   }
