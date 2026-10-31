@@ -652,65 +652,58 @@ body.pseudo-fs-on { overflow: hidden; }
 @media (max-width: 560px) { .mzkbd { padding: 0.35rem; } }
 
 /* The MZ-821's built-in data recorder: the cream door with its tinted window,
-   and under it the recessed slot with five taupe keys, each named on the case
-   above it. Sizes follow the machine's own block, not the page's width. */
+   and under it the recessed slot of keys, which sits on the bottom edge of the
+   case. The keys are the size of the keyboard's, with their symbols printed on
+   the case above them and their names in the tooltip. */
 .mzcmt {
-  display: flex; align-items: flex-start; gap: 1rem;
+  width: fit-content;
   background: linear-gradient(#ebe5d6, #ddd7c5); border: 1px solid #b3ac99;
-  border-radius: 6px; padding: 0.7rem 0.9rem; margin: 0.5rem 0 0.4rem;
+  border-radius: 6px; padding: 0.5rem 0.55rem 0; margin: 0.5rem 0 0.4rem;
 }
-.cmt-deck { display: flex; flex-direction: column; gap: 0.55rem; width: min(100%, 17rem); }
+.cmt-deck { display: flex; flex-direction: column; gap: 0.4rem; width: 9.4rem; }
 .cmt-door {
-  background: #f2eee2; border: 1px solid #c0b9a6; border-radius: 4px; padding: 0.3rem;
+  background: #f2eee2; border: 1px solid #c0b9a6; border-radius: 3px; padding: 0.22rem;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
 }
 .cmt-window {
-  height: 4.4rem; border-radius: 3px; padding: 0.3rem;
+  height: 3.1rem; border-radius: 2px; padding: 0.22rem;
   background: linear-gradient(#20251f, #11150f); border: 1px solid #0a0c08;
-  box-shadow: inset 0 0.1rem 0.3rem rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 0.08rem 0.25rem rgba(0, 0, 0, 0.8);
 }
 .cmt-cassette {
-  height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 0.3rem;
-  padding: 0.25rem 0.5rem; border-radius: 2px;
+  height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 0.22rem;
+  padding: 0.18rem 0.3rem; border-radius: 2px;
   background: linear-gradient(#3b3a34, #2a2924); border: 1px solid #4a4840; opacity: 0.35;
 }
 .cmt-cassette.in { opacity: 1; }
 .cmt-label {
   display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   background: #ded8c6; color: #2b291f; border-radius: 1px;
-  font-family: var(--mono); font-size: 0.6rem; padding: 0.08rem 0.25rem;
+  font-family: var(--mono); font-size: 0.48rem; padding: 0.05rem 0.2rem;
 }
-.cmt-reels { display: flex; align-items: center; justify-content: center; gap: 0.35rem; }
-.cmt-hub {
-  width: 1.15rem; height: 1.15rem; border-radius: 50%;
-  border: 0.3rem dashed #cfcabb; background: #15170f;
-}
+.cmt-reels { display: flex; align-items: center; justify-content: center; gap: 0.25rem; }
+.cmt-hub { width: 0.8rem; height: 0.8rem; border-radius: 50%; border: 0.22rem dashed #cfcabb; background: #15170f; }
 .cmt-cassette.running .cmt-hub { animation: cmt-spin 1.5s linear infinite; }
 @keyframes cmt-spin { to { transform: rotate(360deg); } }
-.cmt-tape { flex: 1 1 auto; height: 0.45rem; background: #5b4a32; border-radius: 1px; max-width: 4rem; }
-/* The keys sit in a dark slot cut into the case. */
+.cmt-tape { flex: 1 1 auto; height: 0.3rem; max-width: 2.6rem; background: #5b4a32; border-radius: 1px; }
+/* The slot the keys stand in, flush with the bottom edge of the case. */
 .cmt-keys {
-  display: flex; gap: 0.12rem; align-items: flex-end;
-  /* the names are printed on the case, the keys stand in a dark slot below */
-  background: linear-gradient(#e3ddcb 0 1.05rem, #464237 1.05rem 100%);
-  border: 1px solid #b2ab98; border-radius: 3px;
-  padding: 1.1rem 0.3rem 0.22rem;
+  display: flex; justify-content: space-between; gap: 0.1rem; align-items: flex-end;
+  background: linear-gradient(#e3ddcb 0 0.6rem, #464237 0.6rem 100%);
+  border: 1px solid #b2ab98; border-bottom: 0; border-radius: 3px 3px 0 0;
+  padding: 0.65rem 0.22rem 0.18rem;
 }
-.cmt-key {
-  position: relative; display: block; flex: 1 1 0; min-width: 0;
-  padding: 0; border: 0; background: none; cursor: pointer;
-}
+.cmt-key { position: relative; display: block; padding: 0; border: 0; background: none; cursor: pointer; }
 .cmt-cap {
-  display: block; height: 1.5rem; border-radius: 2px 2px 3px 3px;
+  display: block; width: 1.35rem; height: 1.35rem; border-radius: 2px 2px 3px 3px;
   background: linear-gradient(#a79f8c, #8b8371); border: 1px solid #6f6859;
-  box-shadow: 0 0.12rem 0 #6f6859, inset 0 0.1rem 0 rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0.1rem 0 #6f6859, inset 0 0.08rem 0 rgba(255, 255, 255, 0.25);
 }
-.cmt-key.down .cmt-cap { transform: translateY(0.12rem); box-shadow: inset 0 0.1rem 0.2rem rgba(0, 0, 0, 0.45); background: linear-gradient(#8b8371, #776f5f); }
+.cmt-key.down .cmt-cap { transform: translateY(0.1rem); box-shadow: inset 0 0.08rem 0.18rem rgba(0, 0, 0, 0.45); background: linear-gradient(#8b8371, #776f5f); }
 .mzcmt.recording .cmt-key[data-key='rec'] .cmt-cap { background: linear-gradient(#c4705c, #a8402c); border-color: #7d2d1e; }
 .cmt-key.dead { cursor: default; }
 .cmt-key.dead .cmt-cap { opacity: 0.6; }
-/* Name and symbol are printed on the case, not on the cap. */
-.cmt-sym, .cmt-name { position: absolute; left: 50%; transform: translateX(-50%); color: #4b4537; font-family: var(--mono); line-height: 1; white-space: nowrap; pointer-events: none; }
-.cmt-sym { bottom: 1.75rem; font-size: 0.4rem; }
-.cmt-name { bottom: 2.25rem; font-size: 0.38rem; font-weight: 700; letter-spacing: 0.02em; }
-@media (max-width: 560px) { .mzcmt { padding: 0.5rem; } .cmt-deck { width: 100%; } }
+.cmt-sym {
+  position: absolute; left: 50%; bottom: 1.5rem; transform: translateX(-50%);
+  font-size: 0.42rem; line-height: 1; color: #4b4537; pointer-events: none; white-space: nowrap;
+}

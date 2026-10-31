@@ -54,10 +54,9 @@ export function recorder(host: HTMLElement, hooks: DeckHooks): () => void {
         </div>
       </div>
       <div class="cmt-keys">${KEYS.map((key) => `
-        <button type="button" class="cmt-key" data-key="${key.id}" aria-label="${key.name}">
+        <button type="button" class="cmt-key" data-key="${key.id}" aria-label="${key.name}" title="${key.name}">
           <span class="cmt-cap"></span>
           <span class="cmt-sym">${key.symbol}</span>
-          <span class="cmt-name">${key.name}</span>
         </button>`).join('')}</div>
     </div>`;
 
@@ -78,7 +77,7 @@ export function recorder(host: HTMLElement, hooks: DeckHooks): () => void {
 
   for (const key of host.querySelectorAll<HTMLButtonElement>('.cmt-key')) {
     const id = key.dataset.key as DeckKey;
-    if (id === 'ff') { key.classList.add('dead'); key.title = hooks.strings.noFf; continue; }
+    if (id === 'ff') { key.classList.add('dead'); key.title = `${key.title} — ${hooks.strings.noFf}`; continue; }
     key.addEventListener('click', async () => { await hooks.press(id); draw(); });
   }
 
