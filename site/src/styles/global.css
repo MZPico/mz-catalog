@@ -546,8 +546,7 @@ body.pseudo-fs-on { overflow: hidden; }
    on the left, the hardware on the right and the panels underneath. */
 .wb { display: grid; gap: 0.8rem 1.1rem; grid-template-areas: 'head' 'drop' 'screen' 'left' 'right' 'below'; }
 .wb-head { grid-area: head; }
-.wb-head h1 { margin-bottom: 0.2rem; }
-.wb-head .lead { margin: 0; max-width: 70ch; }
+.wb-head h1 { font-size: 1.1rem; margin: 0; }
 .wb-drop { grid-area: drop; margin: 0; }
 .wb-screen { grid-area: screen; }
 .wb-left { grid-area: left; min-width: 0; }
