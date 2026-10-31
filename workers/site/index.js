@@ -199,6 +199,10 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === '/net') return netUpgrade(request, env);   // multiplayer relay (Durable Object)
     if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(request);
+    // Our own pages always send a User-Agent. Requests to /api/* without one are
+    // scanners; answering here keeps them out of the database, the counters and the
+    // daily free quota (they were also the only source of 5xx on record).
+    if (!request.headers.get('User-Agent')) return bad('not found', 404);
     if (!env.STATS) return json({ error: 'stats database not bound' }, { status: 503 });
 
     try {

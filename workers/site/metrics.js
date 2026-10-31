@@ -26,7 +26,7 @@ const nothing = () => new Response(null, { status: 204 });
 
 /** Anything that announces itself as automated. Headless renderers (Googlebot's
  * among them) run our JavaScript, so the page's own "I am a browser" is not enough. */
-export const BOT_UA = /bot|crawl|spider|slurp|headless|lighthouse|google|inspectiontool|preview|facebookexternalhit|embedly|python|curl|wget|httpclient|java\/|go-http|axios|node-fetch|scrapy|phantom|puppeteer|playwright/i;
+export const BOT_UA = /bot|crawl|spider|slurp|headless|lighthouse|google|inspectiontool|preview|facebookexternalhit|embedly|python|curl|wget|httpclient|java\/|go-http|axios|node-fetch|scrapy|phantom|puppeteer|playwright|scanner|l9scan|leakix|nuclei|zgrab|masscan|censys|internetmeasurement|expanse|paloalto|elevenlabs|deepseek|xai-|vertexbot|amzn-|netapi|astrion|okhttp|libwww|perl|ruby|dart\/|guzzle|postman|insomnia|apachebench|wpscan/i;
 export const isBot = (request) => BOT_UA.test(request.headers.get('User-Agent') ?? '') || !request.headers.get('User-Agent');
 
 const EVENTS = new Set(['save', 'load', 'continue', 'autosave', 'import', 'export', 'gamepad', 'touch', 'fullscreen', 'tape-audio']);
@@ -90,8 +90,22 @@ const put = (env, day, metric, key, value) =>
   ).bind(day, metric, key, value);
 
 /** POST /api/hit — never errors back at the page; a counter is not worth a console line. */
+/** Networks that host machines, not readers. A crawler that runs our JavaScript sends
+ * the beacon like a browser would — plain Chrome user agent, no referrer — and used to
+ * land in the visitor count (two thirds of it, in October). The network a request
+ * arrives from is the one thing such a crawler cannot dress up. Residential ISPs and
+ * mobile carriers are not listed; Cloudflare itself is not either, because WARP
+ * carries real people. */
+const DATACENTER = /alibaba|aliyun|tencent|huawei|chinanet|china mobile communication|ucloud|kingsoft|baidu|amazon|aws|google llc|google cloud|microsoft|azure|oracle|digitalocean|linode|akamai|fastly|vultr|hetzner|ovh|contabo|leaseweb|m247|choopa|scaleway|datacamp|hostinger|godaddy|psychz|zenlayer|gcore|stark industries|cogent|constant|servers|hosting|datacenter|data center|colocation|vps|cloud computing/i;
+const fromDatacenter = (request) => DATACENTER.test(request.cf?.asOrganization ?? '');
+
 export async function hit(env, request, { sameOrigin, readBody, hash, withinBudget }) {
   if (!sameOrigin || isBot(request)) return nothing();
+  // Counted, but as a robot: the dashboard shows how much of this there is.
+  if (fromDatacenter(request)) {
+    await bump(env, today(), 'bot', 'other|crawlers running JavaScript').run().catch(() => {});
+    return nothing();
+  }
   if (request.headers.get('Sec-GPC') === '1' || request.headers.get('DNT') === '1') return nothing();
   const body = await readBody(request);
   if (!body) return nothing();
@@ -202,6 +216,11 @@ const BOTS = [
   ['ai-train', /meta-externalagent|FacebookBot/i, 'Meta AI'],
   ['ai-train', /Bytespider/i, 'Bytespider (ByteDance)'],
   ['ai-train', /CCBot/i, 'Common Crawl'],
+  ['ai-train', /ElevenlabsCrawler/i, 'ElevenLabs'],
+  ['ai-train', /DeepSeekBot/i, 'DeepSeek'],
+  ['ai-train', /Google-CloudVertexBot/i, 'Google Vertex'],
+  ['ai-search', /xAI-SearchBot|GrokBot/i, 'xAI (Grok)'],
+  ['ai-search', /AzureAI-SearchBot/i, 'Azure AI'],
   ['ai-train', /cohere-ai|Diffbot|ImagesiftBot|Timpibot/i, 'other AI'],
   ['search', /Googlebot|Google-InspectionTool|Storebot-Google|AdsBot-Google/i, 'Google'],
   ['search', /bingbot|BingPreview|msnbot/i, 'Bing'],
@@ -209,9 +228,16 @@ const BOTS = [
   ['search', /YandexBot|YandexRenderResourcesBot/i, 'Yandex'],
   ['search', /SeznamBot/i, 'Seznam'],
   ['search', /DuckDuckBot|DuckAssistBot/i, 'DuckDuckGo'],
+  ['search', /Amzn-SearchBot/i, 'Amazon search'],
+  ['search', /Qwantbot/i, 'Qwant'],
   ['search', /Baiduspider|PetalBot|Sogou|NaverBot|Yeti\//i, 'other search'],
   ['seo', /AhrefsBot|SemrushBot|MJ12bot|DotBot|DataForSeoBot|BLEXBot|serpstatbot|SeekportBot/i, 'SEO tools'],
   ['social', /facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot|TelegramBot|WhatsApp|redditbot/i, 'link previews'],
+  // Looking for something to break into, not for the catalog. Named so they stop
+  // counting as readers: TLM-Audit-Scanner alone fetched 1775 pages in three days.
+  ['scan', /scanner|l9scan|leakix|nuclei|zgrab|masscan|censys|internetmeasurement|expanse|paloalto|wpscan|CT-WP|WPWatch/i, 'vulnerability scanners'],
+  // Scripts and libraries: somebody's code, not a named crawler.
+  ['tools', /Go-http-client|python|aiohttp|okhttp|libwww|perl|ruby|dart\/|guzzle|postman|insomnia|apachebench|curl|wget|axios|node-fetch|java\//i, 'scripts and libraries'],
 ];
 
 async function graphql(env, query) {

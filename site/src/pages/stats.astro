@@ -143,9 +143,12 @@ import '../styles/global.css';
           + (rows.length > limit ? `<p class="meta">+ ${rows.length - limit} more</p>` : '');
       }
 
+      // The palette holds six validated hues; scanners and scripts share the "other" slot's
+      // family on purpose — they are noise, not something to read trends in.
       const BOT_CLASSES = [
         ['ai-live', 'AI: a person asked', 'var(--s3)'], ['ai-search', 'AI search', 'var(--s1)'], ['ai-train', 'AI training', 'var(--s6)'],
-        ['search', 'search engines', 'var(--s4)'], ['seo', 'SEO tools', 'var(--s5)'], ['other', 'other robots', 'var(--s2)'],
+        ['search', 'search engines', 'var(--s4)'], ['seo', 'SEO tools', 'var(--s5)'],
+        ['scan', 'scanners', 'var(--s2)'], ['tools', 'scripts', 'var(--s2)'], ['other', 'other robots', 'var(--s2)'],
       ];
       const SOURCE_CLASS = { ai: 'AI assistant', search: 'search', social: 'social', site: 'link', tag: 'campaign', direct: '', other: '' };
 
