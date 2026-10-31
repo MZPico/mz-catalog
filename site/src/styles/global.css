@@ -493,3 +493,30 @@ body.pseudo-fs-on { overflow: hidden; }
 .tool-grid .field { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.9rem; }
 .tool-grid textarea { font: inherit; padding: 0.6rem; background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 8px; resize: vertical; }
 .tool-grid textarea.mono { font-family: var(--mono); font-size: 0.85rem; }
+
+/* Hex view: only the visible lines exist, the spacer carries the scrollbar */
+.hexview .hv-scroll { height: 22rem; overflow: auto; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; }
+.hexview .hv-spacer { position: relative; }
+.hexview .hv-rows { position: absolute; top: 0; left: 0; margin: 0; padding: 0.4rem 0.7rem; white-space: pre; font-size: 0.8rem; line-height: 1.5; }
+.rest .hexview .hv-scroll { height: 9rem; }
+.hv-toolbar { display: flex; flex-wrap: wrap; gap: 0.6rem 1.2rem; align-items: center; margin: 0 0 0.5rem; font-size: 0.9rem; }
+.hv-toolbar label { display: flex; align-items: center; gap: 0.4rem; }
+.hv-toolbar select, .hv-toolbar input { font: inherit; padding: 0.25rem 0.4rem; background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 6px; }
+.hv-toolbar input { font-family: var(--mono); }
+.tool-card h3 { font-size: 0.92rem; margin: 1.1rem 0 0.5rem; }
+.tool-card .fields td.raw { color: var(--muted); font-size: 0.78rem; }
+.tool-card .rest { margin: 0.6rem 0 0; }
+.tool-card .rest-text { word-break: break-all; font-size: 0.8rem; color: var(--muted); margin: 0.4rem 0; }
+
+/* Every character the MZ can draw: the character generator as a font, display
+   code c at U+E000+c (set 1) and U+E100+c (set 2). See tools/mzfont/. */
+@font-face {
+  font-family: 'MZ Display';
+  src: url('/fonts/mz-display.woff2') format('woff2');
+  font-display: swap;
+}
+.mzglyph { font-family: 'MZ Display', var(--mono); letter-spacing: 0; }
+.hexview .hv-addr { color: var(--muted); }
+.hexview .hv-chars { color: var(--text); }
+.hexview .hv-chars.mzglyph { font-size: 0.95em; }
+.screen-out.mzglyph { font-size: 1rem; line-height: 1.15; letter-spacing: 0; }

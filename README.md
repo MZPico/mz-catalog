@@ -300,6 +300,27 @@ animation frame, because the emulator's rendering can hold a slow device to a
 few frames a second. First use hides the touch overlay and shows the mapping
 under the screen.
 
+## Tools
+
+`/tools/` — browser-side utilities, no server and no upload:
+
+- **Tape inspector** (`/tools/mzf/`): every header field with its raw bytes, the
+  rest of the header (bytes 24–127), and the whole body in a hex view that
+  renders only the visible lines (`site/src/lib/mz/hexview.ts`), with addresses
+  as file offsets or as the machine sees them, a go-to box, and a character
+  column. A dropped file's CRC is looked up in `manifest.json`: a known dump
+  links to its title, an unknown one gets a `meta.yaml` skeleton.
+- **Character codes** (`/tools/text/`): Sharp codes to text and back, screen
+  codes and the file code, with a 40-column screen view.
+
+`site/src/lib/mz/` holds the formats as plain TypeScript. The character column
+shows the machine's own glyphs: `tools/mzfont/build-display-font.py` turns the
+character generator ROM into `site/public/fonts/mz-display.woff2`, where set 1
+sits at U+E000 and set 2 at U+E100, so any byte can be drawn exactly as the MZ
+draws it — graphics characters included — without mapping anything to Unicode.
+(The emulator's own Unicode tables are GPL and are deliberately not copied into
+this Apache-2.0 repository.)
+
 ## Monitor
 
 `workers/site/metrics.js` keeps per-day totals in D1 (`metrics_daily`), and
