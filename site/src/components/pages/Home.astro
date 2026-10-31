@@ -10,7 +10,9 @@ const t = useTranslations(lang);
 const p = (path: string) => localizePath(lang, path);
 
 // Only curated titles (web: true in meta.yaml) appear on the site; the rest stay API-only.
-const titles = (await getCollection('titles')).filter((e) => e.data.web).sort((a, b) =>
+// A spotlighted title stands above the grid with its own block; listing it in the
+// grid as well would put it on the front page twice.
+const titles = (await getCollection('titles')).filter((e) => e.data.web && !e.data.spotlight).sort((a, b) =>
   a.data.title.localeCompare(b.data.title, 'en', { sensitivity: 'base' }),
 );
 const spotlights = (await getCollection('titles')).filter((e) => e.data.spotlight);

@@ -105,6 +105,27 @@ export default function catalog() {
           await writeFile(headersPath, `${existing}\n# Staging preview — keep it out of search results.\n/*\n  X-Robots-Tag: noindex, nofollow\n`);
           await writeFile(path.join(out, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
         }
+        // BomberNet's browser build is the game compiled to WebAssembly, shipped as a
+        // finished page by its own release — so it carries neither the visit beacon of
+        // our layout nor the play counter of the emulator page, and was invisible in the
+        // statistics. Add both here rather than in the file, so the next release does
+        // not lose them again. Same rules as everywhere else: robots and Do Not Track
+        // are dropped by the Worker, a play counts on the first key or tap.
+        const nativePage = path.join(out, 'bombernet', 'index.html');
+        if (existsSync(nativePage)) {
+          const html = await readFile(nativePage, 'utf8');
+          if (!html.includes('mz-native-stats')) {
+            const snippet = `<script id="mz-native-stats">(()=>{if(navigator.globalPrivacyControl||navigator.doNotTrack==='1'||navigator.webdriver)return;` +
+              `const s=(u,d)=>fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d),keepalive:true}).catch(()=>{});` +
+              `let r='';try{r=document.referrer?new URL(document.referrer).host:''}catch(e){}` +
+              `setTimeout(()=>s('/api/hit',{p:'/bombernet/',r}),1000);` +
+              `let p=false;const play=()=>{if(p)return;p=true;s('/api/play',{slug:'bombernet'})};` +
+              `addEventListener('keydown',play,{capture:true});addEventListener('pointerdown',play,{capture:true});})();</script>`;
+            await writeFile(nativePage, html.replace('</body>', `${snippet}</body>`));
+            logger.info('bombernet/index.html: visit beacon and play counter injected');
+          }
+        }
+
         const site = config.site.replace(/\/$/, '');
         const locales = config.i18n?.locales ?? ['en'];
         const defaultLocale = config.i18n?.defaultLocale ?? 'en';

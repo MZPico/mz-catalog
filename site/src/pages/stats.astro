@@ -196,7 +196,23 @@ import '../styles/global.css';
             <section class="panel"><h2>Where people came from</h2>${rank(byKey('source'), { label: (k) => { const [c, n] = k.includes(':') ? k.split(/:(.*)/) : [k, k]; return `${esc(n)} <span class="cls">${esc(SOURCE_CLASS[c] ?? '')}</span>`; } })}</section>
             <section class="panel"><h2>Most visited pages</h2>${rank(byKey('page'), { label: (k) => `<a href="${esc(k)}">${esc(k)}</a>` })}</section>
             <section class="panel"><h2>Most played</h2>${rank(byKey('play'), { label: (k) => `<a href="/titles/${esc(k)}/">${esc(k)}</a>` })}</section>
-            <section class="panel"><h2>Most downloaded .mzf</h2>${rank(byKey('download'), { label: (k) => `<a href="/titles/${esc(k)}/">${esc(k)}</a>` })}</section>
+            <section class="panel"><h2>Most downloaded files</h2>${rank(byKey('download'), { label: (k) => `<a href="/titles/${esc(k)}/">${esc(k)}</a>` })}</section>
+            <section class="panel"><h2>Downloads per platform</h2>${(() => {
+              // Only titles released per machine: for a single-file title the name just
+              // repeats the slug, and those are already in the panel above.
+              const rows = byKey('download-file').map(([k, v]) => {
+                const [slug, file = ''] = k.split(/\/(.*)/);
+                const ext = (file.match(/\.([a-z0-9]+)$/i) || [, ''])[1];
+                const plat = file.replace(/^.*?\d+\.\d+\.\d+-/, '').replace(/\.[a-z0-9]+$/i, '');
+                return { slug, plat, ext, v, solo: plat === slug || !plat };
+              }).filter((r) => !r.solo);
+              return rows.length
+                ? rank(rows.map((r) => [`${r.slug}|${r.plat}|${r.ext}`, r.v]), { label: (k) => {
+                    const [slug, plat, ext] = k.split('|');
+                    return `<a href="/titles/${esc(slug)}/">${esc(plat)}</a> <span class="cls">.${esc(ext)}</span>`;
+                  } })
+                : '<p class="empty">nothing yet</p>';
+            })()}</section>
             <section class="panel"><h2>AI crawlers</h2>${rank(byKey('bot', (k) => k.startsWith('ai-')), { label: (k) => esc(k.split('|')[1]) })}</section>
             <section class="panel"><h2>Other robots</h2>${rank(byKey('bot', (k) => !k.startsWith('ai-')), { label: (k) => esc(k.split('|')[1]) })}</section>
             <section class="panel"><h2>Countries</h2>${rank(byKey('country'))}</section>

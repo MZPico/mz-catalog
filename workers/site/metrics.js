@@ -39,7 +39,9 @@ function normalizePage(path) {
   const m = path.match(/^\/(?:(cs|de|ja)\/)?(.*)$/);
   if (!m) return null;
   const rest = '/' + m[2].replace(/index\.html$/, '');
-  const ok = /^\/(?:|archive\/|machines\/(?:mz-700|mz-800|mz-1500)\/|machines\/|card\/|about\/|privacy\/|(?:titles|play)\/[a-z0-9][a-z0-9-]{0,63}\/)$/.test(rest);
+  // /bombernet/ is the game itself compiled to WebAssembly, not an emulated title,
+  // but it is a page of ours and counts like one.
+  const ok = /^\/(?:|archive\/|machines\/(?:mz-700|mz-800|mz-1500)\/|machines\/|card\/|about\/|privacy\/|bombernet\/|(?:titles|play)\/[a-z0-9][a-z0-9-]{0,63}\/)$/.test(rest);
   return ok ? { lang: m[1] ?? 'en', page: rest } : null;
 }
 
@@ -289,11 +291,19 @@ async function collectCloudflare(env, day) {
   }
   for (const [k, n] of Object.entries(card)) writes.push(put(env, day, 'card', k, n));
   const files = new Map();
+  const perFile = new Map();
   for (const { count, dimensions: { clientRequestPath: p } } of z.files ?? []) {
-    const slug = p?.split('/')[2];
-    if (slug) files.set(slug, (files.get(slug) ?? 0) + count);
+    const [, , slug, name] = (p ?? '').split('/');     // /files/<slug>/<name>
+    if (!slug) continue;
+    files.set(slug, (files.get(slug) ?? 0) + count);
+    // A title with a build per machine (BomberNet has ten) needs the file, not just
+    // the title: the per-file rows are what "downloads per platform" is read from.
+    if (name) perFile.set(`${slug}/${name}`, (perFile.get(`${slug}/${name}`) ?? 0) + count);
   }
   for (const [slug, n] of files) writes.push(put(env, day, 'download', slug, n));
+  for (const [key, n] of [...perFile].sort((a, b) => b[1] - a[1]).slice(0, 40)) {
+    writes.push(put(env, day, 'download-file', key, n));
+  }
   writes.push(put(env, day, 'health', '5xx', z.errors?.[0]?.count ?? 0));
   for (let i = 0; i < writes.length; i += 50) await env.STATS.batch(writes.slice(i, i + 50));
 }
