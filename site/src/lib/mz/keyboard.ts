@@ -1,40 +1,47 @@
 // The MZ-800 keyboard, drawn under the screen.
 //
-// Layout and host-key mapping are the emulator's own (mz800emu
-// src/ui/vkbd/ui_vkbd.c): rows 1-4 are 15.5 keys wide, F1-F5/INST/DEL are
-// half-height, CR and CTRL are 1.75 keys, the space bar runs from X to the
-// slash. Keys the PC keyboard has nowhere sensible sit on function keys in
-// the emulator (@ = F6, \ = F7, ? = F8, £ = F9), and those are exactly the
-// ones this keyboard is for.
+// Layout, legends and the host key each cap sends are the machine's own, read
+// off the emulator's virtual keyboard (mz800emu src/ui/vkbd/ui_vkbd.c and its
+// cap pictures): rows 1-4 are 15.5 keys wide, F1-F5/INST/DEL are half-height,
+// CTRL and CR are 1.75 keys, the space bar runs from X to the slash. Character
+// caps carry two legends - the shifted symbol above the plain one - and are
+// pale; the command caps (GRAPH, TAB, CTRL, SHIFT, ALPHA, BREAK, CR, the
+// function keys and the cursors) are the darker grey of the real machine.
 //
-// A key press is a synthetic KeyboardEvent on the canvas, the way the touch
-// controls on the play page do it: SDL reads `code`, so that is what has to
-// be right.
+// Keys a PC keyboard has nowhere sensible sit on function keys in the
+// emulator (@ = F6, \ = F7, ? = F8, £ = F9), which is half the reason this
+// keyboard exists. A press is a synthetic KeyboardEvent on the canvas, the way
+// the touch controls on the play page do it: SDL reads `code`, so that is what
+// has to be right.
 
-type Key = { label: string; code: string; w?: number; sticky?: boolean; sub?: string };
+type Key = { label: string; code: string; w?: number; top?: string; dark?: boolean; sticky?: boolean };
 type Row = (Key | { gap: number })[];
 
-const k = (label: string, code: string, w?: number, sub?: string): Key => ({ label, code, w, sub });
-const letters = (text: string): Key[] => [...text].map((c) => k(c, 'Key' + c));
-const digits = (): Key[] => [...'1234567890'].map((c) => k(c, 'Digit' + c));
+const k = (label: string, code: string, top?: string): Key => ({ label, code, top });
+const cmd = (label: string, code: string, w: number, sticky = false): Key => ({ label, code, w, dark: true, sticky });
+const letters = (text: string): Key[] => [...text].map((c) => ({ label: c, code: 'Key' + c }));
+/** 1 to 0 with the symbol each one types under SHIFT. */
+const digits = (): Key[] => [...'1234567890'].map((c, i) => k(c, 'Digit' + c, '!"#$%&\'()π'[i]));
 
 const ROWS: Row[] = [
-  [k('F1', 'F1', 1.5), k('F2', 'F2', 1.5), k('F3', 'F3', 1.5), k('F4', 'F4', 1.5), k('F5', 'F5', 1.5),
-    { gap: 5 }, k('INST', 'Insert', 1.5), k('DEL', 'Delete', 1.5)],
-  [k('GRAPH', 'CapsLock'), ...digits(), k('−', 'Minus'), k('↑', 'Equal'), k('\\', 'F7'), k('BREAK', 'Escape', 1.5)],
-  [k('TAB', 'Tab', 1.5), ...letters('QWERTYUIOP'), k('@', 'F6'), k('[', 'BracketLeft'), k('£', 'F9'), k('BLANK', 'Backquote')],
-  [{ label: 'CTRL', code: 'ControlLeft', w: 1.75, sticky: true }, ...letters('ASDFGHJKL'),
-    k(';', 'Semicolon'), k(':', 'Quote'), k(']', 'BracketRight'), k('CR', 'Enter', 1.75)],
-  [{ label: 'SHIFT', code: 'ShiftLeft', w: 1.25, sticky: true }, k('ALPHA', 'Backslash'), ...letters('ZXCVBNM'),
-    k(',', 'Comma'), k('.', 'Period'), k('/', 'Slash'), k('?', 'F8'),
-    { label: 'SHIFT', code: 'ShiftRight', w: 2.25, sticky: true }],
-  [{ gap: 3.25 }, k('', 'Space', 9)],
+  [cmd('F1', 'F1', 1.5), cmd('F2', 'F2', 1.5), cmd('F3', 'F3', 1.5), cmd('F4', 'F4', 1.5), cmd('F5', 'F5', 1.5),
+    { gap: 5 }, cmd('INST', 'Insert', 1.5), cmd('DEL', 'Delete', 1.5)],
+  [cmd('GRAPH', 'CapsLock', 1), ...digits(), k('−', 'Minus', '='), k('↑', 'Equal', '~'), k('\\', 'F7', '|'),
+    cmd('BREAK\nESC', 'Escape', 1.5)],
+  [cmd('TAB', 'Tab', 1.5), ...letters('QWERTYUIOP'), k('@', 'F6', '`'), k('[', 'BracketLeft', '{'), k('↓', 'F9', '£'),
+    k('', 'Backquote')],
+  [cmd('CTRL', 'ControlLeft', 1.75, true), ...letters('ASDFGHJKL'),
+    k(';', 'Semicolon', '+'), k(':', 'Quote', '*'), k(')', 'BracketRight', '}'), cmd('CR', 'Enter', 1.75)],
+  [cmd('SHIFT', 'ShiftLeft', 1.25, true), cmd('ALPHA', 'Backslash', 1), ...letters('ZXCVBNM'),
+    k(',', 'Comma', '<'), k('.', 'Period', '>'), k('/', 'Slash', '←'), k('?', 'F8', '→'),
+    cmd('SHIFT', 'ShiftRight', 2.25, true)],
+  [{ gap: 3.25 }, { label: '', code: 'Space', w: 9 }],
 ];
 
 const CURSORS: Row[] = [
-  [{ gap: 1 }, k('▲', 'ArrowUp'), { gap: 1 }],
-  [k('◀', 'ArrowLeft'), { gap: 1 }, k('▶', 'ArrowRight')],
-  [{ gap: 1 }, k('▼', 'ArrowDown'), { gap: 1 }],
+  [{ gap: 1 }, cmd('↑', 'ArrowUp', 1), { gap: 1 }],
+  [cmd('←', 'ArrowLeft', 1), { gap: 1 }, cmd('→', 'ArrowRight', 1)],
+  [{ gap: 1 }, cmd('↓', 'ArrowDown', 1), { gap: 1 }],
 ];
 
 /** The legacy keyCode, for anything that still reads it. */
@@ -72,10 +79,13 @@ export function keyboard(host: HTMLElement, canvas: HTMLElement): void {
   const button = (key: Key): HTMLButtonElement => {
     const el = document.createElement('button');
     el.type = 'button';
-    el.className = 'kb-key' + (key.label.length > 2 ? ' wide-label' : '');
-    el.textContent = key.label;
+    el.className = 'kb-key' + (key.dark ? ' kb-cmd' : '') + (key.label.length > 2 ? ' kb-word' : '');
+    if (key.top) el.insertAdjacentHTML('beforeend', `<span class="kb-top"></span>`);
+    el.insertAdjacentHTML('beforeend', `<span class="kb-face"></span>`);
+    if (key.top) el.firstElementChild!.textContent = key.top;
+    el.lastElementChild!.textContent = key.label;
     el.style.setProperty('--w', String(key.w ?? 1));
-    el.setAttribute('aria-label', key.label || 'Space');
+    el.setAttribute('aria-label', key.label.replace('\n', ' ') || (key.code === 'Space' ? 'Space' : key.code));
     if (key.sticky) {
       el.addEventListener('click', () => {
         const on = !held.has(key.code);

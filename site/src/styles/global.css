@@ -619,26 +619,36 @@ body.pseudo-fs-on { overflow: hidden; }
 .wb-panel { margin: 0 0 1rem; }
 .wb-later { margin: 0.6rem 0 0; }
 
-/* The MZ-800 keyboard. Widths are in keys (--w), and a key is a share of the
-   block's own width, so the whole thing scales with the page: the main block
-   is 15.5 keys wide, the cursor diamond 3. */
-.mzkbd { display: flex; align-items: flex-end; gap: 1.2rem; margin: 0.2rem 0 0.4rem; }
+/* The MZ-800 keyboard, as the machine wears it: pale character caps with the
+   shifted legend above the plain one, darker command caps, on a near-black
+   body. Widths are in keys (--w), and a key is a share of its block's width,
+   so the whole thing scales: the main block is 15.5 keys wide, the cursors 3. */
+.mzkbd {
+  display: flex; align-items: flex-end; gap: 2.5%;
+  background: #151816; border: 1px solid #000; border-radius: 6px;
+  padding: 0.5rem 0.6rem; margin: 0.5rem 0 0.4rem;
+}
 .mzkbd .kb-main { container-type: inline-size; flex: 1 1 auto; min-width: 0; }
-.mzkbd .kb-cursors { container-type: inline-size; flex: 0 0 min(15%, 150px); }
-.kb-row { display: flex; gap: 0.4cqw; margin-bottom: 0.4cqw; }
+.mzkbd .kb-cursors { container-type: inline-size; flex: 0 0 15%; }
+.kb-row { display: flex; gap: 0.5cqw; margin-bottom: 0.5cqw; }
 .kb-gap { flex: 0 0 auto; width: calc(var(--w) * 6.45cqw); }
-.kb-main .kb-key { flex: 0 0 auto; width: calc(var(--w, 1) * 6.45cqw); height: 5.4cqw; min-height: 1.4rem; font-size: clamp(7px, 2.6cqw, 0.8rem); }
-.kb-main .kb-key.wide-label { font-size: clamp(6px, 1.5cqw, 0.62rem); }
-.kb-main .kb-row:first-child .kb-key { height: 3.2cqw; min-height: 1rem; }
+.kb-main .kb-key { width: calc(var(--w, 1) * 6.45cqw); height: 5.8cqw; min-height: 1.4rem; font-size: clamp(7px, 2.8cqw, 0.85rem); }
+.kb-main .kb-row:first-child .kb-key { height: 3.2cqw; min-height: 0.95rem; }
 .kb-cursors .kb-gap { width: calc(var(--w) * 33cqw); }
-.kb-cursors .kb-key { flex: 0 0 auto; width: 33cqw; height: 28cqw; font-size: clamp(8px, 12cqw, 1rem); }
+.kb-cursors .kb-key { width: 33cqw; height: 26cqw; font-size: clamp(8px, 13cqw, 1rem); }
 .kb-cursors .kb-row { gap: 2cqw; margin-bottom: 2cqw; }
 .kb-key {
-  display: flex; align-items: center; justify-content: center; padding: 0;
-  font-family: var(--mono); color: var(--text); background: var(--surface);
-  border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px;
+  flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.1em; padding: 0; border: 0; border-radius: 3px;
+  font-family: var(--mono); font-weight: 600; line-height: 1; white-space: pre-line;
+  color: #14171a; background: linear-gradient(#edf2ec, #c3cec6);
+  box-shadow: inset 0 -0.14em 0 rgba(0, 0, 0, 0.22), 0 0.12em 0.2em rgba(0, 0, 0, 0.55);
   cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: manipulation;
 }
-.kb-key:hover { border-color: var(--accent); }
-.kb-key.down, .kb-key.held { background: var(--accent); color: var(--bg); border-color: var(--accent); }
-@media (max-width: 560px) { .mzkbd { gap: 0.5rem; } .mzkbd .kb-cursors { flex-basis: 18%; } }
+.kb-key.kb-cmd { color: #0d100f; background: linear-gradient(#b3bdb5, #8e9a92); }
+.kb-key.kb-word { font-size: clamp(6px, 1.6cqw, 0.6rem); font-weight: 700; letter-spacing: 0.04em; }
+.kb-cursors .kb-key.kb-word { font-size: clamp(8px, 13cqw, 1rem); }
+.kb-top { font-size: 0.82em; opacity: 0.9; }
+.kb-key.down, .kb-key.held { transform: translateY(0.08em); box-shadow: inset 0 0.1em 0.2em rgba(0, 0, 0, 0.45); }
+.kb-key.held { background: linear-gradient(#f3c98a, #d9a35c); }  /* latched: SHIFT, CTRL */
+@media (max-width: 560px) { .mzkbd { padding: 0.35rem; } .mzkbd .kb-cursors { flex-basis: 18%; } }
