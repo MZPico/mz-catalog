@@ -42,9 +42,6 @@ const ui = {
       <div class="emu-screen" id="emu-frame">
         <!-- SDL's Emscripten backend looks the canvas up by this id; it cannot be renamed. -->
         <canvas id="canvas" tabindex="0" width="928" height="576"></canvas>
-        <div id="emu-overlay" class="play-overlay">
-          <button type="button" id="emu-start" class="btn">{tt.emuStart}</button>
-        </div>
       </div>
       <div class="emu-controls">
         <button type="button" class="btn secondary small" id="emu-reset">{tt.resetMachine}</button>
@@ -113,7 +110,7 @@ const ui = {
     import { recorder } from '../../lib/mz/recorder';
     import { devices, DEVICE_IDS, type DeviceId } from '../../lib/mz/devices';
     import { listFiles, rememberFile, forgetFile, forgetAll } from '../../lib/mz/store';
-    import { boot, running, frames, reset as resetMachine, mountFloppy, ejectFloppy, mountQd, protectQd, runMzf,
+    import { boot, running, frames, wake, reset as resetMachine, mountFloppy, ejectFloppy, mountQd, protectQd, runMzf,
       cmtInsert, cmtPlay, cmtStop, cmtRecord, cmtHack, cmtState, cmtPlaytime, setMuted, writeFile, readBack } from '../../lib/mz/emulator';
     import { defaults, presets, toIni, mediaOf, argsOf, mediaPath, type Machine } from '../../lib/mz/machine';
 
@@ -243,13 +240,17 @@ const ui = {
 
     // Whatever was open last time, back as it was.
     (async () => {
-      for (const stored of await listFiles()) files.push(load(stored.name, stored.bytes, stored.id));
-      if (!files.length) return;
-      select(files[0]);
-      const index = await catalogIndex();
-      for (const file of files) if (file.mzf) file.catalog = index.get(file.mzf.crc32) ?? null;
-      renderList(); renderActions();
-      renderMachine();   // the devices can name their disks now
+      try { for (const stored of await listFiles()) files.push(load(stored.name, stored.bytes, stored.id)); } catch { /* no store */ }
+      if (files.length) {
+        select(files[0]);
+        const index = await catalogIndex();
+        for (const file of files) if (file.mzf) file.catalog = index.get(file.mzf.crc32) ?? null;
+        renderList(); renderActions();
+        renderMachine();   // the devices can name their disks now
+      }
+      // The machine is on as soon as its disks are back: there is nothing to
+      // press first. Sound waits for the first click or key, as browsers insist.
+      startMachine();
     })();
 
     $('forget').addEventListener('click', () => {
@@ -433,9 +434,13 @@ const ui = {
       return false;
     }
 
+    // Browsers keep the sound clock suspended until the visitor touches the
+    // page; the first touch anywhere lets it go.
+    for (const type of ['pointerdown', 'keydown']) document.addEventListener(type, () => wake(), { capture: true });
+
+    let booted = false;
     async function startMachine() {
       const status = (text: string) => { $('emu-status').textContent = text; };
-      $('emu-overlay').hidden = true;
       status(ui.emuLoading);
       const media = mediaOf(machine).map(fileById).filter(Boolean).map((f) => ({ path: mediaPath(f!.id), bytes: f!.bytes }));
       try {
@@ -454,13 +459,15 @@ const ui = {
         if (!machine.tape.instant) await cmtHack(false);
         if (machine.tape.file) await applyLive('tape.file');
         showDeck();
-      } catch {
+      } catch (e) {
         // The runtime starts once per page; a different machine needs a fresh one.
-        location.reload();
+        // A first boot that fails is reported instead, so the page cannot reload in a loop.
+        if (booted) location.reload(); else status(String((e as Error)?.message ?? e));
       }
+      booted = true;
     }
 
-    $('emu-start').addEventListener('click', startMachine);
+
     $('emu-reset').addEventListener('click', () => resetMachine(!!machine.program));
     let muted = false;
     $('emu-mute').addEventListener('click', () => { muted = !muted; setMuted(muted); });
