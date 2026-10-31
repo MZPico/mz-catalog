@@ -1,7 +1,7 @@
 From f57cf61ead806bc24957b4c9f02d86bf6322fa13 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@gmail.com>
 Date: Fri, 11 Sep 2026 00:19:42 +0200
-Subject: [PATCH 27/33] Unicard: MZPico NET extension (vendor commands
+Subject: [PATCH 27/34] Unicard: MZPico NET extension (vendor commands
  0xA0-0xA9, INFO, MZPico REVD identity) behind [UNICARD] mzpico_mode; TCP
  JSON-lines relay transport natively, page-driven queues under Emscripten
 

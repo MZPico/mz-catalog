@@ -29,7 +29,9 @@ export interface Machine {
   memext: { connected: boolean; type: 'PEHU' | 'LUFTNER' };
   card: { connected: boolean; mzpicoMode: boolean; readonly: boolean };
   ide: { hdd0: string; hdd1: string };
-  tape: { speed: 'SPEED_1/1' | 'SPEED_2/1' | 'SPEED_3/1' | 'SPEED_4/1'; inverted: boolean; boost: boolean };
+  // `instant` is the emulator's CMT hack: the ROM's load is answered from the
+  // file at once. Switch it off and the deck plays the tape, bit by bit.
+  tape: { file: string; instant: boolean; speed: 'SPEED_1/1' | 'SPEED_2/1' | 'SPEED_3/1' | 'SPEED_4/1'; inverted: boolean; boost: boolean };
   sound: { on: boolean; secondPsg: boolean };
   joy: { joy1: JoyType; joy2: JoyType };
 }
@@ -46,7 +48,7 @@ export const defaults = (): Machine => ({
   memext: { connected: true, type: 'PEHU' },
   card: { connected: false, mzpicoMode: true, readonly: false },
   ide: { hdd0: '', hdd1: '' },
-  tape: { speed: 'SPEED_1/1', inverted: false, boost: true },
+  tape: { file: '', instant: true, speed: 'SPEED_1/1', inverted: false, boost: true },
   sound: { on: true, secondPsg: false },
   joy: { joy1: 'NONE', joy2: 'NONE' },
 });
@@ -135,7 +137,7 @@ export function toIni(m: Machine): string {
 
 /** Which workbench files this machine needs mounted, by id. */
 export function mediaOf(m: Machine): string[] {
-  return [m.program, ...m.fdc.drives.map((d) => d.file), m.qdisk.file, m.ide.hdd0, m.ide.hdd1].filter(Boolean);
+  return [m.program, m.tape.file, ...m.fdc.drives.map((d) => d.file), m.qdisk.file, m.ide.hdd0, m.ide.hdd1].filter(Boolean);
 }
 
 /** The emulator's command line: a program is injected, everything else just boots. */

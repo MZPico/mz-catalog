@@ -1,7 +1,7 @@
 From 285098f1b74427ce5bd29cadc7f4611ab3fb9418 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Sat, 31 Oct 2026 14:10:11 +0100
-Subject: [PATCH 33/33] Emscripten: the page says what the tape holds, and what
+Subject: [PATCH 33/34] Emscripten: the page says what the tape holds, and what
  to run
 
 The ROM's tape load opened a file chooser over the screen when nothing was

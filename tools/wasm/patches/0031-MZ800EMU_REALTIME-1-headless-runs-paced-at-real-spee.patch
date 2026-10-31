@@ -1,7 +1,7 @@
 From 45725d750fa7375c4ba24edd6f3c4e76f7c710c7 Mon Sep 17 00:00:00 2001
 From: Martin Matyas <martin.matyas@tietoevry.com>
 Date: Tue, 29 Sep 2026 20:22:24 +0200
-Subject: [PATCH 31/33] MZ800EMU_REALTIME=1: headless runs paced at real speed
+Subject: [PATCH 31/34] MZ800EMU_REALTIME=1: headless runs paced at real speed
  by the monotonic clock
 
 Headless (--mcp-pipe) no audio device paces the emulation, and at normal

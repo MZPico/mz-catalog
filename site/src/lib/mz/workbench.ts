@@ -39,8 +39,12 @@ export function detect(name: string, bytes: Uint8Array): Kind {
 
 export function load(name: string, bytes: Uint8Array, id?: string): LoadedFile {
   const kind = detect(name, bytes);
+  // The id ends in the file's own extension: it becomes the name in the
+  // machine's file system, and the emulator's tape deck picks the reader by
+  // extension (mzf, wav, tap).
+  const [, base, ext] = /^(.*?)(?:\.([A-Za-z0-9]{1,4}))?$/.exec(name) ?? [, name, ''];
   return {
-    id: id ?? `${name}-${bytes.length}-${Math.random().toString(36).slice(2, 7)}`,
+    id: id ?? `${base}-${bytes.length}-${Math.random().toString(36).slice(2, 7)}${ext ? '.' + ext : ''}`,
     name, bytes, kind,
     mzf: kind === 'mzf' ? readMzf(bytes) : undefined,
   };

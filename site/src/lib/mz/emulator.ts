@@ -17,7 +17,8 @@ export interface BootOptions {
 }
 
 /** What the build lets the page change while the machine runs (patch 0030). */
-export const MEDIA = { fddMount: 1, qdMount: 2, qdProtect: 3, reset: 4, tape: 5, runMzf: 6 } as const;
+export const MEDIA = { fddMount: 1, qdMount: 2, qdProtect: 3, reset: 4, tape: 5, runMzf: 6,
+  cmtInsert: 7, cmtControl: 8, cmtHack: 9 } as const;
 
 type Emu = {
   canvas: HTMLCanvasElement;
@@ -26,6 +27,8 @@ type Emu = {
   _mz_wasm_restart?: () => number;
   _mz_wasm_total_screens?: () => number;
   _mz_wasm_media_status?: () => number;
+  _mz_wasm_cmt_state?: () => number;
+  _mz_wasm_cmt_playtime?: () => number;
   ccall?: (name: string, ret: string | null, argTypes: string[], args: unknown[]) => unknown;
 };
 
@@ -121,6 +124,19 @@ export const protectQd = (on: boolean) => media(MEDIA.qdProtect, on ? 1 : 0, '')
 export const setTape = (path: string) => media(MEDIA.tape, 0, path);
 /** Reset into an MZF and run it, the way the machine starts with --run-mzf. */
 export const runMzf = (path: string) => media(MEDIA.runMzf, 0, path);
+/** Put a tape in the deck (empty path ejects); `play` starts it at once. */
+export const cmtInsert = (path: string, play = false) => media(MEDIA.cmtInsert, play ? 1 : 0, path);
+/** The deck's buttons. */
+export const cmtPlay = () => media(MEDIA.cmtControl, 1, '');
+export const cmtStop = () => media(MEDIA.cmtControl, 0, '');
+export const cmtPause = (on: boolean) => media(MEDIA.cmtControl, on ? 2 : 3, '');
+/** The instant load: on, the ROM's tape load is answered from the file. */
+export const cmtHack = (on: boolean) => media(MEDIA.cmtHack, on ? 1 : 0, '');
+/** The deck right now: 0 empty, 1 stopped, 2 playing, 3 paused, 4 recording. */
+export const cmtState = (): number => win().Module?._mz_wasm_cmt_state?.() ?? 0;
+/** How far into the tape the deck has played, in seconds. */
+export const cmtPlaytime = (): number => win().Module?._mz_wasm_cmt_playtime?.() ?? 0;
+
 /** Reset the machine; `rerun` starts the --run-mzf program again. */
 export const reset = (rerun = false) => media(MEDIA.reset, rerun ? 1 : 0, '');
 
