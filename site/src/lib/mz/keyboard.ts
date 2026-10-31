@@ -2,11 +2,14 @@
 //
 // Layout, legends and the host key each cap sends are the machine's own, read
 // off the emulator's virtual keyboard (mz800emu src/ui/vkbd/ui_vkbd.c and its
-// cap pictures): rows 1-4 are 15.5 keys wide, F1-F5/INST/DEL are half-height,
-// CTRL and CR are 1.75 keys, the space bar runs from X to the slash. Character
-// caps carry two legends - the shifted symbol above the plain one - and are
-// pale; the command caps (GRAPH, TAB, CTRL, SHIFT, ALPHA, BREAK, CR, the
-// function keys and the cursors) are the darker grey of the real machine.
+// cap pictures): rows 1-4 are 15.5 keys wide, F1-F5 and INST/DEL are
+// half-height with half a key of air below them, CTRL and CR are 1.75 keys,
+// TAB, BREAK, INST, DEL and the cursors 1.5, and the space bar runs from X to
+// the slash. The cursor cross stands to the right of the rows, 1.2 keys past
+// CR, with INST and DEL above it in the function-key row - so the whole board
+// is 19.7 keys wide. Character caps carry two legends - the shifted symbol
+// above the plain one - and are pale; the command caps are the darker grey of
+// the real machine.
 //
 // Keys a PC keyboard has nowhere sensible sit on function keys in the
 // emulator (@ = F6, \ = F7, ? = F8, £ = F9), which is half the reason this
@@ -25,23 +28,18 @@ const digits = (): Key[] => [...'1234567890'].map((c, i) => k(c, 'Digit' + c, '!
 
 const ROWS: Row[] = [
   [cmd('F1', 'F1', 1.5), cmd('F2', 'F2', 1.5), cmd('F3', 'F3', 1.5), cmd('F4', 'F4', 1.5), cmd('F5', 'F5', 1.5),
-    { gap: 5 }, cmd('INST', 'Insert', 1.5), cmd('DEL', 'Delete', 1.5)],
+    { gap: 9.2 }, cmd('INST', 'Insert', 1.5), cmd('DEL', 'Delete', 1.5)],
   [cmd('GRAPH', 'CapsLock', 1), ...digits(), k('−', 'Minus', '='), k('↑', 'Equal', '~'), k('\\', 'F7', '|'),
     cmd('BREAK\nESC', 'Escape', 1.5)],
   [cmd('TAB', 'Tab', 1.5), ...letters('QWERTYUIOP'), k('@', 'F6', '`'), k('[', 'BracketLeft', '{'), k('↓', 'F9', '£'),
-    k('', 'Backquote')],
+    cmd('', 'Backquote', 1), { gap: 1.95 }, cmd('↑', 'ArrowUp', 1.5)],
   [cmd('CTRL', 'ControlLeft', 1.75, true), ...letters('ASDFGHJKL'),
-    k(';', 'Semicolon', '+'), k(':', 'Quote', '*'), k(')', 'BracketRight', '}'), cmd('CR', 'Enter', 1.75)],
+    k(';', 'Semicolon', '+'), k(':', 'Quote', '*'), k(')', 'BracketRight', '}'), cmd('CR', 'Enter', 1.75),
+    { gap: 1.2 }, cmd('←', 'ArrowLeft', 1.5), cmd('→', 'ArrowRight', 1.5)],
   [cmd('SHIFT', 'ShiftLeft', 1.25, true), cmd('ALPHA', 'Backslash', 1), ...letters('ZXCVBNM'),
     k(',', 'Comma', '<'), k('.', 'Period', '>'), k('/', 'Slash', '←'), k('?', 'F8', '→'),
-    cmd('SHIFT', 'ShiftRight', 2.25, true)],
+    cmd('SHIFT', 'ShiftRight', 2.25, true), { gap: 1.95 }, cmd('↓', 'ArrowDown', 1.5)],
   [{ gap: 3.25 }, { label: '', code: 'Space', w: 9 }],
-];
-
-const CURSORS: Row[] = [
-  [{ gap: 1 }, cmd('↑', 'ArrowUp', 1), { gap: 1 }],
-  [cmd('←', 'ArrowLeft', 1), { gap: 1 }, cmd('→', 'ArrowRight', 1)],
-  [{ gap: 1 }, cmd('↓', 'ArrowDown', 1), { gap: 1 }],
 ];
 
 /** The legacy keyCode, for anything that still reads it. */
@@ -121,5 +119,5 @@ export function keyboard(host: HTMLElement, canvas: HTMLElement): void {
   };
 
   host.innerHTML = '';
-  host.append(block(ROWS, 'kb-main'), block(CURSORS, 'kb-cursors'));
+  host.append(block(ROWS, 'kb-main'));
 }
