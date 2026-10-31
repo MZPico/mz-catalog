@@ -271,7 +271,7 @@ export const de: Ui = {
   },
   studio: {
     title: 'Studio',
-    h1: 'Studio',
+    h1: 'MZ-800 studio',
     description: 'Werkzeuge für Sharp-MZ-Dateien: ein Bandabbild ansehen, einen Dump erkennen, Sharp-Zeichencodes umwandeln. Alles läuft in Ihrem Browser.',
     lead: 'Bringen Sie eine Datei mit: Die Seite erkennt, was es ist, und bietet an, was sich damit machen lässt. Alles läuft in Ihrem Browser; Dateien werden nie hochgeladen, und die geöffneten bleiben hier, damit ein Neuladen sie nicht verliert.',
     mzfTitle: 'Band-Betrachter',

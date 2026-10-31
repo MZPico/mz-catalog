@@ -271,7 +271,7 @@ export const en = {
   },
   studio: {
     title: 'Studio',
-    h1: 'Studio',
+    h1: 'MZ-800 studio',
     description: 'Tools for Sharp MZ files: read a tape image, identify a dump, convert Sharp character codes. Everything runs in your browser.',
     lead: 'Bring a file and the page works out what it is, then offers what can be done with it. Everything runs in your browser; files are never uploaded, and the ones you open are kept here so a reload does not lose them.',
     mzfTitle: 'Tape inspector',

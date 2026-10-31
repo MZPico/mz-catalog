@@ -270,7 +270,7 @@ export const cs: Ui = {
   },
   studio: {
     title: 'Studio',
-    h1: 'Studio',
+    h1: 'MZ-800 studio',
     description: 'Nástroje pro soubory Sharp MZ: prohlédnout obraz pásky, poznat dump, převést znakové kódy Sharpu. Vše běží ve vašem prohlížeči.',
     lead: 'Přineste soubor, stránka pozná, co to je, a nabídne, co se s ním dá dělat. Vše běží ve vašem prohlížeči; soubory se nikam neposílají a ty otevřené tu zůstanou, aby je obnovení stránky neztratilo.',
     mzfTitle: 'Prohlížeč pásky',
