@@ -556,7 +556,7 @@ body.pseudo-fs-on { overflow: hidden; }
 
 @media (min-width: 1000px) {
   .wb {
-    grid-template-columns: minmax(180px, 230px) minmax(460px, 1fr) minmax(250px, 290px);
+    grid-template-columns: minmax(200px, 1fr) 400px minmax(260px, 300px);
     grid-template-areas:
       'head   head   head'
       'drop   drop   drop'
@@ -566,11 +566,6 @@ body.pseudo-fs-on { overflow: hidden; }
   }
 }
 
-/* The screen deserves more room than the text column gives it, so on a wide
-   display the workbench steps outside the page's own width. */
-@media (min-width: 1200px) {
-  .wb { --wbw: min(1320px, calc(100vw - 2.5rem)); width: var(--wbw); margin-inline: calc((1040px - var(--wbw)) / 2); }
-}
 
 .wb-kept { margin: 0.3rem 0 0; font-size: 0.72rem; }
 
@@ -581,7 +576,7 @@ body.pseudo-fs-on { overflow: hidden; }
 /* The screen itself: a thin border and the picture only. The emulator draws the
    machine's own border area around it (the same 112/56 offset the screenshot
    tool crops), so the canvas is oversized and shifted to show just the picture. */
-.emu-screen { position: relative; background: #000; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; aspect-ratio: 704 / 464; }
+.emu-screen { max-width: 400px; position: relative; background: #000; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; aspect-ratio: 704 / 464; }
 .emu-screen canvas {
   display: block; outline: none;
   width: calc(100% * 928 / 704);
