@@ -90,7 +90,8 @@ export default function catalog() {
         if (localePlayDirs.length) {
           const headersPath = path.join(out, '_headers');
           const rules = localePlayDirs
-            .map((l) => `\n/${l}/play/*\n  Cross-Origin-Opener-Policy: same-origin\n  Cross-Origin-Embedder-Policy: require-corp\n  Cache-Control: public, max-age=3600\n`)
+            .flatMap((l) => [`\n/${l}/play/*`, `\n/${l}/tools/*`].map((path) =>
+              `${path}\n  Cross-Origin-Opener-Policy: same-origin\n  Cross-Origin-Embedder-Policy: require-corp\n  Cache-Control: public, max-age=3600\n`))
             .join('');
           const existing = await readFile(headersPath, 'utf8').catch(() => '');
           await writeFile(headersPath, `${existing}${rules}`);

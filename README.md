@@ -319,6 +319,20 @@ so a new format module adds its actions and the page is untouched. Today:
 - **no file needed** — Sharp characters to text and back, with a 40-column
   screen preview.
 
+**The emulator** is part of the page: the same build the player uses, with no
+interface of its own, and the machine is composed here —
+`site/src/lib/mz/machine.ts` turns the settings into the ini the emulator reads
+(drives, Quick Disk, RAM disk, memory extension, MZPico card, IDE disks, tape,
+sound, joysticks), with presets to start from. Images come from the files you
+dropped, and a disk the machine wrote to can be taken back into the list.
+
+Disks and the Quick Disk change **while the machine runs**, as the desktop
+menus do it: patch 0027 exports `mz_wasm_media_request()` /
+`mz_wasm_media_status()` and the emulation thread mounts, ejects or resets
+between two instructions. Everything else (controllers, RAM disk, card…) is
+read at start, so changing it offers a restart. `/tools/*` therefore carries
+the same cross-origin isolation headers as `/play/*`.
+
 A tape's CRC is looked up in `manifest.json`: a known dump links to its title
 page and offers to play it.
 

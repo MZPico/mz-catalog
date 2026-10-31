@@ -1,11 +1,18 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { useTranslations, localizePath, type Lang } from '../../i18n';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 const tt = t.tools;
+// Content stamp of the emulator build, so a new one is not served from cache.
+const emuVersion = createHash('md5')
+  .update(readFileSync(new URL('../../../public/play/emu/mz800emu.wasm', import.meta.url)))
+  .digest('hex')
+  .slice(0, 8);
 // Everything the client script needs to speak the visitor's language.
 const ui = {
   ...Object.fromEntries(Object.entries(tt).filter(([, v]) => typeof v === 'string')),
@@ -41,6 +48,48 @@ const ui = {
       <div id="wb-panel" class="wb-panel"></div>
     </section>
 
+    <section class="wb-emu" id="emu-section">
+      <h2>{tt.emuTitle}</h2>
+      <p class="meta">{tt.emuLead}</p>
+      <div class="play-frame emu-frame">
+        <!-- SDL's Emscripten backend looks the canvas up by this id; it cannot be renamed. -->
+        <canvas id="canvas" tabindex="0" width="928" height="576"></canvas>
+        <div id="emu-overlay" class="play-overlay">
+          <button type="button" id="emu-start" class="btn">{tt.emuStart}</button>
+        </div>
+      </div>
+      <div class="play-controls">
+        <button type="button" class="btn secondary" id="emu-reset">{tt.resetMachine}</button>
+        <button type="button" class="btn secondary" id="emu-mute">{t.play.mute}</button>
+        <button type="button" class="btn secondary" id="emu-fs">{t.play.fullscreen}</button>
+        <span class="play-status meta" id="emu-status"></span>
+      </div>
+
+      <h3>{tt.machine}</h3>
+      <div class="machine" id="machine" data-emu={emuVersion} data-ui={JSON.stringify({
+        none: tt.none, drive: tt.drive, connected: tt.connected, plugged: tt.plugged, size: tt.size, type: tt.type,
+        readonly: tt.readonly, writeProtected: tt.writeProtected, keepWrites: tt.keepWrites, discardWrites: tt.discardWrites,
+        mzpicoMode: tt.mzpicoMode, tapeSpeed: tt.tapeSpeed, tapeInverted: tt.tapeInverted, tapeBoost: tt.tapeBoost,
+        soundOn: tt.soundOn, secondPsg: tt.secondPsg, joy1: tt.joy1, joy2: tt.joy2,
+        joyNone: tt.joyNone, joyKeypad: tt.joyKeypad, joyStick: tt.joyStick, program: tt.program,
+        drives: tt.drives, qdisk: tt.qdisk, ramdisk: tt.ramdisk, memext: tt.memext, cardSection: tt.cardSection,
+        hdd: tt.hdd, tapeSection: tt.tapeSection, soundSection: tt.soundSection, takeImage: tt.takeImage, taken: tt.taken,
+      })}></div>
+      <div class="machine-apply">
+        <label>{tt.preset}
+          <select id="preset">
+            <option value="">—</option>
+            <option value="plain">{tt.presetPlain}</option>
+            <option value="floppy">{tt.presetFloppy}</option>
+            <option value="card">{tt.presetCard}</option>
+            <option value="everything">{tt.presetEverything}</option>
+          </select>
+        </label>
+        <button type="button" class="btn primary" id="apply">{tt.applyLive}</button>
+        <span class="meta" id="apply-note">{tt.liveNote}</span>
+      </div>
+    </section>
+
     <section class="wb-nofile">
       <h2>{tt.groupNoFile}</h2>
       <div class="wb-actions">
@@ -61,6 +110,8 @@ const ui = {
     import { load, actionsFor, catalogIndex, formatSize, type LoadedFile } from '../../lib/mz/workbench';
     import { setStrings, charactersPanel } from '../../lib/mz/panels';
     import { listFiles, rememberFile, forgetFile, forgetAll } from '../../lib/mz/store';
+    import { boot, running, reset as resetMachine, mountFloppy, ejectFloppy, mountQd, protectQd, setMuted, writeFile, readBack } from '../../lib/mz/emulator';
+    import { defaults, presets, toIni, mediaOf, argsOf, mediaPath, type Machine } from '../../lib/mz/machine';
 
     const drop = document.getElementById('drop')!;
     const ui = JSON.parse(drop.dataset.ui!) as Record<string, any>;
@@ -161,6 +212,7 @@ const ui = {
           file.catalog = (await catalogIndex()).get(file.mzf.crc32) ?? null;
           renderList(); renderActions();
         }
+        renderMachine();
       }
     }
 
@@ -190,6 +242,186 @@ const ui = {
       $('wb-panel').innerHTML = '';
       renderList(); renderActions();
     });
+
+
+    // ---------------------------------------------------------------- emulator
+    const mui = JSON.parse($('machine').dataset.ui!) as Record<string, string>;
+    const EMU_VERSION = $('machine').dataset.emu ?? '1';
+    let machine: Machine = defaults();
+    try { machine = { ...defaults(), ...JSON.parse(localStorage.getItem('mz-machine') ?? '{}') }; } catch { /* first visit */ }
+    const saveMachine = () => { try { localStorage.setItem('mz-machine', JSON.stringify(machine)); } catch { /* private mode */ } };
+
+    const fileById = (id: string) => files.find((f) => f.id === id) ?? null;
+    const option = (value: string, text: string, on: boolean) =>
+      `<option value="${esc(value)}"${on ? ' selected' : ''}>${esc(text)}</option>`;
+    /** Files of a kind, as a picker that always offers "empty". */
+    const picker = (kinds: string[], chosen: string) =>
+      [option('', mui.none, !chosen), ...files.filter((f) => kinds.includes(f.kind)).map((f) => option(f.id, f.name, f.id === chosen))].join('');
+    const check = (path: string, label: string, on: boolean) =>
+      `<label class="check"><input type="checkbox" data-set="${esc(path)}"${on ? ' checked' : ''}> ${esc(label)}</label>`;
+    const chooser = (path: string, label: string, options: string) =>
+      `<label>${esc(label)} <select data-set="${esc(path)}">${options}</select></label>`;
+
+    function renderMachine() {
+      const m = machine;
+      $('machine').innerHTML = `
+        <div class="m-row"><b>${esc(mui.program)}</b>${chooser('program', '', picker(['mzf'], m.program))}</div>
+        <div class="m-row"><b>${esc(mui.drives)}</b>
+          ${check('fdc.connected', mui.connected, m.fdc.connected)}
+          ${m.fdc.drives.map((d, i) => `${chooser(`fdc.drives.${i}.file`, `${mui.drive} ${i}`, picker(['dsk'], d.file))}
+             ${check(`fdc.drives.${i}.readonly`, mui.readonly, d.readonly)}
+             ${chooser(`fdc.drives.${i}.storage`, '', option('cached', mui.keepWrites, d.storage === 'cached') + option('discard', mui.discardWrites, d.storage === 'discard'))}
+             ${d.file ? `<button class="btn ghost small" type="button" data-take="${i}">${esc(mui.takeImage)}</button>` : ''}`).join('<hr>')}
+        </div>
+        <div class="m-row"><b>${esc(mui.qdisk)}</b>
+          ${check('qdisk.connected', mui.connected, m.qdisk.connected)}
+          ${chooser('qdisk.type', mui.type, option('STANDARD', 'MZ-1F11', m.qdisk.type === 'STANDARD') + option('UNICARD', 'MZPico', m.qdisk.type === 'UNICARD'))}
+          ${chooser('qdisk.file', '', picker(['mzq', 'bin'], m.qdisk.file))}
+          ${check('qdisk.writeProtected', mui.writeProtected, m.qdisk.writeProtected)}
+        </div>
+        <div class="m-row"><b>${esc(mui.ramdisk)}</b>
+          ${check('ramdisk.mr1r18.plugged', 'MR1R18', m.ramdisk.mr1r18.plugged)}
+          ${chooser('ramdisk.mr1r18.size', mui.size, ['64K', '256K', '512K', '1M', '16M'].map((v) => option(v, v, m.ramdisk.mr1r18.size === v)).join(''))}
+          ${chooser('ramdisk.mr1r18.type', mui.type, option('SRAM', 'SRAM', m.ramdisk.mr1r18.type === 'SRAM') + option('ROM', 'ROM', m.ramdisk.mr1r18.type === 'ROM'))}
+          ${check('ramdisk.pezikE8', 'Pezik E8', m.ramdisk.pezikE8)}
+          ${check('ramdisk.pezik68', 'Pezik 68', m.ramdisk.pezik68)}
+        </div>
+        <div class="m-row"><b>${esc(mui.memext)}</b>
+          ${check('memext.connected', mui.connected, m.memext.connected)}
+          ${chooser('memext.type', mui.type, option('PEHU', 'PEHU', m.memext.type === 'PEHU') + option('LUFTNER', 'Luftner', m.memext.type === 'LUFTNER'))}
+        </div>
+        <div class="m-row"><b>${esc(mui.cardSection)}</b>
+          ${check('card.connected', mui.connected, m.card.connected)}
+          ${check('card.mzpicoMode', mui.mzpicoMode, m.card.mzpicoMode)}
+          ${check('card.readonly', mui.readonly, m.card.readonly)}
+        </div>
+        <div class="m-row"><b>${esc(mui.hdd)}</b>
+          ${chooser('ide.hdd0', '0', picker(['bin'], m.ide.hdd0))}
+          ${chooser('ide.hdd1', '1', picker(['bin'], m.ide.hdd1))}
+        </div>
+        <div class="m-row"><b>${esc(mui.tapeSection)}</b>
+          ${chooser('tape.speed', mui.tapeSpeed, ['SPEED_1/1', 'SPEED_2/1', 'SPEED_3/1', 'SPEED_4/1'].map((v) => option(v, v.replace('SPEED_', ''), m.tape.speed === v)).join(''))}
+          ${check('tape.inverted', mui.tapeInverted, m.tape.inverted)}
+          ${check('tape.boost', mui.tapeBoost, m.tape.boost)}
+        </div>
+        <div class="m-row"><b>${esc(mui.soundSection)}</b>
+          ${check('sound.on', mui.soundOn, m.sound.on)}
+          ${check('sound.secondPsg', mui.secondPsg, m.sound.secondPsg)}
+          ${chooser('joy.joy1', mui.joy1, (['NONE', 'NUM_KEYPAD', 'JOYSTICK'] as const).map((v) => option(v, v === 'NONE' ? mui.joyNone : v === 'NUM_KEYPAD' ? mui.joyKeypad : mui.joyStick, m.joy.joy1 === v)).join(''))}
+          ${chooser('joy.joy2', mui.joy2, (['NONE', 'NUM_KEYPAD', 'JOYSTICK'] as const).map((v) => option(v, v === 'NONE' ? mui.joyNone : v === 'NUM_KEYPAD' ? mui.joyKeypad : mui.joyStick, m.joy.joy2 === v)).join(''))}
+        </div>`;
+
+      for (const el of $('machine').querySelectorAll<HTMLElement>('[data-set]')) {
+        el.addEventListener('change', () => {
+          const input = el as HTMLInputElement | HTMLSelectElement;
+          const value = input.type === 'checkbox' ? (input as HTMLInputElement).checked : input.value;
+          setAt(machine as unknown as Record<string, unknown>, el.dataset.set!, value);
+          saveMachine();
+          markDirty(el.dataset.set!);
+          renderMachine();
+        });
+      }
+      for (const b of $('machine').querySelectorAll<HTMLButtonElement>('[data-take]')) {
+        b.addEventListener('click', () => takeImage(Number(b.dataset.take)));
+      }
+    }
+
+    function setAt(obj: Record<string, unknown>, path: string, value: unknown) {
+      const parts = path.split('.');
+      let node = obj as Record<string, unknown>;
+      for (const part of parts.slice(0, -1)) node = node[part] as Record<string, unknown>;
+      node[parts.at(-1)!] = value;
+    }
+
+    // Drives and the Quick Disk can be changed while the machine runs; the rest
+    // is read when it starts, exactly as the ini is.
+    const LIVE = /^(fdc\.drives\.\d+\.file|qdisk\.(file|writeProtected))$/;
+    let needsRestart = false;
+    function markDirty(path: string) {
+      if (!running()) return;
+      if (LIVE.test(path)) { applyLive(path); return; }
+      needsRestart = true;
+      $('apply-note').textContent = ui.needsRestart;
+      ($('apply') as HTMLButtonElement).textContent = ui.applyRestart;
+    }
+
+    async function applyLive(path: string) {
+      const drive = path.match(/^fdc\.drives\.(\d+)\.file$/);
+      if (drive) {
+        const index = Number(drive[1]);
+        const file = fileById(machine.fdc.drives[index].file);
+        if (!file) { await ejectFloppy(index); return; }
+        writeFile(mediaPath(file.id), file.bytes);
+        await mountFloppy(index, mediaPath(file.id));
+        return;
+      }
+      if (path === 'qdisk.file') {
+        const file = fileById(machine.qdisk.file);
+        if (!file) { await mountQd(''); return; }
+        writeFile(mediaPath(file.id), file.bytes);
+        await mountQd(mediaPath(file.id));
+        return;
+      }
+      if (path === 'qdisk.writeProtected') await protectQd(machine.qdisk.writeProtected);
+    }
+
+    /** A disk the machine has written to, back into the file list. */
+    async function takeImage(drive: number) {
+      const chosen = fileById(machine.fdc.drives[drive].file);
+      if (!chosen) return;
+      const bytes = readBack(mediaPath(chosen.id));
+      if (!bytes) return;
+      const copy = load(chosen.name.replace(/(\.[^.]+)?$/, '-changed$1'), new Uint8Array(bytes));
+      files.unshift(copy);
+      rememberFile({ id: copy.id, name: copy.name, bytes: copy.bytes, ts: Date.now() });
+      renderList(); renderMachine();
+      $('apply-note').textContent = mui.taken;
+    }
+
+    async function startMachine() {
+      const status = (text: string) => { $('emu-status').textContent = text; };
+      $('emu-overlay').hidden = true;
+      status(ui.emuLoading);
+      const media = mediaOf(machine).map(fileById).filter(Boolean).map((f) => ({ path: mediaPath(f!.id), bytes: f!.bytes }));
+      try {
+        await boot({
+          canvas: $('canvas') as HTMLCanvasElement,
+          version: EMU_VERSION,
+          args: argsOf(machine),
+          files: [{ path: '/mz800emu.ini', bytes: new TextEncoder().encode(toIni(machine)) }, ...media],
+          dirs: ['/media/sd'],
+          onStatus: status,
+        });
+        track('tool-emulator');
+      } catch {
+        // The runtime starts once per page; a different machine needs a fresh one.
+        location.reload();
+      }
+    }
+
+    $('emu-start').addEventListener('click', startMachine);
+    $('emu-reset').addEventListener('click', () => resetMachine(!!machine.program));
+    let muted = false;
+    $('emu-mute').addEventListener('click', () => { muted = !muted; setMuted(muted); });
+    $('emu-fs').addEventListener('click', () => {
+      const frame = document.querySelector('.emu-frame') as HTMLElement & { webkitRequestFullscreen?: () => void };
+      (frame.requestFullscreen ?? frame.webkitRequestFullscreen)?.call(frame);
+    });
+    $('preset').addEventListener('change', (e) => {
+      const name = (e.target as HTMLSelectElement).value;
+      if (!presets[name]) return;
+      machine = presets[name]();
+      saveMachine(); renderMachine(); markDirty('preset');
+    });
+    $('apply').addEventListener('click', async () => {
+      saveMachine();
+      if (!running()) { startMachine(); return; }
+      if (needsRestart) { location.reload(); return; }
+      for (let i = 0; i < 4; i++) await applyLive(`fdc.drives.${i}.file`);
+      await applyLive('qdisk.file');
+      await resetMachine(!!machine.program);
+    });
+    renderMachine();
 
     // The one tool that needs no file.
     const charBtn = $<HTMLButtonElement>('act-characters');

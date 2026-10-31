@@ -20,6 +20,12 @@
   Cache-Control: public, max-age=3600
 
 # In-browser emulator (Emscripten pthreads need SharedArrayBuffer => cross-origin isolation).
+# The tools page starts the same emulator, so it needs the same isolation.
+/tools/*
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Embedder-Policy: require-corp
+  Cache-Control: no-store
+
 /play/*
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Embedder-Policy: require-corp

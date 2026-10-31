@@ -537,3 +537,15 @@ body.pseudo-fs-on { overflow: hidden; }
 .wb-later { margin-top: 2rem; }
 
 .btn.small { padding: 0.2rem 0.5rem; font-size: 0.78rem; vertical-align: middle; margin-left: 0.5rem; }
+
+/* The machine on the tools page */
+.wb-emu { margin: 2rem 0; }
+.emu-frame { max-width: 928px; }
+.machine { display: grid; gap: 0.5rem; margin: 0.6rem 0 1rem; }
+.machine .m-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.9rem; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 0.5rem 0.7rem; font-size: 0.88rem; }
+.machine .m-row > b { min-width: 11rem; font-weight: 600; }
+.machine .m-row hr { width: 100%; border: 0; border-top: 1px solid var(--line); margin: 0.1rem 0; }
+.machine label { display: flex; align-items: center; gap: 0.35rem; }
+.machine select { font: inherit; max-width: 16rem; padding: 0.2rem 0.35rem; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 6px; }
+.machine-apply { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin-bottom: 1rem; }
+.machine-apply select { font: inherit; padding: 0.25rem 0.4rem; background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 6px; }
