@@ -475,10 +475,9 @@ body.pseudo-fs-on { overflow: hidden; }
 .tool-list a:hover { border-color: var(--accent); }
 .tool-list .meta { display: block; margin-top: 0.15rem; }
 .tool-icon { font-size: 1.4rem; line-height: 1; color: var(--accent); }
-.dropzone { border: 2px dashed var(--line); border-radius: var(--radius); padding: 1.4rem 1rem; text-align: center; margin: 1rem 0; background: var(--surface); }
-.dropzone.over { border-color: var(--accent); background: var(--surface-2); }
-.dropzone p { margin: 0 0 0.6rem; }
-.dropzone .meta { margin: 0.6rem 0 0; }
+.dropbar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.8rem; border: 1px dashed var(--line); border-radius: 8px; padding: 0.45rem 0.7rem; margin: 0.8rem 0 0.5rem; background: var(--surface); }
+.dropbar.over { border-color: var(--accent); background: var(--surface-2); }
+.dropbar .meta { flex: 1; min-width: 12rem; }
 .tool-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.9rem 1rem; margin: 0 0 0.9rem; }
 .tool-card h2 { margin: 0 0 0.6rem; }
 .tool-card table { width: auto; min-width: min(100%, 34rem); }
@@ -541,11 +540,86 @@ body.pseudo-fs-on { overflow: hidden; }
 /* The machine on the tools page */
 .wb-emu { margin: 2rem 0; }
 .emu-frame { max-width: 928px; }
-.machine { display: grid; gap: 0.5rem; margin: 0.6rem 0 1rem; }
-.machine .m-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.9rem; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 0.5rem 0.7rem; font-size: 0.88rem; }
-.machine .m-row > b { min-width: 11rem; font-weight: 600; }
-.machine .m-row hr { width: 100%; border: 0; border-top: 1px solid var(--line); margin: 0.1rem 0; }
-.machine label { display: flex; align-items: center; gap: 0.35rem; }
-.machine select { font: inherit; max-width: 16rem; padding: 0.2rem 0.35rem; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 6px; }
-.machine-apply { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin-bottom: 1rem; }
-.machine-apply select { font: inherit; padding: 0.25rem 0.4rem; background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 6px; }
+
+/* The workbench: the machine in the middle, everything else around it.
+   Narrow screens get one column with the machine first; wide ones put the files
+   on the left, the hardware on the right and the panels underneath. */
+.wb { display: grid; gap: 0.8rem 1.1rem; grid-template-areas: 'head' 'drop' 'screen' 'left' 'right' 'below'; }
+.wb-head { grid-area: head; }
+.wb-head h1 { margin-bottom: 0.2rem; }
+.wb-head .lead { margin: 0; max-width: 70ch; }
+.wb-drop { grid-area: drop; margin: 0; }
+.wb-screen { grid-area: screen; }
+.wb-left { grid-area: left; min-width: 0; }
+.wb-right { grid-area: right; min-width: 0; }
+.wb-below { grid-area: below; min-width: 0; }
+
+@media (min-width: 1000px) {
+  .wb {
+    grid-template-columns: minmax(180px, 230px) minmax(460px, 1fr) minmax(250px, 290px);
+    grid-template-areas:
+      'head   head   head'
+      'drop   drop   drop'
+      'left   screen right'
+      'below  below  below';
+    align-items: start;   /* the columns are as tall as their content, not each other */
+  }
+}
+
+/* The screen deserves more room than the text column gives it, so on a wide
+   display the workbench steps outside the page's own width. */
+@media (min-width: 1200px) {
+  .wb { --wbw: min(1320px, calc(100vw - 2.5rem)); width: var(--wbw); margin-inline: calc((1040px - var(--wbw)) / 2); }
+}
+
+.wb-kept { margin: 0.3rem 0 0; font-size: 0.72rem; }
+
+.wb-h { font-size: 0.72rem; letter-spacing: 0.06em; color: var(--muted); margin: 0 0 0.4rem; }
+.wb-h::before { content: none; }
+.wb-left .wb-h:not(:first-child) { margin-top: 1rem; }
+
+/* The screen itself: a thin border and the picture only. The emulator draws the
+   machine's own border area around it (the same 112/56 offset the screenshot
+   tool crops), so the canvas is oversized and shifted to show just the picture. */
+.emu-screen { position: relative; background: #000; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; aspect-ratio: 704 / 464; }
+.emu-screen canvas {
+  display: block; outline: none;
+  width: calc(100% * 928 / 704);
+  height: calc(100% * 576 / 464);
+  margin-left: calc(-100% * 112 / 704);
+  margin-top: calc(-100% * 56 / 704);
+}
+.emu-screen:fullscreen { border: 0; border-radius: 0; display: flex; align-items: center; justify-content: center; }
+.emu-screen:fullscreen { aspect-ratio: 704 / 464; }
+.emu-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; margin: 0.4rem 0 0; font-size: 0.85rem; }
+
+/* Hardware, dense: one line per device where it fits. */
+.machine { display: grid; gap: 0.3rem; margin: 0.4rem 0 0.5rem; }
+.machine .m-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.55rem; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 0.35rem 0.5rem; font-size: 0.78rem; }
+.machine .m-row > summary { min-width: 100%; font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; cursor: pointer; list-style-position: inside; }
+.machine .m-row > summary::marker { color: var(--line); }
+.machine .m-row:not([open]) { padding: 0.25rem 0.5rem; }
+.machine .m-row hr { width: 100%; border: 0; border-top: 1px solid var(--line); margin: 0.05rem 0; }
+.machine label { display: flex; align-items: center; gap: 0.25rem; }
+.machine select { font: inherit; max-width: 10.5rem; padding: 0.12rem 0.28rem; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 5px; }
+.machine-apply { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.7rem; font-size: 0.82rem; margin: 0 0 0.4rem; }
+.machine-apply select { font: inherit; padding: 0.15rem 0.3rem; background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 5px; }
+
+/* Files and their actions, compact enough for a column. */
+.wb-list { list-style: none; margin: 0 0 0.4rem; padding: 0; display: grid; gap: 0.25rem; }
+.wb-list li { display: flex; align-items: center; gap: 0.35rem; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 0.25rem 0.45rem; font-size: 0.82rem; }
+.wb-list li.on { border-color: var(--accent); }
+.wb-list .wb-pick { flex: 1; min-width: 0; display: grid; background: none; border: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; padding: 0; }
+.wb-list .wb-pick b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wb-list .wb-pick .meta { font-size: 0.72rem; }
+.wb-list .wb-known { font-size: 0.72rem; }
+.wb-list .wb-close { background: none; border: 0; color: var(--muted); cursor: pointer; line-height: 1; }
+.wb-list .wb-close:hover { color: var(--text); }
+.wb-actions { display: grid; gap: 0.3rem; margin: 0.5rem 0 0; }
+.wb-group { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem; }
+.wb-glabel { width: 100%; color: var(--muted); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.wb-actions .btn { font-size: 0.78rem; padding: 0.22rem 0.5rem; }
+.wb-actions .btn.active { border-color: var(--accent); color: var(--accent); }
+.wb-panel:empty { display: none; }
+.wb-panel { margin: 0 0 1rem; }
+.wb-later { margin: 0.6rem 0 0; }

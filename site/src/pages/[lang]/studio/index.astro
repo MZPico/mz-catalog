@@ -1,5 +1,5 @@
 ---
-import Tools from '../../../components/pages/Tools.astro';
+import Studio from '../../../components/pages/Studio.astro';
 import { locales, defaultLang, type Lang } from '../../../i18n';
 
 export async function getStaticPaths() {
@@ -7,4 +7,4 @@ export async function getStaticPaths() {
 }
 const { lang } = Astro.props as { lang: Lang };
 ---
-<Tools lang={lang} />
+<Studio lang={lang} />

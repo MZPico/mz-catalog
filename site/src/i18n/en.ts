@@ -10,7 +10,7 @@ export const en = {
   },
   langName: { en: 'English', cs: 'Čeština', de: 'Deutsch', ja: '日本語' },
   langSwitchLabel: 'Language',
-  nav: { tools: 'Tools', card: 'The Card', archive: 'Archive', titles: 'Featured', machines: 'Machines', about: 'About', github: 'GitHub' },
+  nav: { studio: 'Studio', card: 'The Card', archive: 'Archive', titles: 'Featured', machines: 'Machines', about: 'About', github: 'GitHub' },
   footer: {
     privacy: 'Privacy',
     blurb:
@@ -253,7 +253,7 @@ export const en = {
       },
       {
         h2: 'Stored in your browser',
-        html: `<ul><li><b>Touch layout</b> (<code>mz-touch-swap</code>) — only if you swap the on-screen controls on a phone.</li><li><b>Rating id</b> (<code>mz-voter</code>) — a random number created the first time you rate a title, so you can change your rating later and so one person counts once. It says nothing about you.</li><li><b>Saved positions</b> (IndexedDB <code>mzpico</code>) — only when you press Save, turn on automatic saving or open a .mzs file: a snapshot of the emulated machine with a picture of its screen. Delete them on the game's page. The automatic-saving choice itself is kept as <code>mz-autosave</code>.</li><li><b>Files you open in the tools</b> (IndexedDB <code>mzpico</code>): what you drop into <a href="/tools/">Tools</a> stays in this browser so a reload does not lose it — the file itself, nothing else. Remove a file there, or use “Forget all”.</li></ul>This data stays on your device; clearing the site data in your browser removes it.`,
+        html: `<ul><li><b>Touch layout</b> (<code>mz-touch-swap</code>) — only if you swap the on-screen controls on a phone.</li><li><b>Rating id</b> (<code>mz-voter</code>) — a random number created the first time you rate a title, so you can change your rating later and so one person counts once. It says nothing about you.</li><li><b>Saved positions</b> (IndexedDB <code>mzpico</code>) — only when you press Save, turn on automatic saving or open a .mzs file: a snapshot of the emulated machine with a picture of its screen. Delete them on the game's page. The automatic-saving choice itself is kept as <code>mz-autosave</code>.</li><li><b>Files you open in the Studio</b> (IndexedDB <code>mzpico</code>): what you drop into <a href="/studio/">the Studio</a> stays in this browser so a reload does not lose it — the file itself, nothing else. Remove a file there, or use “Forget all”.</li></ul>This data stays on your device; clearing the site data in your browser removes it.`,
       },
       {
         h2: 'Stored on our server',
@@ -269,9 +269,9 @@ export const en = {
       },
     ],
   },
-  tools: {
-    title: 'Tools',
-    h1: 'Tools',
+  studio: {
+    title: 'Studio',
+    h1: 'Studio',
     description: 'Tools for Sharp MZ files: read a tape image, identify a dump, convert Sharp character codes. Everything runs in your browser.',
     lead: 'Bring a file and the page works out what it is, then offers what can be done with it. Everything runs in your browser; files are never uploaded, and the ones you open are kept here so a reload does not lose them.',
     mzfTitle: 'Tape inspector',
@@ -361,7 +361,7 @@ export const en = {
     groupConvert: 'Convert',
     groupUse: 'Use',
     groupShare: 'Share',
-    groupNoFile: 'Tools that need no file',
+    groupNoFile: 'No file needed',
     actHeader: 'Header',
     actBytes: 'Bytes',
     actSkeleton: 'meta.yaml skeleton',
@@ -376,7 +376,7 @@ export const en = {
     partBody: 'Body only',
     partWhole: 'Whole file',
     laterTitle: 'Coming here',
-    later: 'Floppy and Quick Disk images, disassembly, tape audio both ways, and the emulator with its debugger.',
+    later: 'Still to come: disassembly, tape audio both ways, and the debugger.',
     kinds: { mzf: 'tape', dsk: 'floppy', mzq: 'Quick Disk', mzs: 'snapshot', wav: 'tape audio', tap: 'ZX tape', bin: 'raw bytes' },
     headerSection: 'Header',
     bodySection: 'Body',

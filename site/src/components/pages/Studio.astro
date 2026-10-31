@@ -7,7 +7,7 @@ import { useTranslations, localizePath, type Lang } from '../../i18n';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = useTranslations(lang);
-const tt = t.tools;
+const tt = t.studio;
 // Content stamp of the emulator build, so a new one is not served from cache.
 const emuVersion = createHash('md5')
   .update(readFileSync(new URL('../../../public/play/emu/mz800emu.wasm', import.meta.url)))
@@ -23,58 +23,52 @@ const ui = {
 };
 ---
 <Base lang={lang} title={tt.title} description={tt.description}>
-  <article>
-    <h1>{tt.h1}</h1>
-    <p class="lead">{tt.lead}</p>
+  <article class="wb">
+    <header class="wb-head">
+      <h1>{tt.h1}</h1>
+      <p class="lead">{tt.lead}</p>
+    </header>
 
-    <div class="dropzone" id="drop" data-ui={JSON.stringify(ui)}>
-      <p>{tt.drop}</p>
+    <div class="dropbar wb-drop" id="drop" data-ui={JSON.stringify(ui)}>
       <input type="file" id="files" multiple hidden />
       <button class="btn primary" type="button" id="pick">{tt.choose}</button>
-      <p class="meta">{tt.nothingUploaded}</p>
+      <span class="meta">{tt.drop} · {tt.nothingUploaded}</span>
+      <button class="btn ghost small" type="button" id="forget" hidden>{tt.forgetAll}</button>
     </div>
 
-    <section class="wb-files" aria-live="polite">
-      <h2>{tt.yourFiles} <button class="btn ghost small" type="button" id="forget" hidden>{tt.forgetAll}</button></h2>
-      <ul id="filelist" class="wb-list"></ul>
-      <p class="meta" id="noFiles">{tt.empty}</p>
-      <p class="meta" id="keptNote" hidden>{tt.kept}</p>
-    </section>
-
-    <section id="workbench" hidden>
-      <h2 id="wb-name"></h2>
-      <div id="wb-actions" class="wb-actions"></div>
-      <p class="meta" id="wb-say" hidden></p>
-      <div id="wb-panel" class="wb-panel"></div>
-    </section>
-
-    <section class="wb-emu" id="emu-section">
-      <h2>{tt.emuTitle}</h2>
-      <p class="meta">{tt.emuLead}</p>
-      <div class="play-frame emu-frame">
+    <!-- The machine comes first: on a narrow screen it is what you see, and on a
+         wide one everything else sits around it. -->
+    <section class="wb-screen" aria-label={tt.emuTitle}>
+      <div class="emu-screen" id="emu-frame">
         <!-- SDL's Emscripten backend looks the canvas up by this id; it cannot be renamed. -->
         <canvas id="canvas" tabindex="0" width="928" height="576"></canvas>
         <div id="emu-overlay" class="play-overlay">
           <button type="button" id="emu-start" class="btn">{tt.emuStart}</button>
         </div>
       </div>
-      <div class="play-controls">
-        <button type="button" class="btn secondary" id="emu-reset">{tt.resetMachine}</button>
-        <button type="button" class="btn secondary" id="emu-mute">{t.play.mute}</button>
-        <button type="button" class="btn secondary" id="emu-fs">{t.play.fullscreen}</button>
-        <span class="play-status meta" id="emu-status"></span>
+      <div class="emu-controls">
+        <button type="button" class="btn secondary small" id="emu-reset">{tt.resetMachine}</button>
+        <button type="button" class="btn secondary small" id="emu-mute">{t.play.mute}</button>
+        <button type="button" class="btn secondary small" id="emu-fs">{t.play.fullscreen}</button>
+        <span class="meta" id="emu-status"></span>
       </div>
+    </section>
 
-      <h3>{tt.machine}</h3>
-      <div class="machine" id="machine" data-emu={emuVersion} data-ui={JSON.stringify({
-        none: tt.none, drive: tt.drive, connected: tt.connected, plugged: tt.plugged, size: tt.size, type: tt.type,
-        readonly: tt.readonly, writeProtected: tt.writeProtected, keepWrites: tt.keepWrites, discardWrites: tt.discardWrites,
-        mzpicoMode: tt.mzpicoMode, tapeSpeed: tt.tapeSpeed, tapeInverted: tt.tapeInverted, tapeBoost: tt.tapeBoost,
-        soundOn: tt.soundOn, secondPsg: tt.secondPsg, joy1: tt.joy1, joy2: tt.joy2,
-        joyNone: tt.joyNone, joyKeypad: tt.joyKeypad, joyStick: tt.joyStick, program: tt.program,
-        drives: tt.drives, qdisk: tt.qdisk, ramdisk: tt.ramdisk, memext: tt.memext, cardSection: tt.cardSection,
-        hdd: tt.hdd, tapeSection: tt.tapeSection, soundSection: tt.soundSection, takeImage: tt.takeImage, taken: tt.taken,
-      })}></div>
+    <aside class="wb-left">
+      <h2 class="wb-h">{tt.yourFiles}</h2>
+      <ul id="filelist" class="wb-list"></ul>
+      <p class="meta" id="noFiles">{tt.empty}</p>
+      <p class="meta wb-kept" id="keptNote" hidden>{tt.kept}</p>
+      <div id="workbench" hidden>
+        <div id="wb-actions" class="wb-actions"></div>
+        <p class="meta" id="wb-say" hidden></p>
+      </div>
+      <h2 class="wb-h">{tt.groupNoFile}</h2>
+      <button class="btn secondary small" type="button" id="act-characters">{tt.actCharacters}</button>
+    </aside>
+
+    <aside class="wb-right">
+      <h2 class="wb-h">{tt.machine}</h2>
       <div class="machine-apply">
         <label>{tt.preset}
           <select id="preset">
@@ -85,24 +79,24 @@ const ui = {
             <option value="everything">{tt.presetEverything}</option>
           </select>
         </label>
-        <button type="button" class="btn primary" id="apply">{tt.applyLive}</button>
-        <span class="meta" id="apply-note">{tt.liveNote}</span>
+        <button type="button" class="btn primary small" id="apply">{tt.applyLive}</button>
       </div>
-    </section>
+      <div class="machine" id="machine" data-emu={emuVersion} data-ui={JSON.stringify({
+        none: tt.none, drive: tt.drive, connected: tt.connected, plugged: tt.plugged, size: tt.size, type: tt.type,
+        readonly: tt.readonly, writeProtected: tt.writeProtected, keepWrites: tt.keepWrites, discardWrites: tt.discardWrites,
+        mzpicoMode: tt.mzpicoMode, tapeSpeed: tt.tapeSpeed, tapeInverted: tt.tapeInverted, tapeBoost: tt.tapeBoost,
+        soundOn: tt.soundOn, secondPsg: tt.secondPsg, joy1: tt.joy1, joy2: tt.joy2,
+        joyNone: tt.joyNone, joyKeypad: tt.joyKeypad, joyStick: tt.joyStick, program: tt.program,
+        drives: tt.drives, qdisk: tt.qdisk, ramdisk: tt.ramdisk, memext: tt.memext, cardSection: tt.cardSection,
+        hdd: tt.hdd, tapeSection: tt.tapeSection, soundSection: tt.soundSection, takeImage: tt.takeImage, taken: tt.taken,
+      })}></div>
+      <p class="meta" id="apply-note">{tt.liveNote}</p>
+    </aside>
 
-    <section class="wb-nofile">
-      <h2>{tt.groupNoFile}</h2>
-      <div class="wb-actions">
-        <div class="wb-group">
-          <button class="btn secondary" type="button" id="act-characters">{tt.actCharacters}</button>
-        </div>
-      </div>
+    <section class="wb-below">
+      <div id="wb-panel" class="wb-panel"></div>
       <div id="nofile-panel" class="wb-panel"></div>
-    </section>
-
-    <section class="wb-later">
-      <h2>{tt.laterTitle}</h2>
-      <p class="meta">{tt.later}</p>
+      <p class="meta wb-later">{tt.later}</p>
     </section>
   </article>
 
@@ -158,7 +152,6 @@ const ui = {
       const box = $('workbench');
       box.hidden = !current;
       if (!current) return;
-      $('wb-name').textContent = current.name;
       const groups: Record<string, string[]> = {};
       for (const a of actionsFor(current)) (groups[a.group] ??= []).push(a.id);
       // A dump the catalog knows can be played straight away.
@@ -203,6 +196,9 @@ const ui = {
     async function add(fileList: FileList | null) {
       for (const f of [...(fileList ?? [])]) {
         const file = load(f.name, new Uint8Array(await f.arrayBuffer()));
+        // The same file brought twice replaces the copy that is already here.
+        const same = files.findIndex((o) => o.name === file.name && o.bytes.length === file.bytes.length);
+        if (same >= 0) { forgetFile(files[same].id); files.splice(same, 1); }
         files.unshift(file);
         select(file);
         track('tool-open');
@@ -262,55 +258,70 @@ const ui = {
     const chooser = (path: string, label: string, options: string) =>
       `<label>${esc(label)} <select data-set="${esc(path)}">${options}</select></label>`;
 
+    // The panel is long, so each section remembers whether it is open.
+    const OPEN_KEY = 'mz-machine-open';
+    let openSections = new Set(['program', 'drives']);
+    try {
+      const kept = JSON.parse(localStorage.getItem(OPEN_KEY) ?? 'null');
+      if (Array.isArray(kept)) openSections = new Set(kept);
+    } catch { /* first visit */ }
+    const fold = (key: string) => (openSections.has(key) ? ' open' : '');
+
     function renderMachine() {
       const m = machine;
       $('machine').innerHTML = `
-        <div class="m-row"><b>${esc(mui.program)}</b>${chooser('program', '', picker(['mzf'], m.program))}</div>
-        <div class="m-row"><b>${esc(mui.drives)}</b>
+        <details class="m-row" data-sect="program"${fold('program')}><summary>${esc(mui.program)}</summary>${chooser('program', '', picker(['mzf'], m.program))}</details>
+        <details class="m-row" data-sect="drives"${fold('drives')}><summary>${esc(mui.drives)}</summary>
           ${check('fdc.connected', mui.connected, m.fdc.connected)}
           ${m.fdc.drives.map((d, i) => `${chooser(`fdc.drives.${i}.file`, `${mui.drive} ${i}`, picker(['dsk'], d.file))}
              ${check(`fdc.drives.${i}.readonly`, mui.readonly, d.readonly)}
              ${chooser(`fdc.drives.${i}.storage`, '', option('cached', mui.keepWrites, d.storage === 'cached') + option('discard', mui.discardWrites, d.storage === 'discard'))}
              ${d.file ? `<button class="btn ghost small" type="button" data-take="${i}">${esc(mui.takeImage)}</button>` : ''}`).join('<hr>')}
-        </div>
-        <div class="m-row"><b>${esc(mui.qdisk)}</b>
+        </details>
+        <details class="m-row" data-sect="qdisk"${fold('qdisk')}><summary>${esc(mui.qdisk)}</summary>
           ${check('qdisk.connected', mui.connected, m.qdisk.connected)}
           ${chooser('qdisk.type', mui.type, option('STANDARD', 'MZ-1F11', m.qdisk.type === 'STANDARD') + option('UNICARD', 'MZPico', m.qdisk.type === 'UNICARD'))}
           ${chooser('qdisk.file', '', picker(['mzq', 'bin'], m.qdisk.file))}
           ${check('qdisk.writeProtected', mui.writeProtected, m.qdisk.writeProtected)}
-        </div>
-        <div class="m-row"><b>${esc(mui.ramdisk)}</b>
+        </details>
+        <details class="m-row" data-sect="ramdisk"${fold('ramdisk')}><summary>${esc(mui.ramdisk)}</summary>
           ${check('ramdisk.mr1r18.plugged', 'MR1R18', m.ramdisk.mr1r18.plugged)}
           ${chooser('ramdisk.mr1r18.size', mui.size, ['64K', '256K', '512K', '1M', '16M'].map((v) => option(v, v, m.ramdisk.mr1r18.size === v)).join(''))}
           ${chooser('ramdisk.mr1r18.type', mui.type, option('SRAM', 'SRAM', m.ramdisk.mr1r18.type === 'SRAM') + option('ROM', 'ROM', m.ramdisk.mr1r18.type === 'ROM'))}
           ${check('ramdisk.pezikE8', 'Pezik E8', m.ramdisk.pezikE8)}
           ${check('ramdisk.pezik68', 'Pezik 68', m.ramdisk.pezik68)}
-        </div>
-        <div class="m-row"><b>${esc(mui.memext)}</b>
+        </details>
+        <details class="m-row" data-sect="memext"${fold('memext')}><summary>${esc(mui.memext)}</summary>
           ${check('memext.connected', mui.connected, m.memext.connected)}
           ${chooser('memext.type', mui.type, option('PEHU', 'PEHU', m.memext.type === 'PEHU') + option('LUFTNER', 'Luftner', m.memext.type === 'LUFTNER'))}
-        </div>
-        <div class="m-row"><b>${esc(mui.cardSection)}</b>
+        </details>
+        <details class="m-row" data-sect="cardSection"${fold('cardSection')}><summary>${esc(mui.cardSection)}</summary>
           ${check('card.connected', mui.connected, m.card.connected)}
           ${check('card.mzpicoMode', mui.mzpicoMode, m.card.mzpicoMode)}
           ${check('card.readonly', mui.readonly, m.card.readonly)}
-        </div>
-        <div class="m-row"><b>${esc(mui.hdd)}</b>
+        </details>
+        <details class="m-row" data-sect="hdd"${fold('hdd')}><summary>${esc(mui.hdd)}</summary>
           ${chooser('ide.hdd0', '0', picker(['bin'], m.ide.hdd0))}
           ${chooser('ide.hdd1', '1', picker(['bin'], m.ide.hdd1))}
-        </div>
-        <div class="m-row"><b>${esc(mui.tapeSection)}</b>
+        </details>
+        <details class="m-row" data-sect="tapeSection"${fold('tapeSection')}><summary>${esc(mui.tapeSection)}</summary>
           ${chooser('tape.speed', mui.tapeSpeed, ['SPEED_1/1', 'SPEED_2/1', 'SPEED_3/1', 'SPEED_4/1'].map((v) => option(v, v.replace('SPEED_', ''), m.tape.speed === v)).join(''))}
           ${check('tape.inverted', mui.tapeInverted, m.tape.inverted)}
           ${check('tape.boost', mui.tapeBoost, m.tape.boost)}
-        </div>
-        <div class="m-row"><b>${esc(mui.soundSection)}</b>
+        </details>
+        <details class="m-row" data-sect="soundSection"${fold('soundSection')}><summary>${esc(mui.soundSection)}</summary>
           ${check('sound.on', mui.soundOn, m.sound.on)}
           ${check('sound.secondPsg', mui.secondPsg, m.sound.secondPsg)}
           ${chooser('joy.joy1', mui.joy1, (['NONE', 'NUM_KEYPAD', 'JOYSTICK'] as const).map((v) => option(v, v === 'NONE' ? mui.joyNone : v === 'NUM_KEYPAD' ? mui.joyKeypad : mui.joyStick, m.joy.joy1 === v)).join(''))}
           ${chooser('joy.joy2', mui.joy2, (['NONE', 'NUM_KEYPAD', 'JOYSTICK'] as const).map((v) => option(v, v === 'NONE' ? mui.joyNone : v === 'NUM_KEYPAD' ? mui.joyKeypad : mui.joyStick, m.joy.joy2 === v)).join(''))}
-        </div>`;
+        </details>`;
 
+      for (const d of $('machine').querySelectorAll<HTMLDetailsElement>('details[data-sect]')) {
+        d.addEventListener('toggle', () => {
+          if (d.open) openSections.add(d.dataset.sect!); else openSections.delete(d.dataset.sect!);
+          try { localStorage.setItem(OPEN_KEY, JSON.stringify([...openSections])); } catch { /* private mode */ }
+        });
+      }
       for (const el of $('machine').querySelectorAll<HTMLElement>('[data-set]')) {
         el.addEventListener('change', () => {
           const input = el as HTMLInputElement | HTMLSelectElement;
@@ -404,7 +415,7 @@ const ui = {
     let muted = false;
     $('emu-mute').addEventListener('click', () => { muted = !muted; setMuted(muted); });
     $('emu-fs').addEventListener('click', () => {
-      const frame = document.querySelector('.emu-frame') as HTMLElement & { webkitRequestFullscreen?: () => void };
+      const frame = $('emu-frame') as HTMLElement & { webkitRequestFullscreen?: () => void };
       (frame.requestFullscreen ?? frame.webkitRequestFullscreen)?.call(frame);
     });
     $('preset').addEventListener('change', (e) => {

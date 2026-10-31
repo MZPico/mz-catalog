@@ -9,7 +9,7 @@ export const de: Ui = {
   },
   langName: { en: 'English', cs: 'Čeština', de: 'Deutsch', ja: '日本語' },
   langSwitchLabel: 'Sprache',
-  nav: { tools: 'Werkzeuge', card: 'Die Karte', archive: 'Archiv', titles: 'Perlen', machines: 'Computer', about: 'Über', github: 'GitHub' },
+  nav: { studio: 'Studio', card: 'Die Karte', archive: 'Archiv', titles: 'Perlen', machines: 'Computer', about: 'Über', github: 'GitHub' },
   footer: {
     privacy: 'Datenschutz',
     blurb:
@@ -253,7 +253,7 @@ export const de: Ui = {
       },
       {
         h2: 'In Ihrem Browser gespeichert',
-        html: `<ul><li><b>Touch-Belegung</b> (<code>mz-touch-swap</code>) — nur wenn Sie am Handy die Bildschirmsteuerung vertauschen.</li><li><b>Bewertungs-Kennung</b> (<code>mz-voter</code>) — eine Zufallszahl, die bei Ihrer ersten Bewertung entsteht, damit Sie die Bewertung später ändern können und eine Person einmal zählt. Sie verrät nichts über Sie.</li><li><b>Spielstände</b> (IndexedDB <code>mzpico</code>) — nur wenn Sie auf Speichern drücken, das automatische Speichern einschalten oder eine .mzs-Datei öffnen: ein Abbild des emulierten Rechners mit einem Bild seines Bildschirms. Löschen können Sie sie auf der Seite des Spiels. Die Einstellung zum automatischen Speichern selbst steht unter <code>mz-autosave</code>.</li><li><b>Dateien in den Werkzeugen</b> (IndexedDB <code>mzpico</code>): Was Sie in die <a href="/de/tools/">Werkzeuge</a> ziehen, bleibt in diesem Browser, damit ein Neuladen es nicht verliert — nur die Datei selbst, sonst nichts. Dort entfernen Sie sie wieder, oder mit „Alle vergessen“.</li></ul>Diese Daten bleiben auf Ihrem Gerät; wenn Sie die Websitedaten im Browser löschen, sind sie weg.`,
+        html: `<ul><li><b>Touch-Belegung</b> (<code>mz-touch-swap</code>) — nur wenn Sie am Handy die Bildschirmsteuerung vertauschen.</li><li><b>Bewertungs-Kennung</b> (<code>mz-voter</code>) — eine Zufallszahl, die bei Ihrer ersten Bewertung entsteht, damit Sie die Bewertung später ändern können und eine Person einmal zählt. Sie verrät nichts über Sie.</li><li><b>Spielstände</b> (IndexedDB <code>mzpico</code>) — nur wenn Sie auf Speichern drücken, das automatische Speichern einschalten oder eine .mzs-Datei öffnen: ein Abbild des emulierten Rechners mit einem Bild seines Bildschirms. Löschen können Sie sie auf der Seite des Spiels. Die Einstellung zum automatischen Speichern selbst steht unter <code>mz-autosave</code>.</li><li><b>Dateien im Studio</b> (IndexedDB <code>mzpico</code>): Was Sie ins <a href="/de/studio/">Studio</a> ziehen, bleibt in diesem Browser, damit ein Neuladen es nicht verliert — nur die Datei selbst, sonst nichts. Dort entfernen Sie sie wieder, oder mit „Alle vergessen“.</li></ul>Diese Daten bleiben auf Ihrem Gerät; wenn Sie die Websitedaten im Browser löschen, sind sie weg.`,
       },
       {
         h2: 'Auf unserem Server gespeichert',
@@ -269,9 +269,9 @@ export const de: Ui = {
       },
     ],
   },
-  tools: {
-    title: 'Werkzeuge',
-    h1: 'Werkzeuge',
+  studio: {
+    title: 'Studio',
+    h1: 'Studio',
     description: 'Werkzeuge für Sharp-MZ-Dateien: ein Bandabbild ansehen, einen Dump erkennen, Sharp-Zeichencodes umwandeln. Alles läuft in Ihrem Browser.',
     lead: 'Bringen Sie eine Datei mit: Die Seite erkennt, was es ist, und bietet an, was sich damit machen lässt. Alles läuft in Ihrem Browser; Dateien werden nie hochgeladen, und die geöffneten bleiben hier, damit ein Neuladen sie nicht verliert.',
     mzfTitle: 'Band-Betrachter',
@@ -361,7 +361,7 @@ export const de: Ui = {
     groupConvert: 'Umwandeln',
     groupUse: 'Benutzen',
     groupShare: 'Sichern',
-    groupNoFile: 'Werkzeuge ohne Datei',
+    groupNoFile: 'Ohne Datei',
     actHeader: 'Kopf',
     actBytes: 'Bytes',
     actSkeleton: 'meta.yaml-Gerüst',
@@ -376,7 +376,7 @@ export const de: Ui = {
     partBody: 'Nur die Daten',
     partWhole: 'Ganze Datei',
     laterTitle: 'Kommt noch',
-    later: 'Disketten und Quick Disk, Disassembler, Bandton in beide Richtungen und der Emulator mit Debugger.',
+    later: 'In Arbeit: Disassembler, Bandton in beide Richtungen und der Debugger.',
     kinds: { mzf: 'Band', dsk: 'Diskette', mzq: 'Quick Disk', mzs: 'Snapshot', wav: 'Bandton', tap: 'ZX-Band', bin: 'rohe Bytes' },
     headerSection: 'Kopf',
     bodySection: 'Daten',

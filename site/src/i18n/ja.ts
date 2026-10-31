@@ -9,7 +9,7 @@ export const ja: Ui = {
   },
   langName: { en: 'English', cs: 'Čeština', de: 'Deutsch', ja: '日本語' },
   langSwitchLabel: '言語',
-  nav: { tools: 'ツール', card: 'カード', archive: 'アーカイブ', titles: '名作', machines: '機種', about: 'このサイトについて', github: 'GitHub' },
+  nav: { studio: 'Studio', card: 'カード', archive: 'アーカイブ', titles: '名作', machines: '機種', about: 'このサイトについて', github: 'GitHub' },
   footer: {
     privacy: 'プライバシー',
     blurb:
@@ -252,7 +252,7 @@ export const ja: Ui = {
       },
       {
         h2: 'ブラウザーに保存するもの',
-        html: `<ul><li><b>タッチ操作の配置</b>（<code>mz-touch-swap</code>）— スマートフォンで画面上の操作ボタンを入れ替えた場合のみ。</li><li><b>評価用 ID</b>（<code>mz-voter</code>）— 初めてタイトルを評価したときに作られる乱数。あとで評価を変更でき、一人が一票として数えられるようにするためのもので、あなたについての情報は含みません。</li><li><b>保存データ</b>（IndexedDB <code>mzpico</code>）— 保存ボタンを押したとき、自動保存をオンにしたとき、.mzs ファイルを開いたときのみ。エミュレートしているマシンの状態と画面の画像です。ゲームのページで削除できます。自動保存の設定自体は <code>mz-autosave</code> に保存されます。</li><li><b>ツールで開いたファイル</b>（IndexedDB <code>mzpico</code>）: <a href="/ja/tools/">ツール</a>にドロップしたものは、再読み込みで失われないようこのブラウザーに保持されます。保持するのはファイル自体だけです。ツール上で削除するか、「すべて消去」で消せます。</li></ul>これらはあなたの端末にだけ残り、ブラウザーでサイトのデータを消去すると削除されます。`,
+        html: `<ul><li><b>タッチ操作の配置</b>（<code>mz-touch-swap</code>）— スマートフォンで画面上の操作ボタンを入れ替えた場合のみ。</li><li><b>評価用 ID</b>（<code>mz-voter</code>）— 初めてタイトルを評価したときに作られる乱数。あとで評価を変更でき、一人が一票として数えられるようにするためのもので、あなたについての情報は含みません。</li><li><b>保存データ</b>（IndexedDB <code>mzpico</code>）— 保存ボタンを押したとき、自動保存をオンにしたとき、.mzs ファイルを開いたときのみ。エミュレートしているマシンの状態と画面の画像です。ゲームのページで削除できます。自動保存の設定自体は <code>mz-autosave</code> に保存されます。</li><li><b>Studio で開いたファイル</b>（IndexedDB <code>mzpico</code>）: <a href="/ja/studio/">Studio</a> にドロップしたものは、再読み込みで失われないようこのブラウザーに保持されます。保持するのはファイル自体だけです。Studio で削除するか、「すべて消去」で消せます。</li></ul>これらはあなたの端末にだけ残り、ブラウザーでサイトのデータを消去すると削除されます。`,
       },
       {
         h2: 'サーバーに保存するもの',
@@ -268,9 +268,9 @@ export const ja: Ui = {
       },
     ],
   },
-  tools: {
-    title: 'ツール',
-    h1: 'ツール',
+  studio: {
+    title: 'Studio',
+    h1: 'Studio',
     description: 'Sharp MZ のファイル用ツール。テープイメージの中身を見る、ダンプを特定する、Sharp の文字コードを変換する。すべてブラウザー内で動作します。',
     lead: 'ファイルを持ってくれば、ページがその種類を判別し、できることを示します。すべてブラウザー内で動作し、ファイルが送信されることはありません。開いたファイルは再読み込みで失われないよう、このブラウザーに保持されます。',
     mzfTitle: 'テープビューアー',
@@ -360,7 +360,7 @@ export const ja: Ui = {
     groupConvert: '変換',
     groupUse: '使う',
     groupShare: '保存',
-    groupNoFile: 'ファイル不要のツール',
+    groupNoFile: 'ファイル不要',
     actHeader: 'ヘッダー',
     actBytes: 'バイト',
     actSkeleton: 'meta.yaml のひな形',
@@ -375,7 +375,7 @@ export const ja: Ui = {
     partBody: '本体のみ',
     partWhole: 'ファイル全体',
     laterTitle: '今後追加予定',
-    later: 'フロッピーと Quick Disk、逆アセンブラー、テープ音声の双方向変換、デバッガー付きエミュレーター。',
+    later: '準備中: 逆アセンブラー、テープ音声の双方向変換、デバッガー。',
     kinds: { mzf: 'テープ', dsk: 'フロッピー', mzq: 'Quick Disk', mzs: 'スナップショット', wav: 'テープ音声', tap: 'ZX テープ', bin: '生バイト' },
     headerSection: 'ヘッダー',
     bodySection: '本体',

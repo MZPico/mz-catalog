@@ -41,7 +41,7 @@ function normalizePage(path) {
   const rest = '/' + m[2].replace(/index\.html$/, '');
   // /bombernet/ is the game itself compiled to WebAssembly, not an emulated title,
   // but it is a page of ours and counts like one.
-  const ok = /^\/(?:|archive\/|machines\/(?:mz-700|mz-800|mz-1500)\/|machines\/|card\/|about\/|privacy\/|bombernet\/|tools\/(?:mzf|text)\/|tools\/|(?:titles|play)\/[a-z0-9][a-z0-9-]{0,63}\/)$/.test(rest);
+  const ok = /^\/(?:|archive\/|machines\/(?:mz-700|mz-800|mz-1500)\/|machines\/|card\/|about\/|privacy\/|bombernet\/|studio\/|(?:titles|play)\/[a-z0-9][a-z0-9-]{0,63}\/)$/.test(rest);
   return ok ? { lang: m[1] ?? 'en', page: rest } : null;
 }
 
