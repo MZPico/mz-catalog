@@ -520,3 +520,18 @@ body.pseudo-fs-on { overflow: hidden; }
 .hexview .hv-chars { color: var(--text); }
 .hexview .hv-chars.mzglyph { font-size: 0.95em; }
 .screen-out.mzglyph { font-size: 1rem; line-height: 1.15; letter-spacing: 0; }
+
+/* Workbench: the file you brought, and what can be done with it */
+.wb-list { list-style: none; margin: 0.6rem 0; padding: 0; display: grid; gap: 0.35rem; }
+.wb-list li { display: flex; align-items: center; gap: 0.6rem; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 0.35rem 0.6rem; }
+.wb-list li.on { border-color: var(--accent); }
+.wb-list .wb-pick { flex: 1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem; background: none; border: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; padding: 0.2rem 0; }
+.wb-list .wb-close { background: none; border: 0; color: var(--muted); font-size: 1rem; cursor: pointer; }
+.wb-list .wb-close:hover { color: var(--text); }
+.wb-actions { display: flex; flex-wrap: wrap; gap: 0.5rem 1.4rem; margin: 0.4rem 0 0.8rem; }
+.wb-group { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
+.wb-glabel { color: var(--muted); font-size: 0.8rem; margin-right: 0.15rem; }
+.wb-actions .btn.active { border-color: var(--accent); color: var(--accent); }
+.wb-panel:empty { display: none; }
+.wb-panel { margin: 0.2rem 0 1.4rem; }
+.wb-later { margin-top: 2rem; }

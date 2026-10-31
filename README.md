@@ -302,16 +302,25 @@ under the screen.
 
 ## Tools
 
-`/tools/` — browser-side utilities, no server and no upload:
+`/tools/` — one workbench, no server and no upload. A dropped file is
+identified by content (tape, floppy, Quick Disk, snapshot, tape audio, raw
+bytes) and only the actions that fit it are offered, in groups: inspect,
+convert, use, share.
 
-- **Tape inspector** (`/tools/mzf/`): every header field with its raw bytes, the
-  rest of the header (bytes 24–127), and the whole body in a hex view that
-  renders only the visible lines (`site/src/lib/mz/hexview.ts`), with addresses
-  as file offsets or as the machine sees them, a go-to box, and a character
-  column. A dropped file's CRC is looked up in `manifest.json`: a known dump
-  links to its title, an unknown one gets a `meta.yaml` skeleton.
-- **Character codes** (`/tools/text/`): Sharp codes to text and back, screen
-  codes and the file code, with a 40-column screen view.
+A tool is an action registered in `site/src/lib/mz/workbench.ts`, not a page:
+`register({ id, group, accepts, panel, run })`. Panels draw into the workbench,
+so a new format module adds its actions and the page is untouched. Today:
+
+- **tape** — header (every field with its raw bytes, plus bytes 24–127), bytes
+  (the whole file or just the body) in a hex view that renders only the visible
+  lines (`hexview.ts`) with addresses as offsets or as the machine sees them and
+  a go-to box, `meta.yaml` skeleton, save the body, copy the CRC;
+- **any file** — bytes, save;
+- **no file needed** — Sharp characters to text and back, with a 40-column
+  screen preview.
+
+A tape's CRC is looked up in `manifest.json`: a known dump links to its title
+page and offers to play it.
 
 `site/src/lib/mz/` holds the formats as plain TypeScript. The character column
 shows the machine's own glyphs: `tools/mzfont/build-display-font.py` turns the

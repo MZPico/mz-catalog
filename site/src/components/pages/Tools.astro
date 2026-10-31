@@ -5,29 +5,175 @@ import { useTranslations, localizePath, type Lang } from '../../i18n';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = useTranslations(lang);
-const p = (path: string) => localizePath(lang, path);
-const tools = [
-  { href: p('/tools/mzf/'), title: t.tools.mzfTitle, lead: t.tools.mzfLead, icon: '▤' },
-  { href: p('/tools/text/'), title: t.tools.textTitle, lead: t.tools.textLead, icon: '⇄' },
-];
+const tt = t.tools;
+// Everything the client script needs to speak the visitor's language.
+const ui = {
+  ...Object.fromEntries(Object.entries(tt).filter(([, v]) => typeof v === 'string')),
+  identifiedAs: tt.identifiedAs('{title}'),
+  kinds: tt.kinds,
+  titlePath: localizePath(lang, '/titles/'),
+  playPath: localizePath(lang, '/play/'),
+};
 ---
-<Base lang={lang} title={t.tools.title} description={t.tools.description}>
-  <article data-pagefind-body>
-    <h1>{t.tools.h1}</h1>
-    <p class="lead">{t.tools.lead}</p>
-    <ul class="tool-list">
-      {tools.map((tool) => (
-        <li>
-          <a href={tool.href}>
-            <span class="tool-icon" aria-hidden="true">{tool.icon}</span>
-            <span>
-              <b>{tool.title}</b>
-              <span class="meta">{tool.lead}</span>
-            </span>
-          </a>
-        </li>
-      ))}
-    </ul>
-    <p class="meta">{t.tools.soon}</p>
+<Base lang={lang} title={tt.title} description={tt.description}>
+  <article>
+    <h1>{tt.h1}</h1>
+    <p class="lead">{tt.lead}</p>
+
+    <div class="dropzone" id="drop" data-ui={JSON.stringify(ui)}>
+      <p>{tt.drop}</p>
+      <input type="file" id="files" multiple hidden />
+      <button class="btn primary" type="button" id="pick">{tt.choose}</button>
+      <p class="meta">{tt.nothingUploaded}</p>
+    </div>
+
+    <section class="wb-files" aria-live="polite">
+      <h2>{tt.yourFiles}</h2>
+      <ul id="filelist" class="wb-list"></ul>
+      <p class="meta" id="noFiles">{tt.empty}</p>
+    </section>
+
+    <section id="workbench" hidden>
+      <h2 id="wb-name"></h2>
+      <div id="wb-actions" class="wb-actions"></div>
+      <p class="meta" id="wb-say" hidden></p>
+      <div id="wb-panel" class="wb-panel"></div>
+    </section>
+
+    <section class="wb-nofile">
+      <h2>{tt.groupNoFile}</h2>
+      <div class="wb-actions">
+        <div class="wb-group">
+          <button class="btn secondary" type="button" id="act-characters">{tt.actCharacters}</button>
+        </div>
+      </div>
+      <div id="nofile-panel" class="wb-panel"></div>
+    </section>
+
+    <section class="wb-later">
+      <h2>{tt.laterTitle}</h2>
+      <p class="meta">{tt.later}</p>
+    </section>
   </article>
+
+  <script>
+    import { load, actionsFor, catalogIndex, formatSize, type LoadedFile } from '../../lib/mz/workbench';
+    import { setStrings, charactersPanel } from '../../lib/mz/panels';
+
+    const drop = document.getElementById('drop')!;
+    const ui = JSON.parse(drop.dataset.ui!) as Record<string, any>;
+    setStrings(ui);
+    const esc = (s: unknown) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+    const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+    const track = (e: string) => (window as unknown as { mzEvent?: (e: string) => void }).mzEvent?.(e);
+
+    const files: LoadedFile[] = [];
+    let current: LoadedFile | null = null;
+    let openAction = '';
+
+    const label = (id: string) => ui['act' + id.replace(/(^|-)([a-z])/g, (_: string, __: string, c: string) => c.toUpperCase())] ?? id;
+
+    function renderList() {
+      const list = $('filelist');
+      $('noFiles').hidden = files.length > 0;
+      list.innerHTML = files.map((f) => {
+        const known = f.catalog ? ` · <a href="${esc(ui.titlePath + f.catalog.slug)}/">${esc(f.catalog.title)}</a>` : '';
+        return `<li class="${f === current ? 'on' : ''}" data-id="${esc(f.id)}">
+          <button type="button" class="wb-pick">
+            <b>${esc(f.name)}</b>
+            <span class="meta">${esc(formatSize(f.bytes.length))} · ${esc(ui.kinds[f.kind] ?? f.kind)}</span>
+          </button>
+          <span class="meta wb-known">${known}</span>
+          <button type="button" class="wb-close" title="${esc(ui.remove)}" aria-label="${esc(ui.remove)}">✕</button>
+        </li>`;
+      }).join('');
+      for (const li of list.querySelectorAll<HTMLElement>('li')) {
+        const file = files.find((f) => f.id === li.dataset.id)!;
+        li.querySelector('.wb-pick')!.addEventListener('click', () => select(file));
+        li.querySelector('.wb-close')!.addEventListener('click', () => {
+          files.splice(files.indexOf(file), 1);
+          if (current === file) { current = files[0] ?? null; openAction = ''; }
+          renderList(); renderActions();
+        });
+      }
+    }
+
+    function renderActions() {
+      const box = $('workbench');
+      box.hidden = !current;
+      if (!current) return;
+      $('wb-name').textContent = current.name;
+      const groups: Record<string, string[]> = {};
+      for (const a of actionsFor(current)) (groups[a.group] ??= []).push(a.id);
+      // A dump the catalog knows can be played straight away.
+      if (current.catalog) (groups.use ??= []).push('play');
+      const order = ['inspect', 'convert', 'use', 'share'] as const;
+      $('wb-actions').innerHTML = order.filter((g) => groups[g]?.length).map((g) => `
+        <div class="wb-group"><span class="wb-glabel">${esc(ui['group' + g[0].toUpperCase() + g.slice(1)])}</span>
+          ${groups[g].map((id) => id === 'play'
+            ? `<a class="btn secondary" href="${esc(ui.playPath + current!.catalog!.slug)}/">${esc(ui.actPlay)}</a>`
+            : `<button class="btn secondary${openAction === id ? ' active' : ''}" type="button" data-act="${esc(id)}">${esc(label(id))}</button>`).join('')}
+        </div>`).join('');
+      for (const b of $('wb-actions').querySelectorAll<HTMLButtonElement>('button[data-act]')) {
+        b.addEventListener('click', () => run(b.dataset.act!));
+      }
+      if (openAction) run(openAction, true);
+    }
+
+    async function run(id: string, keep = false) {
+      if (!current) return;
+      const action = actionsFor(current).find((a) => a.id === id);
+      if (!action) return;
+      const panel = $('wb-panel');
+      const say = (message: string) => { const el = $('wb-say'); el.textContent = message; el.hidden = false; setTimeout(() => { el.hidden = true; }, 2500); };
+      if (action.panel) {
+        if (!keep && openAction === id) { openAction = ''; panel.innerHTML = ''; renderActions(); return; }
+        openAction = id;
+        panel.innerHTML = '';
+        await action.run({ file: current, panel, say });
+        if (!keep) renderActions();
+      } else {
+        await action.run({ file: current, panel, say });
+      }
+      track('tool-' + id);
+    }
+
+    function select(file: LoadedFile) {
+      current = file;
+      openAction = file.kind === 'mzf' ? 'header' : 'bytes';
+      renderList(); renderActions();
+    }
+
+    async function add(fileList: FileList | null) {
+      for (const f of [...(fileList ?? [])]) {
+        const file = load(f.name, new Uint8Array(await f.arrayBuffer()));
+        files.unshift(file);
+        select(file);
+        track('tool-open');
+        if (file.mzf) {
+          file.catalog = (await catalogIndex()).get(file.mzf.crc32) ?? null;
+          renderList(); renderActions();
+        }
+      }
+    }
+
+    const input = $<HTMLInputElement>('files');
+    $('pick').addEventListener('click', () => input.click());
+    input.addEventListener('change', () => add(input.files));
+    for (const type of ['dragenter', 'dragover']) drop.addEventListener(type, (e) => { e.preventDefault(); drop.classList.add('over'); });
+    for (const type of ['dragleave', 'drop']) drop.addEventListener(type, () => drop.classList.remove('over'));
+    for (const target of [drop, document.body]) {
+      target.addEventListener('drop', (e) => { e.preventDefault(); add((e as DragEvent).dataTransfer?.files ?? null); });
+      target.addEventListener('dragover', (e) => e.preventDefault());
+    }
+
+    // The one tool that needs no file.
+    const charBtn = $<HTMLButtonElement>('act-characters');
+    charBtn.addEventListener('click', () => {
+      const panel = $('nofile-panel');
+      const open = charBtn.classList.toggle('active');
+      panel.innerHTML = '';
+      if (open) { charactersPanel(panel); track('tool-characters'); }
+    });
+  </script>
 </Base>
