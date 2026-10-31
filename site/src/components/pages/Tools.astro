@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+import { useTranslations, localizePath, type Lang } from '../../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const p = (path: string) => localizePath(lang, path);
+const tools = [
+  { href: p('/tools/mzf/'), title: t.tools.mzfTitle, lead: t.tools.mzfLead, icon: '▤' },
+  { href: p('/tools/text/'), title: t.tools.textTitle, lead: t.tools.textLead, icon: '⇄' },
+];
+---
+<Base lang={lang} title={t.tools.title} description={t.tools.description}>
+  <article data-pagefind-body>
+    <h1>{t.tools.h1}</h1>
+    <p class="lead">{t.tools.lead}</p>
+    <ul class="tool-list">
+      {tools.map((tool) => (
+        <li>
+          <a href={tool.href}>
+            <span class="tool-icon" aria-hidden="true">{tool.icon}</span>
+            <span>
+              <b>{tool.title}</b>
+              <span class="meta">{tool.lead}</span>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+    <p class="meta">{t.tools.soon}</p>
+  </article>
+</Base>

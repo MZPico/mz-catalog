@@ -29,7 +29,7 @@ const nothing = () => new Response(null, { status: 204 });
 export const BOT_UA = /bot|crawl|spider|slurp|headless|lighthouse|google|inspectiontool|preview|facebookexternalhit|embedly|python|curl|wget|httpclient|java\/|go-http|axios|node-fetch|scrapy|phantom|puppeteer|playwright|scanner|l9scan|leakix|nuclei|zgrab|masscan|censys|internetmeasurement|expanse|paloalto|elevenlabs|deepseek|xai-|vertexbot|amzn-|netapi|astrion|okhttp|libwww|perl|ruby|dart\/|guzzle|postman|insomnia|apachebench|wpscan/i;
 export const isBot = (request) => BOT_UA.test(request.headers.get('User-Agent') ?? '') || !request.headers.get('User-Agent');
 
-const EVENTS = new Set(['save', 'load', 'continue', 'autosave', 'import', 'export', 'gamepad', 'touch', 'fullscreen', 'tape-audio']);
+const EVENTS = new Set(['save', 'load', 'continue', 'autosave', 'import', 'export', 'gamepad', 'touch', 'fullscreen', 'tape-audio', 'tool-mzf', 'tool-text']);
 const today = () => new Date().toISOString().slice(0, 10);
 const dayBefore = (day, n = 1) => new Date(Date.parse(day) - n * 86400000).toISOString().slice(0, 10);
 
@@ -41,7 +41,7 @@ function normalizePage(path) {
   const rest = '/' + m[2].replace(/index\.html$/, '');
   // /bombernet/ is the game itself compiled to WebAssembly, not an emulated title,
   // but it is a page of ours and counts like one.
-  const ok = /^\/(?:|archive\/|machines\/(?:mz-700|mz-800|mz-1500)\/|machines\/|card\/|about\/|privacy\/|bombernet\/|(?:titles|play)\/[a-z0-9][a-z0-9-]{0,63}\/)$/.test(rest);
+  const ok = /^\/(?:|archive\/|machines\/(?:mz-700|mz-800|mz-1500)\/|machines\/|card\/|about\/|privacy\/|bombernet\/|tools\/(?:mzf|text)\/|tools\/|(?:titles|play)\/[a-z0-9][a-z0-9-]{0,63}\/)$/.test(rest);
   return ok ? { lang: m[1] ?? 'en', page: rest } : null;
 }
 

@@ -1,0 +1,111 @@
+---
+import Base from '../../layouts/Base.astro';
+import { useTranslations, localizePath, type Lang } from '../../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const ui = {
+  th: t.tools.th, name: t.tools.name, type: t.tools.type, load: t.tools.load, exec: t.tools.exec,
+  bodySize: t.tools.bodySize, fileSize: t.tools.fileSize, crc: t.tools.crc, bodyCrc: t.tools.bodyCrc,
+  notes: t.tools.notes, bytes: t.tools.bytes, identified: t.tools.identified,
+  identifiedAs: t.tools.identifiedAs('{title}'), unknown: t.tools.unknown, identifying: t.tools.identifying,
+  titlePath: localizePath(lang, '/titles/'),
+};
+---
+<Base lang={lang} title={t.tools.mzfTitle} description={t.tools.mzfLead}>
+  <article data-pagefind-body>
+    <h1>{t.tools.mzfTitle}</h1>
+    <p class="lead">{t.tools.mzfLead}</p>
+
+    <div class="dropzone" id="drop" data-pagefind-ignore data-ui={JSON.stringify(ui)}>
+      <p>{t.tools.drop}</p>
+      <input type="file" id="files" multiple accept=".mzf,.mzt,.m12,.MZF" hidden />
+      <button class="btn primary" type="button" id="pick">{t.tools.choose}</button>
+      <p class="meta">{t.tools.nothingUploaded}</p>
+    </div>
+    <div id="out" data-pagefind-ignore></div>
+  </article>
+
+  <script>
+    import { readMzf, problems, hex, type MzfFile } from '../../lib/mz/mzf';
+    const drop = document.getElementById('drop')!;
+    const ui = JSON.parse(drop.dataset.ui!) as Record<string, any>;
+    const out = document.getElementById('out')!;
+    const input = document.getElementById('files') as HTMLInputElement;
+    const esc = (s: unknown) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+    const kb = (n: number) => `${(n / 1024).toFixed(1)} KB`;
+
+    // The catalog's own index: every title's files with their CRC. Fetched once,
+    // only when somebody actually drops a file in.
+    let index: Promise<Map<string, { slug: string; title: string }>> | null = null;
+    const catalog = () => (index ??= fetch('/manifest.json').then((r) => r.json()).then((m: any) => {
+      const map = new Map<string, { slug: string; title: string }>();
+      for (const title of m.titles ?? []) for (const f of title.files ?? []) map.set(f.crc32, { slug: title.slug, title: title.title });
+      return map;
+    }).catch(() => new Map()));
+
+    const row = (label: string, value: string) => `<tr><td>${esc(label)}</td><td class="mono">${esc(value)}</td></tr>`;
+
+    function card(fileName: string, m: MzfFile): HTMLElement {
+      const h = m.header;
+      const notes = problems(m);
+      const el = document.createElement('section');
+      el.className = 'tool-card';
+      el.innerHTML = `<h2>${esc(fileName)}</h2>
+        <table class="rank"><tbody>
+          ${h ? row(ui.name, h.name || '—') + row(ui.type, h.attributeName) +
+                row(ui.load, hex(h.loadAddress)) + row(ui.exec, hex(h.execAddress)) +
+                row(ui.bodySize, `${h.dataSize} B`) : ''}
+          ${row(ui.fileSize, `${m.size} B (${kb(m.size)})`)}
+          ${row(ui.crc, m.crc32)}
+          ${row(ui.bodyCrc, m.bodyCrc32)}
+        </tbody></table>
+        ${notes.length ? `<p class="meta"><b>${esc(ui.notes)}</b></p><ul class="notes">${notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
+        <p class="identify meta">${esc(ui.identifying)}</p>
+        <details><summary>${esc(ui.bytes)}</summary><pre class="mono hexdump">${esc(dump(m.bytes))}</pre></details>`;
+      return el;
+    }
+
+    function dump(bytes: Uint8Array, limit = 256): string {
+      const lines: string[] = [];
+      for (let i = 0; i < Math.min(bytes.length, limit); i += 16) {
+        const part = bytes.subarray(i, i + 16);
+        const hexes = [...part].map((b) => b.toString(16).padStart(2, '0')).join(' ').padEnd(47);
+        const text = [...part].map((b) => (b >= 0x20 && b < 0x7f ? String.fromCharCode(b) : '.')).join('');
+        lines.push(`${i.toString(16).padStart(4, '0')}  ${hexes}  ${text}`);
+      }
+      return lines.join('\n');
+    }
+
+    function skeleton(fileName: string, m: MzfFile): string {
+      const name = (m.header?.name || fileName.replace(/\.[^.]+$/, '')).trim();
+      const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 20) || 'untitled';
+      return `# titles/${slug}/meta.yaml\ntitle: "${name}"\nmachine: mz-800\nmode: native\ngenre: [game]\nfiles:\n  - path: ${slug}.mzf\n    kind: standard\nsource: "Tape image, CRC-32 ${m.crc32}."\n`;
+    }
+
+    async function show(file: File) {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const m = readMzf(bytes);
+      const el = card(file.name, m);
+      out.prepend(el);
+      (window as unknown as { mzEvent?: (e: string) => void }).mzEvent?.('tool-mzf');
+      const hit = (await catalog()).get(m.crc32);
+      const line = el.querySelector('.identify')!;
+      if (hit) {
+        line.classList.add('hit');
+        line.innerHTML = `<b>${esc(ui.identified)}</b> ${esc(ui.identifiedAs.replace('{title}', hit.title))} ` +
+          `<a href="${esc(ui.titlePath + hit.slug)}/">${esc(hit.title)} →</a>`;
+      } else {
+        line.innerHTML = `${esc(ui.unknown)}<pre class="mono skeleton">${esc(skeleton(file.name, m))}</pre>`;
+      }
+    }
+
+    const take = (files: FileList | null) => { for (const f of [...(files ?? [])]) show(f); };
+    document.getElementById('pick')!.addEventListener('click', () => input.click());
+    input.addEventListener('change', () => take(input.files));
+    for (const type of ['dragenter', 'dragover']) drop.addEventListener(type, (e) => { e.preventDefault(); drop.classList.add('over'); });
+    for (const type of ['dragleave', 'drop']) drop.addEventListener(type, () => drop.classList.remove('over'));
+    drop.addEventListener('drop', (e) => { e.preventDefault(); take((e as DragEvent).dataTransfer?.files ?? null); });
+  </script>
+</Base>

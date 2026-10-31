@@ -468,3 +468,28 @@ body.pseudo-fs-on { overflow: hidden; }
 .ports-foot { margin: 1rem 0 0; font-size: 0.9rem; }
 .tag.multi { border-color: var(--amber); color: var(--amber); text-decoration: none; }
 .tag.multi:hover { background: var(--surface-2); }
+
+/* Tools */
+.tool-list { list-style: none; margin: 1.2rem 0; padding: 0; display: grid; gap: 0.6rem; max-width: 60ch; }
+.tool-list a { display: flex; gap: 0.9rem; align-items: flex-start; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.8rem 0.9rem; text-decoration: none; color: inherit; }
+.tool-list a:hover { border-color: var(--accent); }
+.tool-list .meta { display: block; margin-top: 0.15rem; }
+.tool-icon { font-size: 1.4rem; line-height: 1; color: var(--accent); }
+.dropzone { border: 2px dashed var(--line); border-radius: var(--radius); padding: 1.4rem 1rem; text-align: center; margin: 1rem 0; background: var(--surface); }
+.dropzone.over { border-color: var(--accent); background: var(--surface-2); }
+.dropzone p { margin: 0 0 0.6rem; }
+.dropzone .meta { margin: 0.6rem 0 0; }
+.tool-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.9rem 1rem; margin: 0 0 0.9rem; }
+.tool-card h2 { margin: 0 0 0.6rem; }
+.tool-card table { width: auto; min-width: min(100%, 34rem); }
+.tool-card .notes { margin: 0.2rem 0 0.6rem; padding-left: 1.2rem; font-size: 0.88rem; color: var(--muted); }
+.tool-card .identify.hit { color: var(--text); }
+.hexdump, .skeleton, .screen-out { overflow-x: auto; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 0.6rem 0.7rem; font-size: 0.8rem; line-height: 1.45; }
+.screen-out { white-space: pre; }
+.tool-row { display: flex; flex-wrap: wrap; gap: 0.8rem 1.4rem; align-items: center; margin: 1rem 0 0.6rem; }
+.tool-row label { display: flex; align-items: center; gap: 0.45rem; }
+.tool-row select { font: inherit; padding: 0.3rem 0.4rem; background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 6px; }
+.tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.8rem; }
+.tool-grid .field { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.9rem; }
+.tool-grid textarea { font: inherit; padding: 0.6rem; background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 8px; resize: vertical; }
+.tool-grid textarea.mono { font-family: var(--mono); font-size: 0.85rem; }

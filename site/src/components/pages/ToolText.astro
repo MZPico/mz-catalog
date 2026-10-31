@@ -1,0 +1,56 @@
+---
+import Base from '../../layouts/Base.astro';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+<Base lang={lang} title={t.tools.textTitle} description={t.tools.textLead}>
+  <article data-pagefind-body>
+    <h1>{t.tools.textTitle}</h1>
+    <p class="lead">{t.tools.textLead}</p>
+
+    <div class="tool-row" data-pagefind-ignore>
+      <label>{t.tools.codeSet}
+        <select id="set">
+          <option value="display" selected>{t.tools.setDisplay}</option>
+          <option value="file">{t.tools.setFile}</option>
+        </select>
+      </label>
+      <label class="check"><input type="checkbox" id="screen" /> {t.tools.screen}</label>
+    </div>
+
+    <div class="tool-grid" data-pagefind-ignore>
+      <label class="field"><span>{t.tools.text}</span>
+        <textarea id="text" rows="8" spellcheck="false">HELLO MZ-800</textarea>
+      </label>
+      <label class="field"><span>{t.tools.codes}</span>
+        <textarea id="codes" rows="8" spellcheck="false" class="mono"></textarea>
+      </label>
+    </div>
+    <pre id="screenout" class="screen-out" hidden></pre>
+    <p class="meta">{t.tools.unknownChar}</p>
+  </article>
+
+  <script>
+    import { decode, encode, parseHex, toHex, screenText, type Charset } from '../../lib/mz/charset';
+    const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+    const text = $<HTMLTextAreaElement>('text'), codes = $<HTMLTextAreaElement>('codes');
+    const set = $<HTMLSelectElement>('set'), screen = $<HTMLInputElement>('screen'), out = $<HTMLPreElement>('screenout');
+    const charset = () => set.value as Charset;
+    let counted = false;
+    const used = () => { if (!counted) { counted = true; (window as unknown as { mzEvent?: (e: string) => void }).mzEvent?.('tool-text'); } };
+    const paintScreen = (bytes: Uint8Array) => {
+      out.hidden = !screen.checked;
+      if (screen.checked) out.textContent = screenText(bytes).join('\n') || ' ';
+    };
+    const fromText = () => { const b = encode(text.value, charset()); codes.value = toHex(b); paintScreen(b); used(); };
+    const fromCodes = () => { const b = parseHex(codes.value); text.value = decode(b, charset()); paintScreen(b); used(); };
+    text.addEventListener('input', fromText);
+    codes.addEventListener('input', fromCodes);
+    set.addEventListener('change', fromText);
+    screen.addEventListener('change', () => paintScreen(parseHex(codes.value)));
+    fromText();
+  </script>
+</Base>
