@@ -356,6 +356,7 @@ export const ja: Ui = {
     actRun: '実行',
     actDrive: 'ドライブ 0 に入れる',
     actQd: 'Quick Disk に入れる',
+    keyboard: 'キーボード',
     yourFiles: 'あなたのファイル',
     empty: 'まだありません。上にファイルをドロップしてください。ブラウザー内に留まります。',
     remove: '削除',

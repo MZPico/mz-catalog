@@ -50,8 +50,11 @@ const ui = {
         <button type="button" class="btn secondary small" id="emu-reset">{tt.resetMachine}</button>
         <button type="button" class="btn secondary small" id="emu-mute">{t.play.mute}</button>
         <button type="button" class="btn secondary small" id="emu-fs">{t.play.fullscreen}</button>
+        <button type="button" class="btn secondary small" id="emu-kbd" aria-pressed="true">{tt.keyboard}</button>
         <span class="meta" id="emu-status"></span>
       </div>
+      <!-- The machine's own keyboard, for the keys a PC has nowhere sensible. -->
+      <div id="mzkbd" class="mzkbd" aria-label={tt.keyboard}></div>
     </section>
 
     <aside class="wb-left">
@@ -103,6 +106,7 @@ const ui = {
   <script>
     import { load, actionsFor, catalogIndex, formatSize, type LoadedFile } from '../../lib/mz/workbench';
     import { setStrings, charactersPanel } from '../../lib/mz/panels';
+    import { keyboard } from '../../lib/mz/keyboard';
     import { listFiles, rememberFile, forgetFile, forgetAll } from '../../lib/mz/store';
     import { boot, running, reset as resetMachine, mountFloppy, ejectFloppy, mountQd, protectQd, runMzf, setMuted, writeFile, readBack } from '../../lib/mz/emulator';
     import { defaults, presets, toIni, mediaOf, argsOf, mediaPath, type Machine } from '../../lib/mz/machine';
@@ -439,6 +443,19 @@ const ui = {
     $('emu-reset').addEventListener('click', () => resetMachine(!!machine.program));
     let muted = false;
     $('emu-mute').addEventListener('click', () => { muted = !muted; setMuted(muted); });
+    // The keyboard under the screen, on unless it was switched off here before.
+    const kbdBox = $('mzkbd');
+    const kbdBtn = $<HTMLButtonElement>('emu-kbd');
+    const showKeyboard = (on: boolean) => {
+      kbdBox.hidden = !on;
+      kbdBtn.setAttribute('aria-pressed', String(on));
+      kbdBtn.classList.toggle('active', on);
+      try { localStorage.setItem('mz-kbd', on ? '1' : '0'); } catch { /* private mode */ }
+      if (on && !kbdBox.childElementCount) keyboard(kbdBox, $('canvas'));
+    };
+    kbdBtn.addEventListener('click', () => showKeyboard(kbdBox.hidden));
+    showKeyboard(localStorage.getItem('mz-kbd') !== '0');
+
     $('emu-fs').addEventListener('click', () => {
       const frame = $('emu-frame') as HTMLElement & { webkitRequestFullscreen?: () => void };
       (frame.requestFullscreen ?? frame.webkitRequestFullscreen)?.call(frame);

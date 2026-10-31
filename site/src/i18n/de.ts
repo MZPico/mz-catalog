@@ -357,6 +357,7 @@ export const de: Ui = {
     actRun: 'Starten',
     actDrive: 'In Laufwerk 0 legen',
     actQd: 'In den Quick Disk legen',
+    keyboard: 'Tastatur',
     yourFiles: 'Ihre Dateien',
     empty: 'Noch nichts. Ziehen Sie oben eine Datei herein — sie bleibt in Ihrem Browser.',
     remove: 'Entfernen',

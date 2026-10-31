@@ -357,6 +357,7 @@ export const en = {
     actRun: 'Run it',
     actDrive: 'Put in drive 0',
     actQd: 'Put in the Quick Disk',
+    keyboard: 'Keyboard',
     yourFiles: 'Your files',
     empty: 'No file yet. Drop one above — it stays in your browser.',
     remove: 'Remove',

@@ -356,6 +356,7 @@ export const cs: Ui = {
     actRun: 'Spustit',
     actDrive: 'Vložit do mechaniky 0',
     actQd: 'Vložit do Quick Disku',
+    keyboard: 'Klávesnice',
     yourFiles: 'Vaše soubory',
     empty: 'Zatím nic. Přetáhněte soubor nahoru — zůstane ve vašem prohlížeči.',
     remove: 'Odebrat',
