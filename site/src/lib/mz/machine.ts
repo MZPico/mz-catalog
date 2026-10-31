@@ -69,7 +69,13 @@ export const presets: Record<string, () => Machine> = {
 
 const bool = (value: boolean) => (value ? '1' : '0');
 /** Where a mounted file lives inside the emulator's own filesystem. */
-export const mediaPath = (id: string) => `/media/${id.replace(/[^A-Za-z0-9._-]/g, '_')}`;
+export const mediaPath = (id: string) => {
+  const safe = id.replace(/[^A-Za-z0-9._-]/g, '_');
+  // The emulator picks a reader by extension, so the path has to end in one.
+  // Ids made before that was so carry it in the middle (name-size-random).
+  const buried = /\.([A-Za-z0-9]{1,4})-\d+-[a-z0-9]+$/.exec(safe);
+  return `/media/${safe}${buried ? '.' + buried[1] : ''}`;
+};
 const file = (id: string) => (id ? mediaPath(id) : '');
 
 /** The ini the emulator reads at start. Only what we actually set. */

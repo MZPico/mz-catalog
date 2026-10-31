@@ -352,6 +352,13 @@ const ui = {
           const input = el as HTMLInputElement | HTMLSelectElement;
           const value = input.type === 'checkbox' ? (input as HTMLInputElement).checked : input.value;
           setAt(machine as unknown as Record<string, unknown>, el.dataset.set!, value);
+          // A disk in a drive is no use with the controller switched off.
+          if (value && /^fdc\.drives\.\d+\.file$/.test(el.dataset.set!) && !machine.fdc.connected) {
+            machine.fdc.connected = true; markDirty('fdc.connected');
+          }
+          if (value && el.dataset.set === 'qdisk.file' && !machine.qdisk.connected) {
+            machine.qdisk.connected = true; markDirty('qdisk.connected');
+          }
           saveMachine();
           markDirty(el.dataset.set!);
           renderMachine();
