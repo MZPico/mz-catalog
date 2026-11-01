@@ -52,9 +52,14 @@ const ui = {
       </div>
       <!-- The machine's own keyboard, for the keys a PC has nowhere sensible. -->
       <div id="mzkbd" class="mzkbd" aria-label={tt.keyboard}></div>
-      <!-- The built-in data recorder of the MZ-821. -->
-      <div id="mzcmt" class="mzcmt" aria-label={tt.recorder}></div>
-      <!-- What the chosen file holds, under the machine. -->
+      <!-- What you hold: the joysticks, and the MZ-821's data recorder. -->
+      <div class="desk">
+        <div id="dev-desk" class="devices desk-devs" aria-label={tt.joysticks}></div>
+        <div id="mzcmt" class="mzcmt" aria-label={tt.recorder}></div>
+      </div>
+      <!-- Where a file goes: the drives, with the file's own details under them. -->
+      <h2 class="wb-h">{tt.storage}</h2>
+      <div id="dev-storage" class="devices storage" aria-label={tt.storage}></div>
       <div id="wb-panel" class="wb-panel"></div>
     </section>
 
@@ -73,8 +78,8 @@ const ui = {
       <div class="machine-apply">
         <button type="button" class="btn primary small" id="apply">{tt.applyLive}</button>
       </div>
-      <!-- The hardware as it looks: a bay takes a disk, a lever throws it out. -->
-      <div class="devices" id="devices" data-emu={emuVersion} aria-label={tt.devices}></div>
+      <!-- The cards inside the case, drawn as they look; each carries its own settings. -->
+      <div class="devices cards" id="devices" data-emu={emuVersion} aria-label={tt.devices}></div>
       <p class="meta" id="apply-note">{tt.liveNote}</p>
     </aside>
   </article>
@@ -476,9 +481,12 @@ const ui = {
           strings: { empty: ui.deckEmpty, noFf: ui.noFastForward, insert: ui.insert },
         });
 
-    // The peripherals beside the machine, each carrying its own settings.
-    drawDevices = devices($('devices'), {
+    // The peripherals, each carrying its own settings: joysticks on the desk,
+    // the drives under the keyboard, the cards in the machine's own column.
+    const where: Record<string, HTMLElement> = { joy: $('dev-desk'), fdc: $('dev-storage'), qdisk: $('dev-storage'), ide: $('dev-storage') };
+    drawDevices = devices({
       machine: () => machine,
+      place: (id) => where[id] ?? $('devices'),
       files: (kinds) => files.filter((f) => kinds.includes(f.kind)).map((f) => ({ id: f.id, name: f.name })),
       set: setMachine,
       take: takeImage,

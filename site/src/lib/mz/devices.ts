@@ -31,6 +31,8 @@ export type DeviceId = (typeof DEVICE_IDS)[number];
 
 export interface DeviceHooks {
   machine(): Machine;
+  /** Where each device stands: storage under the keyboard, cards inside the machine. */
+  place(id: DeviceId): HTMLElement;
   /** Workbench files of these kinds, as id and name. */
   files(kinds: string[]): { id: string; name: string }[];
   /** Change one setting, by its path in the machine. */
@@ -61,12 +63,13 @@ const tower = (first: number) => `
     </div>
   </div>`;
 
-const CASE = `
+const CASE: Record<DeviceId, string> = {
+  fdc: `
   <div class="dev dev-fdd wide" data-dev="fdc">
     <div class="fd-towers">${tower(0)}${tower(2)}</div>
     <p class="dev-cap"><b>Floppy</b> <span class="dev-what"></span></p>
-  </div>
-
+  </div>`,
+  ramdisk: `
   <div class="dev dev-ram wide" data-dev="ramdisk">
     <button type="button" class="ram-card" data-toggle="ramdisk.mr1r18.plugged">
       <span class="ram-edge"></span>
@@ -82,8 +85,8 @@ const CASE = `
       </button>
     </div>
     <p class="dev-cap"><b>RAM disk</b> <span class="dev-what"></span></p>
-  </div>
-
+  </div>`,
+  qdisk: `
   <div class="dev dev-qd" data-dev="qdisk">
     <div class="qd-case">
       <span class="qd-made">MADE IN JAPAN</span>
@@ -95,8 +98,8 @@ const CASE = `
       <button type="button" class="qd-eject" data-eject="qdisk.file"><span>EJECT</span></button>
     </div>
     <p class="dev-cap"><b>MZ-1F11</b> <span class="dev-what"></span></p>
-  </div>
-
+  </div>`,
+  card: `
   <div class="dev dev-pico" data-dev="card">
     <button type="button" class="ram-card pico" data-toggle="card.connected">
       <span class="ram-edge"></span>
@@ -105,8 +108,8 @@ const CASE = `
       <span class="ram-silk pico-silk">MZPico <b data-menu="card">⚙</b></span>
     </button>
     <p class="dev-cap"><b>MZPico</b> <span class="dev-what"></span></p>
-  </div>
-
+  </div>`,
+  memext: `
   <div class="dev dev-mem" data-dev="memext">
     <button type="button" class="ram-card mem" data-toggle="memext.connected">
       <span class="ram-edge"></span>
@@ -115,9 +118,8 @@ const CASE = `
       <span class="ram-silk"><b class="mem-type" data-menu="memext"></b></span>
     </button>
     <p class="dev-cap"><b class="cap-memext"></b> <span class="dev-what"></span></p>
-  </div>
-
-
+  </div>`,
+  ide: `
   <div class="dev dev-hdd" data-dev="ide">
     <div class="pair">
       ${[0, 1].map((i) => `
@@ -126,8 +128,8 @@ const CASE = `
         </button>`).join('')}
     </div>
     <p class="dev-cap"><b class="cap-hdd"></b> <span class="dev-what"></span></p>
-  </div>
-
+  </div>`,
+  joy: `
   <div class="dev dev-joy" data-dev="joy">
     <div class="pair">
       ${['joy1', 'joy2'].map((j, i) => `
@@ -137,26 +139,32 @@ const CASE = `
         </button>`).join('')}
     </div>
     <p class="dev-cap"><b class="cap-joy"></b> <span class="dev-what"></span></p>
-  </div>
-
+  </div>`,
+  sound: `
   <div class="dev dev-snd" data-dev="sound">
     <div class="pair">
       <button type="button" class="snd-speaker" data-toggle="sound.on"><span class="snd-grille"></span></button>
       <button type="button" class="snd-chip" data-toggle="sound.secondPsg"><span>PSG<br>2</span></button>
     </div>
     <p class="dev-cap"><b class="cap-sound"></b> <span class="dev-what"></span></p>
-  </div>`;
+  </div>`,
+};
 
 /** Walk a dotted path into the machine. */
 const get = (m: Machine, path: string): unknown =>
   path.split('.').reduce<unknown>((node, part) => (node as Record<string, unknown>)[part], m);
 
-/** Draw the peripherals into `host`; returns the redraw the page calls after a change. */
-export function devices(host: HTMLElement, hooks: DeviceHooks): () => void {
-  host.innerHTML = CASE;
+/** Draw the peripherals, each where `hooks.place` puts it; returns the redraw the page calls after a change. */
+export function devices(hooks: DeviceHooks): () => void {
+  const devs = DEVICE_IDS.map((id) => {
+    const host = hooks.place(id);
+    host.insertAdjacentHTML('beforeend', CASE[id]);
+    return host.lastElementChild as HTMLElement;
+  });
   const ui = hooks.strings;
-  const find = <T extends HTMLElement>(sel: string) => host.querySelector(sel) as T;
-  const all = (sel: string) => [...host.querySelectorAll<HTMLElement>(sel)];
+  const find = <T extends HTMLElement>(sel: string) =>
+    devs.map((d) => (d.matches(sel) ? d : d.querySelector(sel))).find(Boolean) as T;
+  const all = (sel: string) => devs.flatMap((d) => [...(d.matches(sel) ? [d] : []), ...d.querySelectorAll<HTMLElement>(sel)]);
   const joyName = (t: string) => (t === 'NONE' ? ui.joyNone : t === 'NUM_KEYPAD' ? ui.joyKeypad : ui.joyStick);
   const nameOf = (id: string, kinds: string[]) => hooks.files(kinds).find((f) => f.id === id)?.name ?? '';
 

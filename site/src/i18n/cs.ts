@@ -370,6 +370,7 @@ export const cs: Ui = {
     recorder: 'Magnetofon',
     devices: 'Zařízení',
     joysticks: 'Joysticky',
+    storage: 'Úložiště',
     viaCard: 'přes kartu MZPico',
     programNote: 'Program v paměti:',
     insert: 'Vložit disk',

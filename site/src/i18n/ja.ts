@@ -370,6 +370,7 @@ export const ja: Ui = {
     recorder: 'データレコーダー',
     devices: '周辺機器',
     joysticks: 'ジョイスティック',
+    storage: 'ストレージ',
     viaCard: 'MZPicoカード経由',
     programNote: 'メモリ上のプログラム:',
     insert: 'ディスクを入れる',

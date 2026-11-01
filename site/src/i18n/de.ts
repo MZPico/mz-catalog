@@ -371,6 +371,7 @@ export const de: Ui = {
     recorder: 'Rekorder',
     devices: 'Geräte',
     joysticks: 'Joysticks',
+    storage: 'Speichermedien',
     viaCard: 'über die MZPico-Karte',
     programNote: 'Programm im Speicher:',
     insert: 'Diskette einlegen',

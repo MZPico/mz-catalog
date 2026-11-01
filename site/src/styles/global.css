@@ -553,7 +553,7 @@ body.pseudo-fs-on { overflow: hidden; }
 
 @media (min-width: 1000px) {
   .wb {
-    grid-template-columns: minmax(190px, 240px) minmax(420px, 1fr) minmax(250px, 290px);
+    grid-template-columns: minmax(190px, 230px) minmax(420px, 1fr) minmax(220px, 250px);
     grid-template-areas:
       'head   head   head'
       'drop   drop   drop'
@@ -642,8 +642,14 @@ body.pseudo-fs-on { overflow: hidden; }
 .mzcmt {
   width: fit-content;
   background: linear-gradient(#ebe5d6, #ddd7c5); border: 1px solid #b3ac99;
-  border-radius: 6px; padding: 0.5rem 0.55rem 0; margin: 0.5rem 0 0.4rem;
+  border-radius: 6px; padding: 0.5rem 0.55rem 0; margin: 0;
 }
+/* The desk: joysticks to the left, the recorder to the right, under the keyboard. */
+.desk { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 0.6rem 1rem; margin: 0.5rem 0 0.8rem; }
+.devices.desk-devs { display: block; margin: 0; }
+/* Storage: the drives in a row, wrapping when the column is narrow. */
+.devices.storage { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.7rem 1.1rem; margin: 0.3rem 0 1rem; }
+.devices.storage .dev.wide { grid-column: auto; }
 .cmt-deck { display: flex; flex-direction: column; gap: 0.4rem; width: 9.4rem; }
 .cmt-door {
   background: #f2eee2; border: 1px solid #c0b9a6; border-radius: 3px; padding: 0.22rem;

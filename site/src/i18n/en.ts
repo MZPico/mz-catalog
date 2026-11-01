@@ -371,6 +371,7 @@ export const en = {
     recorder: 'Recorder',
     devices: 'Devices',
     joysticks: 'Joysticks',
+    storage: 'Storage',
     viaCard: 'through the MZPico card',
     programNote: 'Program in memory:',
     insert: 'Put a disk in',
