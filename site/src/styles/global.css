@@ -533,7 +533,6 @@ body.pseudo-fs-on { overflow: hidden; }
 .wb-actions .btn.active { border-color: var(--accent); color: var(--accent); }
 .wb-panel:empty { display: none; }
 .wb-panel { margin: 0.2rem 0 1.4rem; }
-.wb-later { margin-top: 2rem; }
 
 .btn.small { padding: 0.2rem 0.5rem; font-size: 0.78rem; vertical-align: middle; margin-left: 0.5rem; }
 
@@ -544,14 +543,13 @@ body.pseudo-fs-on { overflow: hidden; }
 /* The workbench: the machine in the middle, everything else around it.
    Narrow screens get one column with the machine first; wide ones put the files
    on the left, the hardware on the right and the panels underneath. */
-.wb { display: grid; gap: 0.8rem 1.1rem; grid-template-areas: 'head' 'drop' 'screen' 'left' 'right' 'below'; }
+.wb { display: grid; gap: 0.8rem 1.1rem; grid-template-areas: 'head' 'drop' 'screen' 'left' 'right'; }
 .wb-head { grid-area: head; }
 .wb-head h1 { font-size: 1.1rem; margin: 0; }
 .wb-drop { grid-area: drop; margin: 0; }
 .wb-screen { grid-area: screen; }
 .wb-left { grid-area: left; min-width: 0; }
 .wb-right { grid-area: right; min-width: 0; }
-.wb-below { grid-area: below; min-width: 0; }
 
 @media (min-width: 1000px) {
   .wb {
@@ -559,8 +557,7 @@ body.pseudo-fs-on { overflow: hidden; }
     grid-template-areas:
       'head   head   head'
       'drop   drop   drop'
-      'left   screen right'
-      'below  below  below';
+      'left   screen right';
     align-items: start;   /* the columns are as tall as their content, not each other */
   }
 }
@@ -606,7 +603,6 @@ body.pseudo-fs-on { overflow: hidden; }
 .wb-actions .btn.active { border-color: var(--accent); color: var(--accent); }
 .wb-panel:empty { display: none; }
 .wb-panel { margin: 0 0 1rem; }
-.wb-later { margin: 0.6rem 0 0; }
 
 /* The MZ-800 keyboard, as the machine wears it: pale character caps with the
    shifted legend above the plain one, darker command caps, on a near-black
@@ -702,8 +698,6 @@ body.pseudo-fs-on { overflow: hidden; }
    switch. Unplugged hardware greys out but stays where it is. */
 .devices { display: grid; grid-template-columns: repeat(auto-fill, minmax(7.4rem, 1fr)); justify-items: center; align-items: start; gap: 0.9rem 0.4rem; margin: 0.2rem 0 0.7rem; }
 .dev.wide { grid-column: 1 / -1; }
-.dev[hidden] { display: none; }
-.devices[hidden] { display: none; }
 .dev { position: relative; width: fit-content; max-width: 100%; }
 .dev.off { filter: grayscale(0.75) brightness(0.62); opacity: 0.6; }
 .dev-cap { margin: 0.25rem 0 0; font-size: 0.7rem; color: var(--muted); text-align: center; }
@@ -846,19 +840,7 @@ body.pseudo-fs-on { overflow: hidden; }
 .ram-silk { display: block; margin-top: 0.3rem; font-family: var(--mono); font-size: 0.42rem; letter-spacing: 0.08em; color: #cfe3d2; }
 .ram-silk b { color: #fff; }
 
-.wb-rhead { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
-.wb-rhead .wb-h { margin: 0; }
-.wb-rhead .btn { font-size: 0.72rem; padding: 0.1rem 0.4rem; }
-.wb-rhead .btn.active { border-color: var(--accent); color: var(--accent); }
 
-/* Which devices are on show. */
-.dev-strip { display: flex; flex-wrap: wrap; gap: 0.2rem; margin: 0.1rem 0 0.4rem; }
-.dev-strip button {
-  font: inherit; font-size: 0.66rem; padding: 0.08rem 0.4rem; border-radius: 999px; cursor: pointer;
-  background: var(--surface); color: var(--muted); border: 1px solid var(--line);
-}
-.dev-strip button[aria-pressed='true'] { color: var(--text); border-color: var(--accent); }
-.dev-strip[hidden] { display: none; }
 
 /* The program chip under the screen. */
 .emu-prog { display: inline-flex; align-items: center; gap: 0.3rem; margin-left: auto; }

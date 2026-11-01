@@ -46,8 +46,6 @@ const ui = {
         <button type="button" class="btn secondary small" id="emu-reset">{tt.resetMachine}</button>
         <button type="button" class="btn secondary small" id="emu-mute">{t.play.mute}</button>
         <button type="button" class="btn secondary small" id="emu-fs">{t.play.fullscreen}</button>
-        <button type="button" class="btn secondary small" id="emu-kbd" aria-pressed="true">{tt.keyboard}</button>
-        <button type="button" class="btn secondary small" id="emu-cmt" aria-pressed="true">{tt.recorder}</button>
         <span class="meta" id="emu-status"></span>
         <!-- The program injected at start: the one setting with no device to live on. -->
         <span class="emu-prog meta" id="emu-prog" hidden><span></span><button type="button" class="wb-close" title={tt.remove} aria-label={tt.remove}>✕</button></span>
@@ -56,6 +54,8 @@ const ui = {
       <div id="mzkbd" class="mzkbd" aria-label={tt.keyboard}></div>
       <!-- The built-in data recorder of the MZ-821. -->
       <div id="mzcmt" class="mzcmt" aria-label={tt.recorder}></div>
+      <!-- What the chosen file holds, under the machine. -->
+      <div id="wb-panel" class="wb-panel"></div>
     </section>
 
     <aside class="wb-left">
@@ -69,24 +69,14 @@ const ui = {
     </aside>
 
     <aside class="wb-right">
-      <div class="wb-rhead">
-        <h2 class="wb-h">{tt.machine}</h2>
-        <button type="button" class="btn ghost small" id="emu-dev" aria-pressed="true">{tt.devices}</button>
-      </div>
+      <h2 class="wb-h">{tt.machine}</h2>
       <div class="machine-apply">
         <button type="button" class="btn primary small" id="apply">{tt.applyLive}</button>
       </div>
       <!-- The hardware as it looks: a bay takes a disk, a lever throws it out. -->
-      <!-- Which devices are on show; each is a picture below, with its settings on it. -->
-      <div class="dev-strip" id="dev-strip" aria-label={tt.devices}></div>
       <div class="devices" id="devices" data-emu={emuVersion} aria-label={tt.devices}></div>
       <p class="meta" id="apply-note">{tt.liveNote}</p>
     </aside>
-
-    <section class="wb-below">
-      <div id="wb-panel" class="wb-panel"></div>
-      <p class="meta wb-later">{tt.later}</p>
-    </section>
   </article>
 
   <script>
@@ -94,7 +84,7 @@ const ui = {
     import { setStrings } from '../../lib/mz/panels';
     import { keyboard } from '../../lib/mz/keyboard';
     import { recorder } from '../../lib/mz/recorder';
-    import { devices, DEVICE_IDS, type DeviceId } from '../../lib/mz/devices';
+    import { devices } from '../../lib/mz/devices';
     import { listFiles, rememberFile, forgetFile, forgetAll } from '../../lib/mz/store';
     import { boot, running, frames, wake, reset as resetMachine, mountFloppy, ejectFloppy, mountQd, protectQd, runMzf,
       cmtInsert, cmtPlay, cmtStop, cmtRecord, cmtHack, cmtState, cmtPlaytime, setMuted, writeFile, readBack } from '../../lib/mz/emulator';
@@ -364,6 +354,7 @@ const ui = {
 
     /** What the deck is doing, next to its buttons and on the recorder. */
     let drawDeck: (() => void) | null = null;
+    let drawDevices: (() => void) | null = null;
     function showDeck() {
       const box = document.getElementById('cmt-state');
       const state = running() ? cmtState() : 0;
@@ -456,29 +447,9 @@ const ui = {
     $('emu-reset').addEventListener('click', () => resetMachine(!!machine.program));
     let muted = false;
     $('emu-mute').addEventListener('click', () => { muted = !muted; setMuted(muted); });
-    // The keyboard under the screen, on unless it was switched off here before.
-    const kbdBox = $('mzkbd');
-    const kbdBtn = $<HTMLButtonElement>('emu-kbd');
-    const showKeyboard = (on: boolean) => {
-      kbdBox.hidden = !on;
-      kbdBtn.setAttribute('aria-pressed', String(on));
-      kbdBtn.classList.toggle('active', on);
-      try { localStorage.setItem('mz-kbd', on ? '1' : '0'); } catch { /* private mode */ }
-      if (on && !kbdBox.childElementCount) keyboard(kbdBox, $('canvas'));
-    };
-    kbdBtn.addEventListener('click', () => showKeyboard(kbdBox.hidden));
-    showKeyboard(localStorage.getItem('mz-kbd') !== '0');
-
-    // The data recorder, the same way.
-    const cmtBox = $('mzcmt');
-    const cmtBtn = $<HTMLButtonElement>('emu-cmt');
-    const showRecorder = (on: boolean) => {
-      cmtBox.hidden = !on;
-      cmtBtn.setAttribute('aria-pressed', String(on));
-      cmtBtn.classList.toggle('active', on);
-      try { localStorage.setItem('mz-cmt', on ? '1' : '0'); } catch { /* private mode */ }
-      if (on && !cmtBox.childElementCount) {
-        drawDeck = recorder(cmtBox, {
+    // The keyboard under the screen, and the data recorder under that.
+    keyboard($('mzkbd'), $('canvas'));
+    drawDeck = recorder($('mzcmt'), {
           press: (key) => deck(key),
           state: () => (running() ? cmtState() : machine.tape.file ? 1 : 0),   // chosen but not yet started: in, stopped
           at: () => cmtPlaytime(),
@@ -498,66 +469,21 @@ const ui = {
                 .map((v) => ({ radio: `${ui.tapeSpeed} ${v.replace('SPEED_', '')}`, on: t.speed === v, pick: () => setMachine('tape.speed', v) })),
               check('tape.inverted', ui.tapeInverted, t.inverted),
               check('tape.boost', ui.tapeBoost, t.boost),
+              // Speed, polarity and boost are read at start, like the ini; say so where it was changed.
+              ...(needsRestart ? ['sep' as const, { note: ui.needsRestart }, { action: ui.applyRestart, pick: () => $('apply').click() }] : []),
             ];
           },
           strings: { empty: ui.deckEmpty, noFf: ui.noFastForward, insert: ui.insert },
         });
-      }
-      drawDeck?.();
-    };
-    cmtBtn.addEventListener('click', () => showRecorder(cmtBox.hidden));
-    showRecorder(localStorage.getItem('mz-cmt') !== '0');
 
     // The peripherals beside the machine, each carrying its own settings.
-    // The strip above them shows or hides any one; the Devices switch, all.
-    let drawDevices: (() => void) | null = null;
-    const devBox = $('devices');
-    const devBtn = $<HTMLButtonElement>('emu-dev');
-    const SHOWN_KEY = 'mz-dev-shown';
-    let shownDevices = new Set<DeviceId>(DEVICE_IDS);
-    try {
-      const kept = JSON.parse(localStorage.getItem(SHOWN_KEY) ?? 'null');
-      if (Array.isArray(kept)) shownDevices = new Set(kept.filter((d) => (DEVICE_IDS as readonly string[]).includes(d)));
-    } catch { /* first visit */ }
-    const stripLabel: Record<DeviceId, string> = {
-      fdc: ui.drives, qdisk: ui.qdisk, ramdisk: ui.ramdisk, memext: ui.memext, card: ui.cardSection, ide: ui.hdd, joy: ui.joysticks, sound: ui.soundOn,
-    };
-    const strip = $('dev-strip');
-    strip.innerHTML = DEVICE_IDS.map((d) => `<button type="button" data-show="${d}">${esc(stripLabel[d])}</button>`).join('');
-    const drawStrip = () => {
-      for (const b of strip.querySelectorAll<HTMLButtonElement>('[data-show]')) {
-        b.setAttribute('aria-pressed', String(shownDevices.has(b.dataset.show as DeviceId)));
-      }
-    };
-    for (const b of strip.querySelectorAll<HTMLButtonElement>('[data-show]')) {
-      b.addEventListener('click', () => {
-        const d = b.dataset.show as DeviceId;
-        if (shownDevices.has(d)) shownDevices.delete(d); else shownDevices.add(d);
-        try { localStorage.setItem(SHOWN_KEY, JSON.stringify([...shownDevices])); } catch { /* private mode */ }
-        drawStrip(); drawDevices?.();
-      });
-    }
-    drawStrip();
-    const showDevices = (on: boolean) => {
-      devBox.hidden = !on;
-      strip.hidden = !on;
-      devBtn.setAttribute('aria-pressed', String(on));
-      devBtn.classList.toggle('active', on);
-      try { localStorage.setItem('mz-dev', on ? '1' : '0'); } catch { /* private mode */ }
-      if (on && !devBox.childElementCount) {
-        drawDevices = devices(devBox, {
-          machine: () => machine,
-          files: (kinds) => files.filter((f) => kinds.includes(f.kind)).map((f) => ({ id: f.id, name: f.name })),
-          set: setMachine,
-          take: takeImage,
-          shown: () => shownDevices,
-          strings: ui,
-        });
-      }
-      drawDevices?.();
-    };
-    devBtn.addEventListener('click', () => showDevices(devBox.hidden));
-    showDevices(localStorage.getItem('mz-dev') !== '0');
+    drawDevices = devices($('devices'), {
+      machine: () => machine,
+      files: (kinds) => files.filter((f) => kinds.includes(f.kind)).map((f) => ({ id: f.id, name: f.name })),
+      set: setMachine,
+      take: takeImage,
+      strings: ui,
+    });
 
     $('emu-fs').addEventListener('click', () => {
       const frame = $('emu-frame') as HTMLElement & { webkitRequestFullscreen?: () => void };

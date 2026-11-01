@@ -37,8 +37,6 @@ export interface DeviceHooks {
   set(path: string, value: unknown): void;
   /** A floppy the machine wrote to, back into the file list. */
   take(drive: number): void;
-  /** Which devices are on show. */
-  shown(): Set<DeviceId>;
   strings: Record<string, string>;
 }
 
@@ -170,8 +168,6 @@ export function devices(host: HTMLElement, hooks: DeviceHooks): () => void {
 
   const draw = () => {
     const m = hooks.machine();
-    const shown = hooks.shown();
-    for (const dev of all('.dev')) dev.hidden = !shown.has(dev.dataset.dev as DeviceId);
 
     // the floppy units
     for (const bay of all('.fd-bay')) {
