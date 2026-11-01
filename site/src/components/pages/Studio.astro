@@ -46,6 +46,8 @@ const ui = {
         <button type="button" class="btn secondary small" id="emu-reset">{tt.resetMachine}</button>
         <button type="button" class="btn secondary small" id="emu-mute">{t.play.mute}</button>
         <button type="button" class="btn secondary small" id="emu-fs">{t.play.fullscreen}</button>
+        <!-- Shows up once a setting the machine only reads at start has changed. -->
+        <button type="button" class="btn primary small" id="apply" hidden>{tt.applyRestart}</button>
         <span class="meta" id="emu-status"></span>
         <!-- The program injected at start: the one setting with no device to live on. -->
         <span class="emu-prog meta" id="emu-prog" hidden><span></span><button type="button" class="wb-close" title={tt.remove} aria-label={tt.remove}>✕</button></span>
@@ -75,12 +77,8 @@ const ui = {
 
     <aside class="wb-right">
       <h2 class="wb-h">{tt.machine}</h2>
-      <div class="machine-apply">
-        <button type="button" class="btn primary small" id="apply">{tt.applyLive}</button>
-      </div>
       <!-- The cards inside the case, drawn as they look; each carries its own settings. -->
       <div class="devices cards" id="devices" data-emu={emuVersion} aria-label={tt.devices}></div>
-      <p class="meta" id="apply-note">{tt.liveNote}</p>
     </aside>
   </article>
 
@@ -286,8 +284,7 @@ const ui = {
       if (!running()) return;
       if (LIVE.test(path)) { applyLive(path); return; }
       needsRestart = true;
-      $('apply-note').textContent = ui.needsRestart;
-      ($('apply') as HTMLButtonElement).textContent = ui.applyRestart;
+      $('apply').hidden = false;
     }
 
     async function applyLive(path: string) {
@@ -401,7 +398,7 @@ const ui = {
       files.unshift(copy);
       rememberFile({ id: copy.id, name: copy.name, bytes: copy.bytes, ts: Date.now() });
       renderList(); renderMachine();
-      $('apply-note').textContent = ui.taken;
+      status(ui.taken);
     }
 
     /** Resolves once the machine is advancing frames (or after a few seconds). */
@@ -474,16 +471,15 @@ const ui = {
                 .map((v) => ({ radio: `${ui.tapeSpeed} ${v.replace('SPEED_', '')}`, on: t.speed === v, pick: () => setMachine('tape.speed', v) })),
               check('tape.inverted', ui.tapeInverted, t.inverted),
               check('tape.boost', ui.tapeBoost, t.boost),
-              // Speed, polarity and boost are read at start, like the ini; say so where it was changed.
-              ...(needsRestart ? ['sep' as const, { note: ui.needsRestart }, { action: ui.applyRestart, pick: () => $('apply').click() }] : []),
             ];
           },
           strings: { empty: ui.deckEmpty, noFf: ui.noFastForward, insert: ui.insert },
         });
 
     // The peripherals, each carrying its own settings: joysticks on the desk,
-    // the drives under the keyboard, the cards in the machine's own column.
-    const where: Record<string, HTMLElement> = { joy: $('dev-desk'), fdc: $('dev-storage'), qdisk: $('dev-storage'), ide: $('dev-storage') };
+    // the Quick Disk beside them, the drives under the keyboard, the cards in
+    // the machine's own column.
+    const where: Record<string, HTMLElement> = { joy: $('dev-desk'), qdisk: $('dev-desk'), fdc: $('dev-storage'), ide: $('dev-storage') };
     drawDevices = devices({
       machine: () => machine,
       place: (id) => where[id] ?? $('devices'),
@@ -497,14 +493,8 @@ const ui = {
       const frame = $('emu-frame') as HTMLElement & { webkitRequestFullscreen?: () => void };
       (frame.requestFullscreen ?? frame.webkitRequestFullscreen)?.call(frame);
     });
-    $('apply').addEventListener('click', async () => {
-      saveMachine();
-      if (!running()) { startMachine(); return; }
-      if (needsRestart) { location.reload(); return; }
-      for (let i = 0; i < 4; i++) await applyLive(`fdc.drives.${i}.file`);
-      await applyLive('qdisk.file');
-      await resetMachine(!!machine.program);
-    });
+    // The ini is read once, at start: a change to it means starting again.
+    $('apply').addEventListener('click', () => { saveMachine(); location.reload(); });
     renderMachine();
   </script>
 </Base>

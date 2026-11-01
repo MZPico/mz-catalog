@@ -26,7 +26,8 @@
 import type { Machine } from './machine';
 import { popup, type Item } from './menu';
 
-export const DEVICE_IDS = ['fdc', 'qdisk', 'ramdisk', 'memext', 'card', 'ide', 'joy', 'sound'] as const;
+/** In the order they are drawn where they stand. */
+export const DEVICE_IDS = ['fdc', 'ide', 'joy', 'qdisk', 'ramdisk', 'memext', 'card', 'sound'] as const;
 export type DeviceId = (typeof DEVICE_IDS)[number];
 
 export interface DeviceHooks {

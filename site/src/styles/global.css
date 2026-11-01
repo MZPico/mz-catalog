@@ -584,7 +584,6 @@ body.pseudo-fs-on { overflow: hidden; }
 .emu-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; margin: 0.4rem 0 0; font-size: 0.85rem; }
 
 /* The preset row above the devices. */
-.machine-apply { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.7rem; font-size: 0.82rem; margin: 0 0 0.4rem; }
 
 /* Files and their actions, compact enough for a column. */
 .wb-list { list-style: none; margin: 0 0 0.4rem; padding: 0; display: grid; gap: 0.25rem; }
@@ -646,7 +645,7 @@ body.pseudo-fs-on { overflow: hidden; }
 }
 /* The desk: joysticks to the left, the recorder to the right, under the keyboard. */
 .desk { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 0.6rem 1rem; margin: 0.5rem 0 0.8rem; }
-.devices.desk-devs { display: block; margin: 0; }
+.devices.desk-devs { display: flex; align-items: flex-end; gap: 1.2rem; margin: 0; }
 /* Storage: the drives in a row, wrapping when the column is narrow. */
 .devices.storage { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.7rem 1.1rem; margin: 0.3rem 0 1rem; }
 .devices.storage .dev.wide { grid-column: auto; }
@@ -897,12 +896,14 @@ body.pseudo-fs-on { overflow: hidden; }
 .hdd:not(.off) .hdd-led { background: #e5533c; box-shadow: 0 0 0.25rem #e5533c; }
 .hdd.off { filter: grayscale(0.75) brightness(0.7); opacity: 0.65; }
 .joy { display: flex; flex-direction: column; align-items: center; padding: 0; border: 0; background: none; cursor: pointer; }
-.joy-stick { display: block; width: 0.32rem; height: 1.6rem; background: linear-gradient(90deg, #333, #111); border-radius: 2px; position: relative; }
+.joy-stick { display: block; width: 0.32rem; height: 1.6rem; background: linear-gradient(90deg, #5a5a5a, #2a2a2a); border-radius: 2px; position: relative; }
 .joy-stick i { position: absolute; top: -0.5rem; left: 50%; transform: translateX(-50%); width: 0.75rem; height: 0.75rem; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ff8b7b, #b2291a); }
-.joy-base { position: relative; display: flex; align-items: center; justify-content: center; width: 3rem; height: 1.3rem; margin-top: -0.1rem; border-radius: 3px 3px 5px 5px; background: linear-gradient(#2c2c2c, #151515); border: 1px solid #000; box-shadow: 0 0.15rem 0.35rem rgba(0, 0, 0, 0.4); }
+.joy-base { position: relative; display: flex; align-items: center; justify-content: center; width: 3rem; height: 1.3rem; margin-top: -0.1rem; border-radius: 3px 3px 5px 5px; background: linear-gradient(#4a4a4a, #262626); border: 1px solid #000; box-shadow: 0 0.15rem 0.35rem rgba(0, 0, 0, 0.4); }
 .joy-base b { position: absolute; left: 0.3rem; top: 0.3rem; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ff8b7b, #b2291a); }
 .joy-base em { font-style: normal; font-family: var(--mono); font-size: 0.42rem; color: #bbb; margin-left: 0.6rem; }
-.joy.off { filter: grayscale(0.9) brightness(0.6); opacity: 0.55; }
+.joy.off { filter: grayscale(0.9) brightness(0.75); opacity: 0.7; }
+.dev-joy.off .joy { filter: none; opacity: 1; }   /* the device greys as one, not twice */
+.emu-controls .btn[hidden] { display: none; }
 .snd-speaker { width: 4.4rem; height: 3rem; padding: 0.25rem; cursor: pointer; border: 1px solid #b4ad9a; border-radius: 3px; background: linear-gradient(100deg, #efeadb, #ddd7c5); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6), 0 0.15rem 0.4rem rgba(0, 0, 0, 0.35); }
 .snd-grille { display: block; height: 100%; background-color: #b5af9c; background-image: repeating-linear-gradient(#5f5a4e 0 1px, transparent 1px 0.3rem), repeating-linear-gradient(90deg, #5f5a4e 0 1px, transparent 1px 0.3rem); border: 1px solid #8f897a; }
 .snd-chip { width: 1.7rem; height: 2.4rem; padding: 0; cursor: pointer; border: 1px solid #0c0e10; border-radius: 1px; color: #cfd3d8; font-family: var(--mono); font-size: 0.42rem; line-height: 1.2; background: repeating-linear-gradient(#c9c2ab 0 0.08rem, transparent 0.08rem 0.22rem) left / 0.12rem 100% no-repeat, repeating-linear-gradient(#c9c2ab 0 0.08rem, transparent 0.08rem 0.22rem) right / 0.12rem 100% no-repeat, linear-gradient(90deg, #1b1e21, #2b2f33); }
