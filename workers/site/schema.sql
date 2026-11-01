@@ -55,3 +55,30 @@ CREATE TABLE IF NOT EXISTS visit_log (
   visitor TEXT NOT NULL,
   PRIMARY KEY (day, visitor)
 );
+
+-- The last days by the hour, for the dashboard's 24-hour view. Filled by the triggers
+-- below from whatever counts into today's metrics_daily, the card Worker included; the
+-- nightly copies write past days, so they stay out. Pruned by the daily cron.
+CREATE TABLE IF NOT EXISTS metrics_hourly (
+  hour   TEXT    NOT NULL,   -- 'YYYY-MM-DDTHH', UTC
+  metric TEXT    NOT NULL,
+  key    TEXT    NOT NULL DEFAULT '',
+  value  INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (hour, metric, key)
+);
+
+CREATE TRIGGER IF NOT EXISTS metrics_hourly_insert AFTER INSERT ON metrics_daily
+WHEN NEW.day = date('now')
+BEGIN
+  INSERT INTO metrics_hourly (hour, metric, key, value)
+    VALUES (strftime('%Y-%m-%dT%H', 'now'), NEW.metric, NEW.key, NEW.value)
+    ON CONFLICT (hour, metric, key) DO UPDATE SET value = value + excluded.value;
+END;
+
+CREATE TRIGGER IF NOT EXISTS metrics_hourly_update AFTER UPDATE ON metrics_daily
+WHEN NEW.day = date('now') AND NEW.value > OLD.value
+BEGIN
+  INSERT INTO metrics_hourly (hour, metric, key, value)
+    VALUES (strftime('%Y-%m-%dT%H', 'now'), NEW.metric, NEW.key, NEW.value - OLD.value)
+    ON CONFLICT (hour, metric, key) DO UPDATE SET value = value + excluded.value;
+END;

@@ -4,6 +4,7 @@
 //   POST /api/hit   {p, r, s}  one page view: path, referring host, campaign tag
 //   POST /api/hit   {e}        one use of a feature (save, gamepad, …)
 //   GET  /api/metrics?days=N   the daily totals, for /stats/ (X-Stats-Key header)
+//   GET  /api/metrics?hours=N  the same by the hour (metrics_hourly, kept three days)
 //   POST /api/metrics/report   send the weekly mail now (X-Stats-Key header)
 //   POST /api/metrics/collect?day=YYYY-MM-DD   copy one past day of Cloudflare
 //                              analytics now (backfill; Cloudflare keeps 8 days)
@@ -177,16 +178,20 @@ export async function collectNow(env, request, url) {
 /** GET /api/metrics — the dashboard's data. The key is a Worker secret; the page keeps it in the URL fragment. */
 export async function metricsApi(env, request, url) {
   if (!authorised(env, request)) return refused();
+  const hours = Math.min(Math.max(Number(url.searchParams.get('hours')) || 0, 0), 72);
   const days = Math.min(Math.max(Number(url.searchParams.get('days')) || 30, 1), 400);
-  const from = dayBefore(today(), days - 1);
+  const hourOf = (ms) => new Date(ms).toISOString().slice(0, 13);
+  const from = hours ? hourOf(Date.now() - (hours - 1) * 3600000) : dayBefore(today(), days - 1);
   const [rows, totals] = await env.STATS.batch([
-    env.STATS.prepare('SELECT day, metric, key, value FROM metrics_daily WHERE day >= ? ORDER BY day').bind(from),
+    hours
+      ? env.STATS.prepare('SELECT hour AS day, metric, key, value FROM metrics_hourly WHERE hour >= ? ORDER BY hour').bind(from)
+      : env.STATS.prepare('SELECT day, metric, key, value FROM metrics_daily WHERE day >= ? ORDER BY day').bind(from),
     env.STATS.prepare(`SELECT (SELECT COALESCE(SUM(n), 0) FROM plays) AS plays,
                               (SELECT COUNT(*) FROM votes) AS votes,
                               (SELECT COUNT(*) FROM plays WHERE n > 0) AS titles_played`),
   ]);
   return new Response(JSON.stringify({
-    from, to: today(), generated: new Date().toISOString(),
+    from, to: hours ? hourOf(Date.now()) : today(), generated: new Date().toISOString(),
     rows: (rows.results ?? []).map((r) => [r.day, r.metric, r.key, r.value]),
     totals: totals.results?.[0] ?? {},
   }), { headers: JSON_HEADERS });
@@ -308,6 +313,9 @@ async function collectCloudflare(env, day) {
   for (let i = 0; i < writes.length; i += 50) await env.STATS.batch(writes.slice(i, i + 50));
 }
 
+/** One play as it happens, so today and the last 24 hours show it; the nightly copy below sets the same totals. */
+export const countPlay = (env, slug) => env.STATS.batch([bump(env, today(), 'play', slug), bump(env, today(), 'plays', '')]);
+
 /** Plays and votes of one day, from our own tables — before the play log is pruned. */
 async function collectOwn(env, day) {
   const start = Date.parse(`${day}T00:00:00Z`) / 1000;
@@ -329,7 +337,10 @@ export async function daily(env) {
   if (env.CF_ANALYTICS_TOKEN && env.ZONE_ID) {
     try { await collectCloudflare(env, yesterday); } catch (err) { console.error('cloudflare analytics:', String(err)); }
   }
-  await env.STATS.prepare('DELETE FROM visit_log WHERE day < ?').bind(today()).run();
+  await env.STATS.batch([
+    env.STATS.prepare('DELETE FROM visit_log WHERE day < ?').bind(today()),
+    env.STATS.prepare('DELETE FROM metrics_hourly WHERE hour < ?').bind(dayBefore(today(), 3)),
+  ]);
 }
 
 // ---- Weekly mail ------------------------------------------------------------

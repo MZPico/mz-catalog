@@ -17,7 +17,7 @@
 // must come from our own pages, every address has an hourly budget, a title
 // takes at most VOTES_PER_IP votes from one network, and play counts are keyed
 // on the network alone.
-import { hit, metricsApi, reportNow, collectNow, daily, weekly, isBot } from './metrics.js';
+import { hit, metricsApi, reportNow, collectNow, countPlay, daily, weekly, isBot } from './metrics.js';
 import { netUpgrade } from './net.js';
 
 const JSON_HEADERS = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
@@ -188,6 +188,7 @@ async function play(env, request, url) {
       `INSERT INTO plays (slug, n) VALUES (?, 1)
          ON CONFLICT (slug) DO UPDATE SET n = n + 1`,
     ).bind(slug).run();
+    await countPlay(env, slug);
   }
   return json({ ok: true });
 }
