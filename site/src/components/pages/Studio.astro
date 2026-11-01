@@ -375,10 +375,15 @@ const ui = {
       if (what === 'emu-run') machine.program = file.id;
       // On tape it is read as the real machine reads it, so the instant load goes off.
       if (what === 'emu-tape') { machine.tape.file = file.id; machine.tape.instant = false; }
+      // A drive is only there if its controller was on when the machine started.
+      // Asking for the disk is asking for the drive, so the machine starts again
+      // with it rather than waiting for Apply.
+      const needsBoot = (what === 'emu-drive' && !machine.fdc.connected) || (what === 'emu-qd' && !machine.qdisk.connected);
       if (what === 'emu-drive') { machine.fdc.connected = true; machine.fdc.drives[0].file = file.id; }
       if (what === 'emu-qd') { machine.qdisk.connected = true; machine.qdisk.file = file.id; }
       saveMachine(); renderMachine();
       if (!running()) { startMachine(); return; }
+      if (needsBoot) { location.reload(); return; }
       writeFile(mediaPath(file.id), file.bytes);
       if (what === 'emu-run') await runMzf(mediaPath(file.id));
       else if (what === 'emu-drive') await applyLive('fdc.drives.0.file');
