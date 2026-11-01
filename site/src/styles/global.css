@@ -572,15 +572,24 @@ body.pseudo-fs-on { overflow: hidden; }
    machine's own border area around it (the same 112/56 offset the screenshot
    tool crops), so the canvas is oversized and shifted to show just the picture. */
 .emu-screen { max-width: 400px; margin-inline: auto; position: relative; background: #000; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; aspect-ratio: 704 / 464; }
+/* The emulator draws 928 x 576 with the MZ-800's border round a 640 x 400
+   picture that sits 9 px right and 4 px low of the middle; the frame shows
+   704 x 464 of it, cut so the picture is centred with 32 px of border each side. */
 .emu-screen canvas {
   display: block; outline: none;
   width: calc(100% * 928 / 704);
   height: calc(100% * 576 / 464);
-  margin-left: calc(-100% * 112 / 704);
-  margin-top: calc(-100% * 56 / 704);
+  margin-left: calc(-100% * 121 / 704);
+  margin-top: calc(-100% * 60 / 704);
 }
-.emu-screen:fullscreen { border: 0; border-radius: 0; display: flex; align-items: center; justify-content: center; }
-.emu-screen:fullscreen { aspect-ratio: 704 / 464; }
+/* Full screen: the same cut, as large as the display allows, centred on it. */
+.emu-screen:fullscreen { border: 0; border-radius: 0; display: block; }
+.emu-screen:fullscreen canvas {
+  --k: calc(min(100vw, 100vh * 704 / 464) / 704);
+  position: absolute; margin: 0;
+  width: calc(928 * var(--k)); height: calc(576 * var(--k));
+  left: calc(50% - 473 * var(--k)); top: calc(50% - 292 * var(--k));
+}
 .emu-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; margin: 0.4rem 0 0; font-size: 0.85rem; }
 
 /* The preset row above the devices. */
@@ -643,8 +652,8 @@ body.pseudo-fs-on { overflow: hidden; }
   background: linear-gradient(#ebe5d6, #ddd7c5); border: 1px solid #b3ac99;
   border-radius: 6px; padding: 0.5rem 0.55rem 0; margin: 0;
 }
-/* The desk: joysticks to the left, the recorder to the right, under the keyboard. */
-.desk { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 0.6rem 1rem; margin: 0.5rem 0 0.8rem; }
+/* The desk: joysticks left, the Quick Disk in the middle, the recorder right, all on one line under the keyboard. */
+.desk { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.6rem 1rem; margin: 0.5rem 0 0.8rem; }
 .devices.desk-devs { display: flex; align-items: flex-end; gap: 1.2rem; margin: 0; }
 /* Storage: the drives in a row, wrapping when the column is narrow. */
 .devices.storage { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.7rem 1.1rem; margin: 0.3rem 0 1rem; }

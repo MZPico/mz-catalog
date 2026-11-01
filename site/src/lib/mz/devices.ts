@@ -8,7 +8,7 @@
 //            as one device. A bay takes a disk and holds that disk's options;
 //            the lever throws it out; the rocker on the first tower is the
 //            controller.
-//   MZ-1F11  the Quick Disk: grille, BUSY lamp, EJECT key down the right
+//   qdisk    the MZ-1F11 Quick Disk: grille, BUSY lamp, EJECT key down the right
 //            edge. The grille takes a cartridge, and with it write protection
 //            and whether the drive is the real one or the card pretending.
 //   MR1R18   the RAM disk card, a green board of DIP chips - and beside it the
@@ -98,7 +98,7 @@ const CASE: Record<DeviceId, string> = {
       <button type="button" class="dev-power" data-toggle="qdisk.connected"><i></i></button>
       <button type="button" class="qd-eject" data-eject="qdisk.file"><span>EJECT</span></button>
     </div>
-    <p class="dev-cap"><b>MZ-1F11</b> <span class="dev-what"></span></p>
+    <p class="dev-cap"><b>Quick disk</b> <span class="dev-what"></span></p>
   </div>`,
   card: `
   <div class="dev dev-pico" data-dev="card">

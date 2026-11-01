@@ -57,6 +57,7 @@ const ui = {
       <!-- What you hold: the joysticks, and the MZ-821's data recorder. -->
       <div class="desk">
         <div id="dev-desk" class="devices desk-devs" aria-label={tt.joysticks}></div>
+        <div id="dev-qd" class="devices desk-devs"></div>
         <div id="mzcmt" class="mzcmt" aria-label={tt.recorder}></div>
       </div>
       <!-- Where a file goes: the drives, with the file's own details under them. -->
@@ -184,6 +185,7 @@ const ui = {
     function select(file: LoadedFile) {
       current = file;
       openAction = file.kind === 'mzf' ? 'header' : 'bytes';
+      try { localStorage.setItem('mz-current', file.id); } catch { /* private mode */ }
       renderList(); renderActions();
     }
 
@@ -220,7 +222,9 @@ const ui = {
     (async () => {
       try { for (const stored of await listFiles()) files.push(load(stored.name, stored.bytes, stored.id)); } catch { /* no store */ }
       if (files.length) {
-        select(files[0]);
+        // The file that was open stays open across a restart of the machine.
+        const last = localStorage.getItem('mz-current');
+        select(files.find((f) => f.id === last) ?? files[0]);
         const index = await catalogIndex();
         for (const file of files) if (file.mzf) file.catalog = index.get(file.mzf.crc32) ?? null;
         renderList(); renderActions();
@@ -484,7 +488,7 @@ const ui = {
     // The peripherals, each carrying its own settings: joysticks on the desk,
     // the Quick Disk beside them, the drives under the keyboard, the cards in
     // the machine's own column.
-    const where: Record<string, HTMLElement> = { joy: $('dev-desk'), qdisk: $('dev-desk'), fdc: $('dev-storage'), ide: $('dev-storage') };
+    const where: Record<string, HTMLElement> = { joy: $('dev-desk'), qdisk: $('dev-qd'), fdc: $('dev-storage'), ide: $('dev-storage') };
     drawDevices = devices({
       machine: () => machine,
       place: (id) => where[id] ?? $('devices'),
