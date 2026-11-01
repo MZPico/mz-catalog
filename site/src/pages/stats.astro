@@ -141,7 +141,7 @@ import '../styles/global.css';
 
       function rank(rows, { label = (k) => esc(k), limit = 12 } = {}) {
         if (!rows.length) return '<p class="empty">nothing yet</p>';
-        const max = rows[0][1];
+        const max = Math.max(1, ...rows.map(([, v]) => v));
         return `<table class="rank">${rows.slice(0, limit).map(([k, v]) => `<tr><td>${label(k)}</td><td class="bar"><div class="fill" style="width:${(v / max) * 100}%"></div></td><td class="n">${fmt(v)}</td></tr>`).join('')}</table>`
           + (rows.length > limit ? `<p class="meta">+ ${rows.length - limit} more</p>` : '');
       }
@@ -154,6 +154,10 @@ import '../styles/global.css';
         ['scan', 'scanners', 'var(--s2)'], ['tools', 'scripts', 'var(--s2)'], ['other', 'other robots', 'var(--s2)'],
       ];
       const SOURCE_CLASS = { ai: 'AI assistant', search: 'search', social: 'social', site: 'link', tag: 'campaign', direct: '', other: '' };
+
+      const NET_GAMES = { 19534: 'BomberNet' };
+      const NET_PLATFORMS = { browser: 'browser (web build)', 'mz-800-emulator': 'MZ-800 emulated in a browser', 'mz-800': 'MZ-800 with an MZPico', retro: 'retro machine, not told which',
+        'zx-spectrum-48k': 'ZX Spectrum 48K', 'element-zx-128k': 'eLeMeNt ZX 128K', 'amstrad-cpc': 'Amstrad CPC', 'atari-xl': 'Atari XL', c64: 'Commodore 64', amiga: 'Amiga', 'atari-st': 'Atari ST', 'pc-dos': 'PC (DOS)', other: 'other client' };
 
       async function load() {
         if (!key) return askKey('This page needs the stats key.');
@@ -180,22 +184,37 @@ import '../styles/global.css';
         };
         const perDay = (metric, keyTest = () => true) => cur.map((d) => data.rows.reduce((s, [dd, m, k, v]) => (dd === d && m === metric && keyTest(k) ? s + v : s), 0));
 
-        const kpi = (label, metric, keyTest) => {
-          const a = sum(inCur, metric, keyTest), b = sum(inPrev, metric, keyTest);
+        const kpi = (label, metric, keyTest, per = 1) => {
+          const a = Math.round(sum(inCur, metric, keyTest) / per), b = Math.round(sum(inPrev, metric, keyTest) / per);
           const delta = b ? `<b>${a >= b ? '+' : '−'}${Math.abs(Math.round(((a - b) / b) * 100))} %</b> vs previous ${period}` : (a ? 'new' : '—');
           return `<div class="kpi"><div class="label">${label}</div><div class="value">${fmt(a)}</div><div class="delta">${delta}</div></div>`;
         };
         const isAi = (k) => k.startsWith('ai:');
+        const netGames = sum(inCur, 'net-games'), netSeconds = sum(inCur, 'net-seconds');
+        const rooms = byKey('net-rooms');
+        const roomStep = (k) => rooms.find(([n]) => n === k)?.[1] ?? 0;
         out.innerHTML = `<div class="kpis">
             ${kpi('Visitors', 'visitors')}
             ${kpi('Page views (people)', 'page')}
             ${kpi('Plays', 'plays')}
             ${kpi('Visits from AI assistants', 'source', isAi)}
             ${kpi('MZPico cards (devices)', 'card-devices')}
+            ${kpi('Online games', 'net-games')}
+            ${kpi('Online player-minutes', 'net-seat-seconds', undefined, 60)}
             ${nightly(kpi('AI crawler page fetches', 'bot', (k) => k.startsWith('ai-')))}
           </div>
           <div class="panels">
             <section class="panel wide"><h2>Visitors per ${unit}</h2><div id="c-visitors"></div></section>
+            <section class="panel wide"><h2>Online games per ${unit}</h2><div id="c-net"></div></section>
+            <section class="panel"><h2>Online: games by title</h2>${rank(byKey('net-games'), { label: (k) => esc(NET_GAMES[k] ?? `game ${k}`) })}
+              <p class="meta">${netGames ? `A game lasts ${(netSeconds / netGames / 60).toFixed(1)} minutes on average. ` : ''}${fmt(sum(inCur, 'net-spectators'))} spectators.</p></section>
+            <section class="panel"><h2>Online: do rooms get going?</h2>${rooms.length ? rank([['rooms created', roomStep('created')], ['someone joined', roomStep('joined')], ['a game started', roomStep('started')]]) : rank([])}
+              <p class="meta">Each room counts once. Rooms that never start are people who found nobody to play with.</p></section>
+            <section class="panel"><h2>Online: seats by platform</h2>${rank(byKey('net-platform'), { label: (k) => esc(NET_PLATFORMS[k] ?? k) })}
+              <p class="meta">One count per player per game. The machines on the shared C client cannot be told apart until their builds say which they are.</p></section>
+            <section class="panel"><h2>Online: players in a game</h2>${rank(byKey('net-seats').sort((a, b) => a[0] - b[0]), { label: (k) => `${esc(k)} ${k === '1' ? 'player' : 'players'}` })}</section>
+            <section class="panel"><h2>Online: how games ended</h2>${rank(byKey('net-ends'))}</section>
+            <section class="panel"><h2>Online: problems</h2>${rank(byKey('net-problem'))}</section>
             <section class="panel"><h2>Plays per ${unit}</h2><div id="c-plays"></div></section>
             <section class="panel"><h2>MZPico cards per ${unit}</h2><div id="c-cards"></div></section>
             <section class="panel"><h2>MZPico card downloads per ${unit}</h2><div id="c-card"></div></section>
@@ -234,6 +253,7 @@ import '../styles/global.css';
               <p class="meta">All time: ${fmt(data.totals.plays ?? 0)} plays of ${fmt(data.totals.titles_played ?? 0)} titles, ${fmt(data.totals.votes ?? 0)} ratings.</p></section>
           </div>`;
         document.getElementById('c-visitors').append(barChart(cur, [{ name: 'visitors', values: perDay('visitors'), color: 'var(--s1)' }]));
+        document.getElementById('c-net').append(barChart(cur, [{ name: 'games', values: perDay('net-games'), color: 'var(--s5)' }]));
         document.getElementById('c-plays').append(barChart(cur, [{ name: 'plays', values: perDay('plays'), color: 'var(--s3)' }], { height: 170, width: 360 }));
         document.getElementById('c-cards').append(barChart(cur, [{ name: 'cards', values: perDay('card-devices'), color: 'var(--s6)' }], { height: 170, width: 360 }));
         // The card Worker counts downloads itself from 12 Sep; before that, Cloudflare's request totals.

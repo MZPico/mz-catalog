@@ -15,8 +15,19 @@
 //                                  data...], from it [slot, frame lo, frame hi,
 //                                  data...]; every other message stays JSON
 //
+//   &pf=<machine>                  which machine this is, when the client says
+//                                  (the machine ids of the title's ports); else
+//                                  the connection's own signs are read, see platformOf
+//
 // Free-plan budget: incoming WebSocket messages count 20:1, outgoing are free;
 // a 4-player room at 17 inputs/s per member is ~3.5 requests/s.
+//
+// Usage goes into metrics_daily as plain totals, at the events of a game and never
+// per input; no room code, address or anything else that tells people apart:
+//   net-rooms created|joined|started   each room once, how far it got
+//   net-games, net-seconds, net-seat-seconds   per game id
+//   net-seats 1..4, net-platform <machine>     per game started, per seat
+//   net-ends, net-problem, net-spectators      how they ended, what went wrong
 
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
 const ROOM_TTL_MS = 10 * 60 * 1000;   // idle rooms only; a room with no sockets is dropped at once
@@ -28,6 +39,24 @@ export function roomCode() {
   crypto.getRandomValues(a);
   return [...a].map((b) => ALPHABET[b % ALPHABET.length]).join('');
 }
+
+const PLATFORMS = new Set(['browser', 'mz-800', 'zx-spectrum-48k', 'element-zx-128k', 'amstrad-cpc', 'atari-xl', 'c64', 'amiga', 'atari-st', 'pc-dos']);
+
+/** The machine behind a connection. Today only the kinds can be told apart without
+ * the client saying: every machine on the shared C client sends the same User-Agent. */
+export function platformOf(request, url) {
+  const said = url.searchParams.get('pf');
+  if (PLATFORMS.has(said)) return said;
+  const ua = request.headers.get('User-Agent') ?? '';
+  if (/^MZPico/.test(ua)) return 'mz-800';
+  if (/^BomberNet/.test(ua)) return 'retro';
+  // In a browser, the game compiled for the web asks for binary lines and the emulated MZ-800 does not.
+  if (/^Mozilla/.test(ua)) return url.searchParams.get('bin') === '1' ? 'browser' : 'mz-800-emulator';
+  return 'other';
+}
+
+const COUNT = `INSERT INTO metrics_daily (day, metric, key, value) VALUES (?, ?, ?, ?)
+  ON CONFLICT (day, metric, key) DO UPDATE SET value = value + excluded.value`;
 
 const send = (ws, obj) => { try { ws.send(JSON.stringify(obj)); } catch { /* closing */ } };
 
@@ -51,6 +80,24 @@ export class NetRoom {
   }
 
   sockets() { return this.ctx.getWebSockets(); }
+
+  /** Add to the statistics: [metric, key, n]. A count is never worth breaking a game for. */
+  async tally(...rows) {
+    if (!this.env.STATS) return;
+    const day = new Date().toISOString().slice(0, 10);
+    try {
+      await this.env.STATS.batch(rows.map(([metric, key, n = 1]) => this.env.STATS.prepare(COUNT).bind(day, metric, String(key), n)));
+    } catch (err) { console.error('net stats:', String(err)); }
+  }
+
+  /** The running game is over: count how long it lasted and how it ended. */
+  async endGame(how) {
+    const seconds = Math.round((Date.now() - (this.room.startedAt ?? Date.now())) / 1000);
+    const game = this.room.game, seats = this.room.seats ?? 0;
+    this.room.running = false;
+    await this.save();
+    await this.tally(['net-seconds', game, seconds], ['net-seat-seconds', game, seconds * seats], ['net-ends', how]);
+  }
 
   members() {
     const out = new Map();
@@ -95,10 +142,11 @@ export class NetRoom {
     const [client, server] = Object.values(pair);
     this.ctx.acceptWebSocket(server);
     // slot -2 = handshake pending (create or join must come first)
-    server.serializeAttachment({ slot: -2, ready: false, create, game, code, bin });
+    server.serializeAttachment({ slot: -2, ready: false, create, game, code, bin, platform: platformOf(request, url) });
     if (!create && !this.room) {
       send(server, { op: 'error', code: E_ROOM, text: 'room unknown' });
       server.close(1000, 'room unknown');
+      await this.tally(['net-problem', 'unknown room code']);
     }
     return new Response(null, { status: 101, webSocket: client });
   }
@@ -126,22 +174,30 @@ export class NetRoom {
         ws.serializeAttachment({ ...a, slot: 0, ready: false });
         send(ws, { op: 'room', code: a.code, slot: 0, slots, bytes, settings: this.room.settings });
         this.broadcast({ op: 'members', count: 1, ready: 0 });
+        await this.tally(['net-rooms', 'created']);
         return;
       }
       if (op === 'join' && !a.create) {
         if (!this.room) return send(ws, { op: 'error', code: E_ROOM, text: 'room unknown' });
-        if (Number(msg.build ?? 0) !== this.room.build) return send(ws, { op: 'error', code: E_BUILD, text: 'build mismatch' });
+        if (Number(msg.build ?? 0) !== this.room.build) {
+          send(ws, { op: 'error', code: E_BUILD, text: 'build mismatch' });
+          return this.tally(['net-problem', 'version mismatch']);
+        }
         const members = this.members();
         if (members.size >= this.room.slots || this.room.running) {
           ws.serializeAttachment({ ...a, slot: -1, ready: false });   // spectator
-          return send(ws, { op: 'room', code: a.code, slot: -1, slots: this.room.slots, bytes: this.room.bytes, settings: this.room.settings, spectator: true });
+          send(ws, { op: 'room', code: a.code, slot: -1, slots: this.room.slots, bytes: this.room.bytes, settings: this.room.settings, spectator: true });
+          return this.tally(['net-spectators', this.room.game]);
         }
         let slot = 0;
         while (members.has(slot)) slot++;
         ws.serializeAttachment({ ...a, slot, ready: false });
+        const firstGuest = !this.room.joined;
+        this.room.joined = true;
         await this.save();
         send(ws, { op: 'room', code: a.code, slot, slots: this.room.slots, bytes: this.room.bytes, settings: this.room.settings });
         this.broadcast({ op: 'members', count: this.members().size, ready: this.readyMask() });
+        if (firstGuest) await this.tally(['net-rooms', 'joined']);
         return;
       }
       return send(ws, { op: 'error', code: E_NOROOM, text: a.create ? 'send create first' : 'send join first' });
@@ -161,11 +217,18 @@ export class NetRoom {
         if (!this.room.running && [...members.values()].every((m) => m.ready)) {
           this.room.running = true;
           this.room.seed = 1 + Math.floor(Math.random() * 0xFFFE);
+          const firstGame = !this.room.started;
+          Object.assign(this.room, { started: true, startedAt: Date.now(), seats: members.size, desynced: false });
           this.inputs.clear(); this.hashes.clear();
           await this.save();
           // mask: the slots taking part (a frame is complete when they all sent input)
           let mask = 0; for (const slot of members.keys()) mask |= 1 << slot;
           this.broadcast({ op: 'start', seed: this.room.seed, frame: 0, mask });
+          await this.tally(
+            ['net-games', this.room.game], ['net-seats', members.size],
+            ...[...members.values()].map((m) => ['net-platform', m.platform ?? 'other']),
+            ...(firstGame ? [['net-rooms', 'started']] : []),
+          );
         }
         return;
       }
@@ -186,7 +249,11 @@ export class NetRoom {
         const hs = this.hashes.get(frame) ?? {};
         hs[a.slot] = h; this.hashes.set(frame, hs);
         this.trim(this.hashes, frame);
-        if (new Set(Object.values(hs)).size > 1) this.broadcast({ op: 'desync', frame });
+        if (new Set(Object.values(hs)).size > 1) {
+          this.broadcast({ op: 'desync', frame });
+          // It can repeat on every frame after: one game counts once.
+          if (!this.room.desynced) { this.room.desynced = true; await this.save(); await this.tally(['net-problem', 'desync']); }
+        }
         return;
       }
       case 'msg': {
@@ -211,20 +278,23 @@ export class NetRoom {
     if (map.size > HISTORY * 2) for (const k of map.keys()) if (k < frame - HISTORY) map.delete(k);
   }
 
-  async webSocketClose(ws) { await this.gone(ws); }
-  async webSocketError(ws) { await this.gone(ws); }
+  // 1000, 1001 and 1005 are a client closing on purpose; the rest is a connection lost.
+  async webSocketClose(ws, code) { await this.gone(ws, [1000, 1001, 1005].includes(code)); }
+  async webSocketError(ws) { await this.gone(ws, false); }
 
-  async gone(ws) {
+  async gone(ws, clean) {
     const a = ws.deserializeAttachment();
     await this.load();
     if (a && a.slot >= 0 && this.room) {
       this.broadcast({ op: 'dropped', slot: a.slot }, ws);
-      if (this.room.running) { this.room.running = false; await this.save(); }
+      if (this.room.running) await this.endGame(clean ? 'left' : 'connection lost');
     }
     if (this.sockets().filter((s) => s !== ws).length === 0) await this.destroy();
   }
 
   async alarm() {
+    await this.load();
+    if (this.room?.running) await this.endGame('timed out');
     this.broadcast({ op: 'dropped', slot: -1, reason: 'timeout' });
     for (const ws of this.sockets()) { try { ws.close(1000, 'timeout'); } catch { /* */ } }
     await this.destroy();

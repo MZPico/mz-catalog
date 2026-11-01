@@ -244,7 +244,7 @@ export const cs: Ui = {
     sections: [
       {
         h2: 'Stručně',
-        html: `Žádné cookies, žádné sledování, žádná reklama a nic se nenačítá ze serverů jiných firem. Návštěvy počítáme anonymně, jen jako denní součty. Pár věcí si web pamatuje ve vašem prohlížeči, a to jen když použijete funkci, která je potřebuje. Náš server uchovává jen solené otisky (hashe) — nikdy vaši IP adresu ani identifikátor v čitelné podobě.`,
+        html: `Žádné cookies, žádné sledování, žádná reklama a nic se nenačítá ze serverů jiných firem. Návštěvy a online hry počítáme anonymně, jen jako součty za den a za poslední tři dny i za hodinu. Pár věcí si web pamatuje ve vašem prohlížeči, a to jen když použijete funkci, která je potřebuje. Náš server uchovává jen solené otisky (hashe) — nikdy vaši IP adresu ani identifikátor v čitelné podobě.`,
       },
       {
         h2: 'Kdo web provozuje',

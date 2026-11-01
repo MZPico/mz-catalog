@@ -245,7 +245,7 @@ export const en = {
     sections: [
       {
         h2: 'In short',
-        html: `No cookies, no tracking, no advertising and nothing loaded from other companies' servers. Visits are counted anonymously, as daily totals. The site remembers a few things in your own browser only when you use the feature that needs them, and our server keeps salted hashes — never your IP address or an identifier in the clear.`,
+        html: `No cookies, no tracking, no advertising and nothing loaded from other companies' servers. Visits and online games are counted anonymously, as totals per day and, for the last three days, per hour. The site remembers a few things in your own browser only when you use the feature that needs them, and our server keeps salted hashes — never your IP address or an identifier in the clear.`,
       },
       {
         h2: 'Who runs the site',

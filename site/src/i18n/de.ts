@@ -245,7 +245,7 @@ export const de: Ui = {
     sections: [
       {
         h2: 'Kurz gesagt',
-        html: `Keine Cookies, kein Tracking, keine Werbung und nichts, was von Servern anderer Firmen geladen wird. Besuche zählen wir anonym, nur als Tagessummen. Einige wenige Dinge merkt sich die Seite in Ihrem eigenen Browser, und nur, wenn Sie die Funktion nutzen, die sie braucht. Unser Server speichert gesalzene Hashes — nie Ihre IP-Adresse oder eine Kennung im Klartext.`,
+        html: `Keine Cookies, kein Tracking, keine Werbung und nichts, was von Servern anderer Firmen geladen wird. Besuche und Online-Spiele zählen wir anonym, nur als Summen pro Tag und für die letzten drei Tage auch pro Stunde. Einige wenige Dinge merkt sich die Seite in Ihrem eigenen Browser, und nur, wenn Sie die Funktion nutzen, die sie braucht. Unser Server speichert gesalzene Hashes — nie Ihre IP-Adresse oder eine Kennung im Klartext.`,
       },
       {
         h2: 'Wer die Seite betreibt',
