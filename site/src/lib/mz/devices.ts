@@ -3,10 +3,11 @@
 // what they do. Every setting the machine has lives on its device - there is
 // no second list of controls anywhere.
 //
-//   MZ-1F19  the two-drive floppy unit: cream tower, SHARP badge, two black
-//            bays. The controller drives four, so it stands twice, bays A-D.
-//            A bay takes a disk and holds that disk's options; the lever
-//            throws it out; the rocker on the top panel is the controller.
+//   floppy   the two-drive MZ-1F19 unit: cream tower, SHARP badge, two black
+//            bays. The controller drives four, so it stands twice, bays A-D,
+//            as one device. A bay takes a disk and holds that disk's options;
+//            the lever throws it out; the rocker on the first tower is the
+//            controller.
 //   MZ-1F11  the Quick Disk: grille, BUSY lamp, EJECT key down the right
 //            edge. The grille takes a cartridge, and with it write protection
 //            and whether the drive is the real one or the card pretending.
@@ -45,30 +46,28 @@ export interface DeviceHooks {
 const short = (name: string) => (name.length > 16 ? name.slice(0, 15) + '…' : name);
 const chips = (n: number) => '<i></i>'.repeat(n);
 
-const unit = (first: number) => `
-  <div class="dev dev-fdd wide" data-dev="fdc">
-    <div class="fd-case">
-      <div class="fd-top"><span class="fd-badge">SHARP</span><span class="fd-vents"></span>
-        <button type="button" class="dev-power" data-toggle="fdc.connected"><i></i></button></div>
-      <div class="fd-bays">
-        ${[first, first + 1].map((i) => `
-          <div class="fd-bay" data-bay="${i}">
-            <button type="button" class="fd-face" data-slot="fdd${i}">
-              <span class="fd-slot"><span class="fd-disk"><span class="fd-label"></span></span></span>
-              <span class="fd-lever"></span>
-              <span class="fd-led"></span>
-            </button>
-            <span class="fd-no">${'ABCD'[i]}</span>
-          </div>`).join('')}
-      </div>
+const tower = (first: number) => `
+  <div class="fd-case">
+    <div class="fd-top"><span class="fd-badge">SHARP</span><span class="fd-vents"></span>
+      ${first === 0 ? '<button type="button" class="dev-power" data-toggle="fdc.connected"><i></i></button>' : ''}</div>
+    <div class="fd-bays">
+      ${[first, first + 1].map((i) => `
+        <div class="fd-bay" data-bay="${i}">
+          <button type="button" class="fd-face" data-slot="fdd${i}">
+            <span class="fd-slot"><span class="fd-disk"><span class="fd-label"></span></span></span>
+            <span class="fd-lever"></span>
+            <span class="fd-led"></span>
+          </button>
+          <span class="fd-no">${'ABCD'[i]}</span>
+        </div>`).join('')}
     </div>
-    <p class="dev-cap"><b>MZ-1F19</b> <span class="dev-what"></span></p>
   </div>`;
 
 const CASE = `
-  ${unit(0)}
-  ${unit(2)}
-
+  <div class="dev dev-fdd wide" data-dev="fdc">
+    <div class="fd-towers">${tower(0)}${tower(2)}</div>
+    <p class="dev-cap"><b>Floppy</b> <span class="dev-what"></span></p>
+  </div>
 
   <div class="dev dev-ram wide" data-dev="ramdisk">
     <button type="button" class="ram-card" data-toggle="ramdisk.mr1r18.plugged">
@@ -181,11 +180,9 @@ export function devices(host: HTMLElement, hooks: DeviceHooks): () => void {
       bay.querySelector('.fd-label')!.textContent = short(name);
       bay.querySelector<HTMLElement>('.fd-face')!.title = name || ui.insert;
     }
-    all('.dev-fdd').forEach((u, i) => {
-      u.classList.toggle('off', !m.fdc.connected);
-      u.querySelector('.dev-what')!.textContent =
-        m.fdc.drives.slice(i * 2, i * 2 + 2).map((d) => nameOf(d.file, ['dsk'])).filter(Boolean).join(', ') || ui.none;
-    });
+    find('.dev-fdd').classList.toggle('off', !m.fdc.connected);
+    find('.dev-fdd .dev-what').textContent =
+      m.fdc.drives.map((d) => nameOf(d.file, ['dsk'])).filter(Boolean).join(', ') || ui.none;
     for (const p of all('[data-toggle]')) p.classList.toggle('on', !!get(m, p.dataset.toggle!));
 
     // the quick disk

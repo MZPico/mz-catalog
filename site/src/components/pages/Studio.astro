@@ -62,13 +62,10 @@ const ui = {
       <h2 class="wb-h">{tt.yourFiles}</h2>
       <ul id="filelist" class="wb-list"></ul>
       <p class="meta" id="noFiles">{tt.empty}</p>
-      <p class="meta wb-kept" id="keptNote" hidden>{tt.kept}</p>
       <div id="workbench" hidden>
         <div id="wb-actions" class="wb-actions"></div>
         <p class="meta" id="wb-say" hidden></p>
       </div>
-      <h2 class="wb-h">{tt.groupNoFile}</h2>
-      <button class="btn secondary small" type="button" id="act-characters">{tt.actCharacters}</button>
     </aside>
 
     <aside class="wb-right">
@@ -77,15 +74,6 @@ const ui = {
         <button type="button" class="btn ghost small" id="emu-dev" aria-pressed="true">{tt.devices}</button>
       </div>
       <div class="machine-apply">
-        <label>{tt.preset}
-          <select id="preset">
-            <option value="">—</option>
-            <option value="plain">{tt.presetPlain}</option>
-            <option value="floppy">{tt.presetFloppy}</option>
-            <option value="card">{tt.presetCard}</option>
-            <option value="everything">{tt.presetEverything}</option>
-          </select>
-        </label>
         <button type="button" class="btn primary small" id="apply">{tt.applyLive}</button>
       </div>
       <!-- The hardware as it looks: a bay takes a disk, a lever throws it out. -->
@@ -97,21 +85,20 @@ const ui = {
 
     <section class="wb-below">
       <div id="wb-panel" class="wb-panel"></div>
-      <div id="nofile-panel" class="wb-panel"></div>
       <p class="meta wb-later">{tt.later}</p>
     </section>
   </article>
 
   <script>
     import { load, actionsFor, catalogIndex, formatSize, type LoadedFile } from '../../lib/mz/workbench';
-    import { setStrings, charactersPanel } from '../../lib/mz/panels';
+    import { setStrings } from '../../lib/mz/panels';
     import { keyboard } from '../../lib/mz/keyboard';
     import { recorder } from '../../lib/mz/recorder';
     import { devices, DEVICE_IDS, type DeviceId } from '../../lib/mz/devices';
     import { listFiles, rememberFile, forgetFile, forgetAll } from '../../lib/mz/store';
     import { boot, running, frames, wake, reset as resetMachine, mountFloppy, ejectFloppy, mountQd, protectQd, runMzf,
       cmtInsert, cmtPlay, cmtStop, cmtRecord, cmtHack, cmtState, cmtPlaytime, setMuted, writeFile, readBack } from '../../lib/mz/emulator';
-    import { defaults, presets, toIni, mediaOf, argsOf, mediaPath, type Machine } from '../../lib/mz/machine';
+    import { defaults, toIni, mediaOf, argsOf, mediaPath, type Machine } from '../../lib/mz/machine';
 
     const drop = document.getElementById('drop')!;
     const ui = JSON.parse(drop.dataset.ui!) as Record<string, any>;
@@ -129,7 +116,6 @@ const ui = {
     function renderList() {
       const list = $('filelist');
       $('noFiles').hidden = files.length > 0;
-      $('keptNote').hidden = files.length === 0;
       $('forget').hidden = files.length === 0;
       list.innerHTML = files.map((f) => {
         const known = f.catalog ? ` · <a href="${esc(ui.titlePath + f.catalog.slug)}/">${esc(f.catalog.title)}</a>` : '';
@@ -577,12 +563,6 @@ const ui = {
       const frame = $('emu-frame') as HTMLElement & { webkitRequestFullscreen?: () => void };
       (frame.requestFullscreen ?? frame.webkitRequestFullscreen)?.call(frame);
     });
-    $('preset').addEventListener('change', (e) => {
-      const name = (e.target as HTMLSelectElement).value;
-      if (!presets[name]) return;
-      machine = presets[name]();
-      saveMachine(); renderMachine(); markDirty('preset');
-    });
     $('apply').addEventListener('click', async () => {
       saveMachine();
       if (!running()) { startMachine(); return; }
@@ -592,14 +572,5 @@ const ui = {
       await resetMachine(!!machine.program);
     });
     renderMachine();
-
-    // The one tool that needs no file.
-    const charBtn = $<HTMLButtonElement>('act-characters');
-    charBtn.addEventListener('click', () => {
-      const panel = $('nofile-panel');
-      const open = charBtn.classList.toggle('active');
-      panel.innerHTML = '';
-      if (open) { charactersPanel(panel); track('tool-characters'); }
-    });
   </script>
 </Base>

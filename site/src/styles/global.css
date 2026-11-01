@@ -566,7 +566,6 @@ body.pseudo-fs-on { overflow: hidden; }
 }
 
 
-.wb-kept { margin: 0.3rem 0 0; font-size: 0.72rem; }
 
 .wb-h { font-size: 0.72rem; letter-spacing: 0.06em; color: var(--muted); margin: 0 0 0.4rem; }
 .wb-h::before { content: none; }
@@ -589,7 +588,6 @@ body.pseudo-fs-on { overflow: hidden; }
 
 /* The preset row above the devices. */
 .machine-apply { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.7rem; font-size: 0.82rem; margin: 0 0 0.4rem; }
-.machine-apply select { font: inherit; padding: 0.15rem 0.3rem; background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 5px; }
 
 /* Files and their actions, compact enough for a column. */
 .wb-list { list-style: none; margin: 0 0 0.4rem; padding: 0; display: grid; gap: 0.25rem; }
@@ -728,7 +726,8 @@ body.pseudo-fs-on { overflow: hidden; }
 .dev-menu hr { border: 0; border-top: 1px solid var(--line); margin: 0.15rem 0; }
 .dev-menu .meta { margin: 0.2rem 0.35rem; }
 
-/* MZ-1F19: the two-drive floppy tower. */
+/* MZ-1F19: the two-drive floppy tower, standing twice for four drives. */
+.fd-towers { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; }
 .fd-case {
   width: 9.6rem; padding: 0.3rem; border-radius: 4px;
   background: linear-gradient(100deg, #efeadb, #d9d3c1); border: 1px solid #b4ad9a;
