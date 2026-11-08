@@ -263,10 +263,10 @@ ports:
       - { path: bombernet-0.3.0-atari-st.st, label: "bootable floppy" }
       - { path: bombernet-0.3.0-atari-st.prg, label: "program" }
     needs:
-      en: "An ST, STE, Mega ST or Mega STE with 1 MB and a colour monitor; the floppy boots. Also runs in Hatari."
-      cs: "ST, STE, Mega ST nebo Mega STE s 1 MB a barevným monitorem; disketa je bootovací. Běží i v Hatari."
-      de: "Ein ST, STE, Mega ST oder Mega STE mit 1 MB und Farbmonitor; die Diskette bootet. Läuft auch in Hatari."
-      ja: "1 MB とカラーモニターの ST、STE、Mega ST、Mega STE。フロッピーから起動できます。Hatari でも動きます。"
+      en: "An ST, STE, Mega ST or Mega STE with 512 KB or more and a colour monitor; the floppy boots. Also runs in Hatari."
+      cs: "ST, STE, Mega ST nebo Mega STE s 512 KB nebo více a barevným monitorem; disketa je bootovací. Běží i v Hatari."
+      de: "Ein ST, STE, Mega ST oder Mega STE mit 512 KB oder mehr und Farbmonitor; die Diskette bootet. Läuft auch in Hatari."
+      ja: "512 KB 以上とカラーモニターの ST、STE、Mega ST、Mega STE。フロッピーから起動できます。Hatari でも動きます。"
     network:
       en: "A Wi-Fi modem on the serial port (an ESP8266 with Hayes commands)."
       cs: "Wi-Fi modem na sériovém portu (ESP8266 s příkazy Hayes)."
