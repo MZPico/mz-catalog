@@ -75,6 +75,16 @@ const titles = defineCollection({
     controls: z.string().optional(),
     web: z.boolean().optional(),
     network: z.boolean().optional(),          // plays over the internet (badge)
+    saves: z.boolean().optional(),            // false = no saved positions on the play page
+    // the browser emulator's machine for this title (play page only; site/src/lib/mz/machine.ts titleMachine)
+    hardware: z
+      .object({
+        ramdisk: z.enum(['none', '64K', '256K', '512K', '1M', '16M']).optional(),
+        mzpico: z.boolean().optional(),
+        joy1: z.enum(['NONE', 'NUM_KEYPAD', 'JOYSTICK']).optional(),
+        joy2: z.enum(['NONE', 'NUM_KEYPAD', 'JOYSTICK']).optional(),
+      })
+      .optional(),
     play: z.string().regex(/^\/[a-z0-9_\/-]*\/$/).optional(),   // a native browser build played instead of the emulator (a site path)
     // front-page spotlight: a short pitch per language (en required)
     spotlight: z.object({ en: z.string(), cs: z.string().optional(), de: z.string().optional(), ja: z.string().optional() }).optional(),

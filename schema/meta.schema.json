@@ -237,6 +237,28 @@
       "type": "boolean",
       "description": "Plays over the internet (MZPico NET relay): shown as a badge on the site."
     },
+    "saves": {
+      "type": "boolean",
+      "description": "The play page's saved positions (machine snapshots in the browser: Save/Load, automatic saving, .mzs export/import, the title page's Continue). false = none for this title; absent = offered. The program's own saving (to its disk or tape) is not affected."
+    },
+    "hardware": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "description": "The machine the browser emulator's play page sets up for this title (an mz800emu ini written by site/src/lib/mz/machine.ts). Absent = the stock machine. Only the play page reads it; manifest.json does not carry it.",
+      "properties": {
+        "ramdisk": {
+          "enum": ["none", "64K", "256K", "512K", "1M", "16M"],
+          "description": "The MR1R18 RAM disk card and its size (in memory, empty at every start); none = unplugged."
+        },
+        "mzpico": {
+          "type": "boolean",
+          "description": "The MZPico card (the Unicard in MZPico mode, with the NET service the page links to the relay); false = no card."
+        },
+        "joy1": { "$ref": "#/$defs/joystick" },
+        "joy2": { "$ref": "#/$defs/joystick" }
+      }
+    },
     "spotlight": {
       "description": "Front-page spotlight: a short pitch per language (en required). Independent of web; the title is shown above the featured grid.",
       "type": "object",
@@ -274,6 +296,10 @@
     }
   ],
   "$defs": {
+    "joystick": {
+      "enum": ["NONE", "NUM_KEYPAD", "JOYSTICK"],
+      "description": "mz800emu's joystick port setting: NONE, NUM_KEYPAD (the numeric keypad is the joystick) or JOYSTICK (a host game controller)."
+    },
     "localized": {
       "description": "English, or a per-language map (en required).",
       "oneOf": [

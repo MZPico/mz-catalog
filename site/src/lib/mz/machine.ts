@@ -22,7 +22,8 @@ export interface Machine {
   fdc: { connected: boolean; drives: [Drive, Drive, Drive, Drive] };
   qdisk: { connected: boolean; type: 'STANDARD' | 'VIRTUAL' | 'UNICARD'; file: string; writeProtected: boolean };
   ramdisk: {
-    mr1r18: { plugged: boolean; type: 'SRAM' | 'ROM'; size: '64K' | '256K' | '512K' | '1M' | '16M' };
+    // STANDARD = plain RAM, 0xFF at every start; SRAM keeps its contents in mr1r18_filepath
+    mr1r18: { plugged: boolean; type: 'STANDARD' | 'SRAM' | 'ROM'; size: RamdiskSize };
     pezikE8: boolean;
     pezik68: boolean;
   };
@@ -37,6 +38,7 @@ export interface Machine {
 }
 
 export type JoyType = 'NONE' | 'NUM_KEYPAD' | 'JOYSTICK';
+export type RamdiskSize = '64K' | '256K' | '512K' | '1M' | '16M';
 
 const emptyDrive = (): Drive => ({ file: '', readonly: false, storage: 'cached' });
 
@@ -66,6 +68,31 @@ export const presets: Record<string, () => Machine> = {
     sound: { on: true, secondPsg: true },
   }),
 };
+
+/** A title's `hardware:` block in meta.yaml (schema/meta.schema.json). */
+export interface TitleHardware {
+  ramdisk?: 'none' | RamdiskSize;
+  mzpico?: boolean;
+  joy1?: JoyType;
+  joy2?: JoyType;
+}
+
+/** The machine a title's play page starts when its meta.yaml has a `hardware:` block:
+ *  the title's file (a floppy in drive 0, or a tape run at once) on the machine the
+ *  emulator starts without an ini (MZPico card in NET mode, 1 MB RAM disk), changed
+ *  only where the block says. `file` is the name the page stores the image under. */
+export function titleMachine(file: string, isDisk: boolean, hw: TitleHardware): Machine {
+  const m = defaults();
+  if (isDisk) m.fdc.drives[0] = { file, readonly: false, storage: 'cached' };
+  else m.program = file;
+  const card = hw.mzpico ?? true;
+  m.card = { connected: card, mzpicoMode: card, readonly: false };
+  if (hw.ramdisk === 'none') m.ramdisk.mr1r18.plugged = false;
+  else if (hw.ramdisk) m.ramdisk.mr1r18 = { plugged: true, type: 'STANDARD', size: hw.ramdisk };
+  if (hw.joy1) m.joy.joy1 = hw.joy1;
+  if (hw.joy2) m.joy.joy2 = hw.joy2;
+  return m;
+}
 
 const bool = (value: boolean) => (value ? '1' : '0');
 /** Where a mounted file lives inside the emulator's own filesystem. */

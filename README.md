@@ -140,6 +140,26 @@ auto-starts when reached from a catalog page (browsers allow audio after
 an interaction with the origin) and otherwise shows a start button; a
 fullscreen button and a `?buf=` audio-buffer override are available.
 
+A floppy image (`kind: disk`) goes into drive 0 through a minimal ini and
+the ROM boots it. A title that needs more of the machine says so in a
+`hardware:` block of its meta.yaml, and the play page then writes a full ini
+with the studio's writer (`titleMachine` + `toIni` in `site/src/lib/mz/machine.ts`):
+
+```yaml
+hardware:
+  ramdisk: 1M        # MR1R18 RAM disk: none | 64K | 256K | 512K | 1M | 16M (plain RAM, empty at start)
+  mzpico: true       # the MZPico card with the NET service (the default); false = no card
+  joy1: NONE         # NONE | NUM_KEYPAD | JOYSTICK (also joy2)
+```
+
+Anything left out stays as the emulator starts without an ini. The block is
+for the play page only: manifest.json does not carry it.
+
+`saves: false` in meta.yaml switches off the play page's saved positions for
+a title: no Save/Load buttons, no saves panel (automatic saving, .mzs
+export/import), no `?resume=1` and no Continue button on the title page. The
+program's own saving to its disk or tape is not affected.
+
 ### Rebuilding the emulator
 
 Done offline (not in CI): Emscripten SDK ≥ 6.0, meson + ninja, and a

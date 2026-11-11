@@ -1,0 +1,109 @@
+title: "Prince of Persia"
+web: true
+network: true
+year: 2026
+publisher: "MZPico / mz800pop port"
+original:
+  title: "Prince of Persia"
+  publisher: "Brøderbund (Jordan Mechner)"
+  year: 1989
+machine: mz-800
+mode: native
+genre: [game, arcade, adventure]
+language: en
+version: "08bde6f (preview)"
+release: "https://github.com/MZPico/mz800pop/pull/63"
+files:
+  - path: pop800.dsk
+    kind: disk
+    note: 3.5" floppy image; boots from drive 0 on reset. Needs an MR1R18 RAM disk of 512 KB or more (best 1 MB to 16 MB).
+saves: false
+hardware:
+  ramdisk: 1M
+  mzpico: true
+description:
+  en: |
+    Jordan Mechner's 1989 classic on the Sharp MZ-800. The Grand Vizier Jaffar
+    holds the Sultan's daughter, and you have sixty minutes to climb out of the
+    dungeons and reach her: run, jump, hang from ledges, dodge choppers and
+    spikes, and cross swords with Jaffar's guards, level after level, up to
+    Jaffar himself.
+
+    This port is new, written in 2026 for the MZ-800's native 320×200 mode with
+    16 colours. The game logic is a Z80 translation of SDLPoP, tested tick for
+    tick against it; the graphics come from the DOS version's EGA art, the music
+    and effects play on the PSG. The game streams its pictures from a RAM disk:
+    it needs an MR1R18 card (or an MZPico) of 512 KB or more and runs best with
+    1 MB to 16 MB. Here in the browser the machine has a 1 MB RAM disk.
+
+    Press Ctrl+D on the title for a hidden extra: a sword duel between the
+    prince and his blue-suited double, two players on one keyboard, or over the
+    internet through the MZPico NET service: one player hosts and gets a
+    four-letter room code, the other joins with it.
+  cs: |
+    Klasika Jordana Mechnera z roku 1989 na Sharpu MZ-800. Velkovezír Džafar
+    drží sultánovu dceru a vy máte šedesát minut na to, abyste se dostali ze
+    žalářů až k ní: běhejte, skákejte, šplhejte po římsách, vyhýbejte se
+    sekáčkům a bodcům a utkejte se v šermu s Džafarovými strážemi, úroveň po
+    úrovni, až k Džafarovi samotnému.
+
+    Port je nový, vznikl v roce 2026 pro nativní režim MZ-800 320×200 s 16
+    barvami. Herní logika je překlad SDLPoP do Z80, porovnaný s ním tik po
+    tiku; grafika pochází z EGA verze pro DOS, hudba a zvuky hrají na PSG. Hra
+    čte obrázky z RAM disku: potřebuje kartu MR1R18 (nebo MZPico) s 512 KB a
+    více, nejlépe běží s 1 MB až 16 MB. Zde v prohlížeči má počítač RAM disk
+    1 MB.
+
+    Na titulní obrazovce stiskněte Ctrl+D: skrytý souboj na meče mezi princem a
+    jeho dvojníkem v modrém, pro dva hráče na jedné klávesnici nebo přes
+    internet službou MZPico NET — jeden hráč založí místnost a dostane
+    čtyřpísmenný kód, druhý se s ním připojí.
+  de: |
+    Jordan Mechners Klassiker von 1989 auf dem Sharp MZ-800. Der Großwesir
+    Jaffar hält die Tochter des Sultans gefangen, und Sie haben sechzig Minuten,
+    um aus den Verliesen zu ihr zu gelangen: rennen, springen, an Kanten
+    hängen, Klingenfallen und Spießen ausweichen und mit Jaffars Wachen die
+    Klingen kreuzen — Ebene um Ebene, bis zu Jaffar selbst.
+
+    Die Umsetzung ist neu, 2026 für den nativen 320×200-Modus des MZ-800 mit 16
+    Farben geschrieben. Die Spiellogik ist eine Z80-Übersetzung von SDLPoP, Tick
+    für Tick dagegen geprüft; die Grafik stammt aus der EGA-Fassung für DOS,
+    Musik und Effekte spielt der PSG. Das Spiel lädt seine Bilder aus einer
+    RAM-Disk: Es braucht eine MR1R18-Karte (oder ein MZPico) mit 512 KB oder
+    mehr und läuft am besten mit 1 MB bis 16 MB. Hier im Browser hat die
+    Maschine eine RAM-Disk von 1 MB.
+
+    Ctrl+D auf dem Titelbild öffnet ein verstecktes Extra: ein Schwertduell
+    zwischen dem Prinzen und seinem Doppelgänger im blauen Anzug, zu zweit an
+    einer Tastatur oder über das Internet mit dem MZPico-NET-Dienst — einer
+    eröffnet einen Raum und bekommt einen Code aus vier Buchstaben, der andere
+    tritt damit bei.
+  ja: |
+    ジョーダン・メックナーによる 1989 年の名作を Sharp MZ-800 で。大臣ジャファーが王女を捕らえ、あなたに残された時間は 60 分。地下牢から王女のもとへ向かうため、走り、跳び、岩棚にぶら下がり、仕掛け刃やトゲをかわし、ジャファーの衛兵と剣を交えながら、レベルを重ねてジャファー本人のもとへ。
+
+    この移植は 2026 年に新しく書かれたもので、MZ-800 のネイティブ 320×200・16 色モードで動く。ゲームロジックは SDLPoP を Z80 に翻訳したもので、1 ティックずつ照合して検証している。グラフィックは DOS 版の EGA アートから、音楽と効果音は PSG で鳴る。画像は RAM ディスクから読み込むため、512 KB 以上の MR1R18 カード（または MZPico）が必要で、1 MB から 16 MB で最もよく動く。このブラウザー版の RAM ディスクは 1 MB。
+
+    タイトル画面で Ctrl+D を押すと隠しモードが現れる。王子と青い服の分身による剣の決闘で、1 台のキーボードで 2 人対戦するか、MZPico NET サービスでインターネット対戦ができる。一方がホストになって 4 文字のルームコードを受け取り、もう一方がそのコードで参加する。
+controls: |
+  Cursor keys     run, jump, climb, crouch
+  SHIFT           careful step, grab a ledge, the sword (with a joystick: fire)
+  SPACE           time left
+  BREAK (Esc)     pause
+  Ctrl+A          restart the level
+  Ctrl+G / Ctrl+L save the game (levels 3-13) / load it on the title
+  Shift+L         skip a level (levels 1-3)
+  Joystick        as the cursor keys, fire = SHIFT
+
+  Duel (Ctrl+D on the title): 1 LOCAL, 2 HOST, 3 JOIN (type the room code, ENTER)
+  Player 1        cursor keys + SHIFT, or joystick 1
+  Player 2        W A S D + Q, or joystick 2
+  ENTER / BREAK   after a match: rematch / back to the title
+touch:
+  pad: cursor
+  buttons:
+    - { label: "SHIFT", key: "Shift" }
+    - { label: "CR", key: "Enter" }
+  extra:
+    - { label: "TIME", key: "Space" }
+    - { label: "BRK", key: "Escape" }
+source: "Built from https://github.com/MZPico/mz800pop at commit 08bde6f (PR #63, the network duel; not merged yet). Logic: SDLPoP ported to Z80; art: the DOS version's EGA graphics. Published on staging with the author's permission, 2026-11-11."
