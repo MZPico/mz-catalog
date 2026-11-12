@@ -436,7 +436,9 @@ const ui = {
           version: EMU_VERSION,
           args: argsOf(machine),
           files: [{ path: '/mz800emu.ini', bytes: new TextEncoder().encode(toIni(machine)) }, ...media],
-          dirs: ['/media/sd'],
+          // No /media/sd here: the emulator creates the card's SD root itself, with
+          // its runtime files. An empty one fails its runtime check and the card
+          // (and its NET service) stays unplugged.
           onStatus: status,
         });
         track('tool-emulator');
