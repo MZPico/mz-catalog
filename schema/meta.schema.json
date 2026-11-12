@@ -375,8 +375,8 @@
     },
     "touchKey": {
       "type": "string",
-      "pattern": "^([A-Z]|[0-9]|Space|Enter|Up|Down|Left|Right|Shift|Ctrl|Tab|Backspace|Delete|Insert|Home|Escape|Graph|Alpha|Minus|Equal|Comma|Period|Slash|Semicolon|Quote|BracketLeft|BracketRight|F([1-9]|10))$",
-      "description": "MZ key name: A-Z, 0-9, Space, Enter, Up/Down/Left/Right, Shift, Ctrl, Tab, Backspace, Delete, Insert, Home, Escape, Graph, Alpha, F1-F10, Minus, Equal, Comma, Period, Slash, Semicolon, Quote, BracketLeft, BracketRight."
+      "pattern": "^((Ctrl|Shift)\\+)?([A-Z]|[0-9]|Space|Enter|Up|Down|Left|Right|Shift|Ctrl|Tab|Backspace|Delete|Insert|Home|Escape|Graph|Alpha|Minus|Equal|Comma|Period|Slash|Semicolon|Quote|BracketLeft|BracketRight|F([1-9]|10))$",
+      "description": "MZ key name, optionally with a modifier pressed first (Ctrl+D, Shift+L): A-Z, 0-9, Space, Enter, Up/Down/Left/Right, Shift, Ctrl, Tab, Backspace, Delete, Insert, Home, Escape, Graph, Alpha, F1-F10, Minus, Equal, Comma, Period, Slash, Semicolon, Quote, BracketLeft, BracketRight."
     },
     "touchButton": {
       "type": "object",

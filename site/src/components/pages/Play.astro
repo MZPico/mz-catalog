@@ -58,6 +58,8 @@ const ui = {
       <div class="touch-extra" id="touch-extra"></div>
       <div class="touch-pad" id="touch-pad" aria-label="direction pad"><span class="pad-arrow up">▲</span><span class="pad-arrow down">▼</span><span class="pad-arrow left">◀</span><span class="pad-arrow right">▶</span><span class="pad-nub" id="pad-nub"></span></div>
       <div class="touch-buttons" id="touch-buttons"></div>
+      <button type="button" class="touch-kbd-toggle" id="touch-kbd-toggle" aria-label="keyboard" title="keyboard">⌨</button>
+      <div class="touch-kbd" id="touch-kbd" hidden></div>
     </div>
     <button type="button" id="play-exit-fs" class="play-exit-fs" hidden aria-label={t.play.fullscreenTitle}>✕</button>
     <div id="play-overlay" class="play-overlay">
@@ -233,9 +235,31 @@ const ui = {
       return m;
     })();
     const touchEl = document.getElementById('play-touch');
+    // A key name may be a combination, 'Ctrl+D' or 'Shift+L': pressed in order, released in reverse.
+    const keyOk = (name) => typeof name === 'string' && name.split('+').every((p) => KEYS[p]);
+    const mods = { Ctrl: false, Shift: false };
     const sendKey = (type, name) => {
-      const k = KEYS[name]; if (!k) return;
-      canvas.dispatchEvent(new KeyboardEvent(type, { code: k[0], key: k[1], keyCode: k[2], which: k[2], bubbles: true, cancelable: true }));
+      if (!keyOk(name)) return;
+      const parts = name.split('+');
+      for (const p of type === 'keydown' ? parts : parts.reverse()) {
+        if (p in mods) mods[p] = type === 'keydown';
+        const k = KEYS[p];
+        canvas.dispatchEvent(new KeyboardEvent(type, { code: k[0], key: k[1], keyCode: k[2], which: k[2], ctrlKey: mods.Ctrl, shiftKey: mods.Shift, bubbles: true, cancelable: true }));
+      }
+    };
+    // A tap shorter than an emulated frame or two could come and go between two reads of the
+    // keyboard: an on-screen key stays down at least this long.
+    const MIN_HOLD = 80;
+    const tapKey = (el, getName) => {
+      let name = null, since = 0;
+      const down = (e) => { e.preventDefault(); if (name) return; name = getName(); if (!name) return; since = performance.now(); el.classList.add('down'); sendKey('keydown', name); };
+      const up = () => {
+        if (!name) return;
+        const n = name; name = null;
+        setTimeout(() => { el.classList.remove('down'); sendKey('keyup', n); }, Math.max(0, MIN_HOLD - (performance.now() - since)));
+      };
+      el.addEventListener('pointerdown', down); for (const t of ['pointerup', 'pointercancel', 'pointerleave']) el.addEventListener(t, up);
+      el.addEventListener('contextmenu', (e) => e.preventDefault());
     };
     let spec = touch || {};
     if (params.has('touchspec')) { try { spec = JSON.parse(params.get('touchspec')); } catch { console.warn('bad touchspec'); } }
@@ -275,11 +299,8 @@ const ui = {
     for (const t of ['pointerup', 'pointercancel', 'lostpointercapture']) pad.addEventListener(t, (e) => { if (e.pointerId === padPointer) padRelease(); });
     const makeButton = (b, cls) => {
       const el = document.createElement('button'); el.type = 'button'; el.className = 'touch-btn ' + cls; el.textContent = b.label; el.title = `${b.label} = ${b.key}`;
-      if (!KEYS[b.key]) { el.disabled = true; el.title += ' (unknown key)'; }
-      const down = (e) => { e.preventDefault(); el.classList.add('down'); sendKey('keydown', b.key); };
-      const up = () => { if (!el.classList.contains('down')) return; el.classList.remove('down'); sendKey('keyup', b.key); };
-      el.addEventListener('pointerdown', down); for (const t of ['pointerup', 'pointercancel', 'pointerleave']) el.addEventListener(t, up);
-      el.addEventListener('contextmenu', (e) => e.preventDefault());
+      if (!keyOk(b.key)) { el.disabled = true; el.title += ' (unknown key)'; }
+      tapKey(el, () => b.key);
       return el;
     };
     const buttons = Array.isArray(spec.buttons) && spec.buttons.length ? spec.buttons : [{ label: 'FIRE', key: 'Space' }, { label: 'RET', key: 'Enter' }];
@@ -287,12 +308,45 @@ const ui = {
     [...buttons].reverse().forEach((b, i) => btnBox.appendChild(makeButton(b, i === buttons.length - 1 ? 'fire' : ''))); // primary (first) ends up rightmost & largest
     const extraBox = document.getElementById('touch-extra');
     for (const b of (Array.isArray(spec.extra) ? spec.extra : [])) extraBox.appendChild(makeButton(b, 'extra'));
+    // On-screen keyboard (⌨, every title): the MZ keys a touch layout does not carry — typing a
+    // name or a code, a menu digit. CTRL and SHIFT latch onto the next key (CTRL then D = Ctrl+D).
+    const kbd = document.getElementById('touch-kbd');
+    const kbdToggle = document.getElementById('touch-kbd-toggle');
+    const KBD_ROWS = [
+      '1234567890'.split(''),
+      'QWERTYUIOP'.split(''),
+      [...'ASDFGHJKL'.split(''), ['DEL', 'Delete']],
+      [['SHIFT', 'Shift', 'mod'], ...'ZXCVBNM'.split(''), ['CR', 'Enter']],
+      [['CTRL', 'Ctrl', 'mod'], ['BRK', 'Escape'], ['SPACE', 'Space', 'wide'], ['✕', '', 'close']],
+    ];
+    const latched = new Set();
+    const modEls = [];
+    const showLatch = () => { for (const el of modEls) el.classList.toggle('latched', latched.has(el.dataset.key)); };
+    for (const row of KBD_ROWS) {
+      const r = document.createElement('div'); r.className = 'kbd-row';
+      for (const item of row) {
+        const [label, key, kind] = Array.isArray(item) ? item : [item, item, ''];
+        const el = document.createElement('button'); el.type = 'button'; el.className = 'kbd-key ' + (kind || ''); el.textContent = label; el.dataset.key = key;
+        if (kind === 'mod') {
+          modEls.push(el);
+          el.addEventListener('pointerdown', (e) => { e.preventDefault(); latched.has(key) ? latched.delete(key) : latched.add(key); showLatch(); });
+        } else if (kind === 'close') {
+          el.addEventListener('pointerdown', (e) => { e.preventDefault(); setKbd(false); });
+        } else {
+          tapKey(el, () => { const name = [...latched, key].join('+'); latched.clear(); showLatch(); return name; });
+        }
+        r.appendChild(el);
+      }
+      kbd.appendChild(r);
+    }
+    const setKbd = (on) => { kbd.hidden = !on; kbdToggle.classList.toggle('active', on); latched.clear(); showLatch(); };
+    kbdToggle.addEventListener('pointerdown', (e) => { e.preventDefault(); setKbd(kbd.hidden); });
     // Side preference (left/right-handed) is per player, remembered in this browser.
     const swapBtn = document.getElementById('play-swap');
     const setSwap = (on) => { touchEl.classList.toggle('swapped', on); swapBtn.classList.toggle('active', on); try { localStorage.setItem('mz-touch-swap', on ? '1' : ''); } catch {} };
     swapBtn.addEventListener('click', () => setSwap(!touchEl.classList.contains('swapped')));
     try { if (localStorage.getItem('mz-touch-swap')) setSwap(true); } catch {}
-    const setTouch = (on) => { touchEl.hidden = !on; touchEl.setAttribute('aria-hidden', String(!on)); swapBtn.hidden = !on; document.getElementById('play-touch-toggle').classList.toggle('active', on); if (!on) { padRelease(); } };
+    const setTouch = (on) => { touchEl.hidden = !on; touchEl.setAttribute('aria-hidden', String(!on)); swapBtn.hidden = !on; document.getElementById('play-touch-toggle').classList.toggle('active', on); if (!on) { padRelease(); setKbd(false); } };
     document.getElementById('play-touch-toggle').addEventListener('click', () => setTouch(touchEl.hidden));
     if (params.has('touch') || params.has('touchspec') || matchMedia('(pointer: coarse)').matches) setTouch(true);
 
@@ -340,7 +394,7 @@ const ui = {
           if (pressed(14) || ax < -dz) want.add(padKeys.left);
           if (pressed(15) || ax > dz) want.add(padKeys.right);
         }
-        for (const [i, b] of gpMap) if (pressed(i) && KEYS[b.key]) want.add(b.key);
+        for (const [i, b] of gpMap) if (pressed(i) && keyOk(b.key)) want.add(b.key);
       }
       if (want.size && !gpActive) {
         // First real use: the controller replaces the on-screen pad, and shows its mapping.

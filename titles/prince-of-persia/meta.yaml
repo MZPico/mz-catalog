@@ -11,8 +11,8 @@ machine: mz-800
 mode: native
 genre: [game, arcade, adventure]
 language: en
-version: "08bde6f (preview)"
-release: "https://github.com/MZPico/mz800pop/pull/63"
+version: "5ac8b30 (preview)"
+release: "https://github.com/MZPico/mz800pop/commit/5ac8b30"
 files:
   - path: pop800.dsk
     kind: disk
@@ -39,7 +39,10 @@ description:
     Press Ctrl+D on the title for a hidden extra: a sword duel between the
     prince and his blue-suited double, two players on one keyboard, or over the
     internet through the MZPico NET service: one player hosts and gets a
-    four-letter room code, the other joins with it.
+    four-letter room code, the other joins with it. The arenas change: every
+    match is fought in another level, every round in another room. On a phone
+    the DUEL button and the ⌨ keyboard (digits, the room code) stand in for the
+    keys.
   cs: |
     Klasika Jordana Mechnera z roku 1989 na Sharpu MZ-800. Velkovezír Džafar
     drží sultánovu dceru a vy máte šedesát minut na to, abyste se dostali ze
@@ -57,7 +60,9 @@ description:
     Na titulní obrazovce stiskněte Ctrl+D: skrytý souboj na meče mezi princem a
     jeho dvojníkem v modrém, pro dva hráče na jedné klávesnici nebo přes
     internet službou MZPico NET — jeden hráč založí místnost a dostane
-    čtyřpísmenný kód, druhý se s ním připojí.
+    čtyřpísmenný kód, druhý se s ním připojí. Arény se střídají: každý zápas
+    v jiné úrovni, každé kolo v jiné místnosti. Na telefonu klávesy nahradí
+    tlačítko DUEL a klávesnice ⌨ (číslice, kód místnosti).
   de: |
     Jordan Mechners Klassiker von 1989 auf dem Sharp MZ-800. Der Großwesir
     Jaffar hält die Tochter des Sultans gefangen, und Sie haben sechzig Minuten,
@@ -77,13 +82,15 @@ description:
     zwischen dem Prinzen und seinem Doppelgänger im blauen Anzug, zu zweit an
     einer Tastatur oder über das Internet mit dem MZPico-NET-Dienst — einer
     eröffnet einen Raum und bekommt einen Code aus vier Buchstaben, der andere
-    tritt damit bei.
+    tritt damit bei. Die Arenen wechseln: jedes Match in einer anderen Ebene,
+    jede Runde in einem anderen Raum. Auf dem Handy ersetzen die Taste DUEL und
+    die Tastatur ⌨ (Ziffern, Raumcode) die Tasten.
   ja: |
     ジョーダン・メックナーによる 1989 年の名作を Sharp MZ-800 で。大臣ジャファーが王女を捕らえ、あなたに残された時間は 60 分。地下牢から王女のもとへ向かうため、走り、跳び、岩棚にぶら下がり、仕掛け刃やトゲをかわし、ジャファーの衛兵と剣を交えながら、レベルを重ねてジャファー本人のもとへ。
 
     この移植は 2026 年に新しく書かれたもので、MZ-800 のネイティブ 320×200・16 色モードで動く。ゲームロジックは SDLPoP を Z80 に翻訳したもので、1 ティックずつ照合して検証している。グラフィックは DOS 版の EGA アートから、音楽と効果音は PSG で鳴る。画像は RAM ディスクから読み込むため、512 KB 以上の MR1R18 カード（または MZPico）が必要で、1 MB から 16 MB で最もよく動く。このブラウザー版の RAM ディスクは 1 MB。
 
-    タイトル画面で Ctrl+D を押すと隠しモードが現れる。王子と青い服の分身による剣の決闘で、1 台のキーボードで 2 人対戦するか、MZPico NET サービスでインターネット対戦ができる。一方がホストになって 4 文字のルームコードを受け取り、もう一方がそのコードで参加する。
+    タイトル画面で Ctrl+D を押すと隠しモードが現れる。王子と青い服の分身による剣の決闘で、1 台のキーボードで 2 人対戦するか、MZPico NET サービスでインターネット対戦ができる。一方がホストになって 4 文字のルームコードを受け取り、もう一方がそのコードで参加する。舞台は毎回変わり、試合ごとに別のレベル、ラウンドごとに別の部屋で戦う。スマートフォンでは DUEL ボタンと ⌨ キーボード（数字とルームコード）がキーの代わりになる。
 controls: |
   Cursor keys     run, jump, climb, crouch
   SHIFT           careful step, grab a ledge, the sword (with a joystick: fire)
@@ -98,12 +105,19 @@ controls: |
   Player 1        cursor keys + SHIFT, or joystick 1
   Player 2        W A S D + Q, or joystick 2
   ENTER / BREAK   after a match: rematch / back to the title
+
+  On a phone: DUEL = Ctrl+D, 1 2 3 for the menu, ⌨ for the room code
+  (letters, DEL, CR), CR = ENTER, BRK = BREAK.
 touch:
   pad: cursor
   buttons:
     - { label: "SHIFT", key: "Shift" }
     - { label: "CR", key: "Enter" }
   extra:
-    - { label: "TIME", key: "Space" }
+    - { label: "DUEL", key: "Ctrl+D" }
+    - { label: "1", key: "1" }
+    - { label: "2", key: "2" }
+    - { label: "3", key: "3" }
     - { label: "BRK", key: "Escape" }
-source: "Built from https://github.com/MZPico/mz800pop at commit 08bde6f (PR #63, the network duel; not merged yet). Logic: SDLPoP ported to Z80; art: the DOS version's EGA graphics. Published on staging with the author's permission, 2026-11-11."
+    - { label: "TIME", key: "Space" }
+source: "Built from https://github.com/MZPico/mz800pop at commit 5ac8b30 (main: the network duel and its random arenas). Logic: SDLPoP ported to Z80; art: the DOS version's EGA graphics. Published on staging with the author's permission, 2026-11-11."
