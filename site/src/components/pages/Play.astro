@@ -44,6 +44,7 @@ const ui = {
   mute: t.play.mute,
   unmute: t.play.unmute,
   pace: t.play.pace(0),
+  warping: t.play.warping,
   gamepad: t.play.gamepad,
 };
 ---
@@ -105,7 +106,7 @@ const ui = {
   </details>
   <p class="meta" set:html={t.play.creditHtml} />
 
-  <script define:vars={{ slug: d.slug, files, touch: d.touch ?? null, emuVersion, ui, machines }}>
+  <script define:vars={{ slug: d.slug, files, touch: d.touch ?? null, emuVersion, ui, machines, warp: d.warp ?? null }}>
     const params = new URLSearchParams(location.search);
     const file = files.includes(params.get('file')) ? params.get('file') : files[0];
     const isDisk = /\.dsk$/i.test(file);
@@ -167,7 +168,7 @@ const ui = {
     addEventListener('keydown', markInteraction, { capture: true });
     addEventListener('pointerdown', markInteraction, { capture: true });
     const restart = () => {
-      if (runtimeReady && typeof window.Module?._mz_wasm_restart === 'function') { window.Module._mz_wasm_restart(); canvas.focus(); }
+      if (runtimeReady && typeof window.Module?._mz_wasm_restart === 'function') { window.Module._mz_wasm_restart(); startWarp(); canvas.focus(); }
       else location.reload();
     };
     document.getElementById('play-fullscreen').addEventListener('click', toggleFullscreen);
@@ -216,6 +217,7 @@ const ui = {
         `gl: ${g.renderer}  (${g.version ?? ''})  preserve: ${g.preserve}  aa: ${g.aa}  glError: ${g.err}`,
         `audio: ${ctx ? `${ctx.state} @${ctx.sampleRate} Hz` : 'no context'}  buf: ${buf}  starved: ${audioStarved}`,
         `t: ${(performance.now() / 1000).toFixed(0)} s  pace: ${window.__mzPace == null ? '?' : Math.round(window.__mzPace * 100) + '%'}`,
+        `warp: ${window.__mzWarp ? `${window.__mzWarp.state} ${window.__mzWarp.t.toFixed(1)} s, ${window.__mzWarp.frames} frames` : 'none'}`,
       ].join('\n');
     };
     // ---- Touch controls: synthetic keyboard events into the canvas (SDL maps KeyboardEvent.code).
@@ -423,6 +425,7 @@ const ui = {
       const fn = window.Module?._mz_wasm_total_screens;
       if (typeof fn !== 'function') return;
       const s = fn() >>> 0; const t = performance.now();
+      if (warping) { paceBase = null; paceEl.hidden = true; return; } // full speed on purpose
       if (paceBase && s >= paceBase.s && t > paceBase.t) {
         const pace = ((s - paceBase.s) / 50) / ((t - paceBase.t) / 1000);
         window.__mzPace = pace;
@@ -441,24 +444,68 @@ const ui = {
     // pipeline, so the context must keep running — only the output is silenced.
     const muteBtn = document.getElementById('play-mute');
     let muted = false, muteGain = null;
-    const setMuted = (on) => {
+    let warping = false; // a warp (below) runs: the output stays silent whatever the player's choice
+    const applyGain = () => {
       try {
         const sdl = window.Module?.SDL3;
         const node = sdl?.audio_playback?.scriptProcessorNode;
-        if (!sdl || !node) return;
+        if (!sdl || !node) return false;
         if (!muteGain) {
           muteGain = sdl.audioContext.createGain();
           node.disconnect();
           node.connect(muteGain);
           muteGain.connect(sdl.audioContext.destination);
         }
-        muteGain.gain.value = on ? 0 : 1;
-        muted = on;
-        muteBtn.textContent = on ? ui.unmute : ui.mute;
-        muteBtn.classList.toggle('active', on);
-      } catch {}
+        muteGain.gain.value = muted || warping ? 0 : 1;
+        return true;
+      } catch { return false; }
+    };
+    const setMuted = (on) => {
+      if (!applyGain() && !warping) return;
+      muted = on;
+      applyGain();
+      muteBtn.textContent = on ? ui.unmute : ui.mute;
+      muteBtn.classList.toggle('active', on);
     };
     muteBtn.addEventListener('click', () => setMuted(!muted));
+
+    // Warp (meta.yaml warp:): a long loader runs at the emulator's full speed, silent, until
+    // the program reaches the point the title names (until: steps, see the schema); the
+    // emulator itself returns to normal speed at that instruction or frame. Emulated time is
+    // unchanged — the program sees the same clocks — only less wall time passes. max_seconds
+    // caps it. ?warp=0 = off (normal speed from the start); ?warp=watch = normal speed, but
+    // the console says when the point is reached (to measure the loader; no cap).
+    const warpMode = params.get('warp') === '0' ? 'off' : params.get('warp') === 'watch' ? 'watch' : 'on';
+    let warpTimer = 0;
+    window.__mzWarp = null; // { state, t0, t, frames } for tests and ?debug
+    const startWarp = () => {
+      const M = window.Module;
+      if (!warp || warpMode === 'off' || typeof M?._mz_wasm_warp_start !== 'function') return;
+      clearInterval(warpTimer);
+      const fast = warpMode === 'on';
+      if (M.ccall('mz_wasm_warp_start', 'number', ['string', 'number'], [warp.until.join(';'), fast ? 1 : 0]) !== 0) return;
+      const t0 = performance.now(), f0 = M._mz_wasm_total_screens() >>> 0;
+      window.__mzWarp = { state: 'running', t0, t: 0, frames: 0 };
+      if (fast) { warping = true; applyGain(); status.textContent = ui.warping; }
+      let stopped = false;
+      const end = (state) => {
+        clearInterval(warpTimer);
+        const t = (performance.now() - t0) / 1000, frames = (M._mz_wasm_total_screens() >>> 0) - f0;
+        window.__mzWarp = { state, t0, t, frames };
+        console.log(`[warp] ${state} after ${t.toFixed(1)} s, ${frames} frames (${(frames / 50).toFixed(1)} s emulated)`);
+        if (warping) { warping = false; applyGain(); if (status.textContent === ui.warping) status.textContent = ''; }
+      };
+      warpTimer = setInterval(() => {
+        const st = M._mz_wasm_warp_status();
+        if (warping) applyGain(); // SDL's audio node may appear only now
+        if (st === 2) end('reached');
+        else if (st === 3) end('capped');
+        else if (st !== 1) end(`error ${st}`);
+        else if (fast && !stopped && performance.now() - t0 > warp.max_seconds * 1000) { stopped = true; M._mz_wasm_warp_stop(); }
+      }, 50);
+    };
+    // A saved machine put in its place ends the warp (the restored program may never reach the point).
+    window.mzWarpStop = () => { if (window.__mzWarp?.state === 'running') window.Module?._mz_wasm_warp_stop?.(); };
 
     let started = false;
     const start = async () => {
@@ -506,9 +553,10 @@ const ui = {
           else if (/error|fail/i.test(m)) console.warn('[mz800emu]', m);
           else if (debug) console.log('[mz800emu]', m);
         },
-        setStatus: (m) => { status.textContent = m; },
+        setStatus: (m) => { status.textContent = m || (warping ? ui.warping : ''); }, // Emscripten clears it ('') after the start
         onRuntimeInitialized: () => {
           status.textContent = ''; canvas.focus(); runtimeReady = true; countPlay();
+          startWarp();
           window.__mzReady = true; // the module below may attach after this fires
           document.dispatchEvent(new CustomEvent('mz:ready'));
           // Keep the screen awake while playing — also stops aggressive tab throttling (Edge efficiency mode).
@@ -666,6 +714,7 @@ const ui = {
         if (!ready || busy) return false;
         busy = true;
         try {
+          (window as unknown as { mzWarpStop?: () => void }).mzWarpStop?.();
           emu()!.FS.writeFile('/mzwasm-load.mzs', mzs);
           const ok = (await request(2)) === 2;
           say(ok ? ui.loaded : ui.loadFailed);

@@ -21,6 +21,13 @@ saves: false
 hardware:
   ramdisk: 1M
   mzpico: true
+# The boot fills the RAM disk from the floppy and the frame store (28 s of emulated time from
+# the power-on): the play page runs it at full speed, silent, until the title is about to fade in.
+warp:
+  until:
+    - "pc == 0x2000 && [0x02a2] == 0x10"   # the launcher starts PRES (PRES_START) for the title (HO_MAIN action ACT_TITLE)
+    - "[0x0800] != 0"                      # PRES's VBLN counter (FRAMES) runs: the title's floppy loads are done
+  max_seconds: 60
 description:
   en: |
     Jordan Mechner's 1989 classic on the Sharp MZ-800. The Grand Vizier Jaffar

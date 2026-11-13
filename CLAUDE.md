@@ -31,6 +31,9 @@ saves (optional: false = no saved positions on the play page),
 hardware (optional: the play page's machine — ramdisk size, mzpico card,
 joy1/joy2; written as an ini by site/src/lib/mz/machine.ts; not in the
 manifest),
+warp (optional: until[] steps + max_seconds — the play page runs the
+loader at full speed, silent, until the program reaches that point; see
+README; not in the manifest),
 web (optional: true = shown on the site; absent = API-only).
 
 ## Rules

@@ -2,6 +2,12 @@ import { defineCollection, z } from 'astro:content';
 // @ts-ignore — plain ESM helper shared with the CLI scripts
 import { readCatalog, TITLES_DIR } from '../../scripts/lib/catalog.mjs';
 
+// One warp step: tests joined by &&, all true at once: pc == A, [A] == V, [A] != V, [A] & M == V
+// (A, M, V: hex 0x.. or decimal; the emulator's parser, mzarch.c mzwasm_warp_parse_step).
+const N = '(?:0[xX][0-9a-fA-F]+|0|[1-9][0-9]*)';
+const WARP_TEST = `(?:pc\\s*==\\s*${N}|\\[\\s*${N}\\s*\\](?:\\s*&\\s*${N})?\\s*[!=]=\\s*${N})`;
+export const WARP_STEP = new RegExp(`^\\s*${WARP_TEST}(?:\\s*&&\\s*${WARP_TEST}){0,4}\\s*$`);
+
 // The authoritative schema for meta.yaml is schema/meta.schema.json
 // (enforced by scripts/validate.mjs). This zod schema only types the
 // loader output, which adds slug, screenshots and per-file derived data.
@@ -83,6 +89,14 @@ const titles = defineCollection({
         mzpico: z.boolean().optional(),
         joy1: z.enum(['NONE', 'NUM_KEYPAD', 'JOYSTICK']).optional(),
         joy2: z.enum(['NONE', 'NUM_KEYPAD', 'JOYSTICK']).optional(),
+      })
+      .optional(),
+    // the play page runs the machine at full speed, silent, until the program reaches a point
+    // (a long loader), then normal speed with sound (Play.astro; emulator: mz_wasm_warp_start)
+    warp: z
+      .object({
+        until: z.array(z.string().regex(WARP_STEP)).min(1).max(4),
+        max_seconds: z.number().int().min(1).max(600),
       })
       .optional(),
     play: z.string().regex(/^\/[a-z0-9_\/-]*\/$/).optional(),   // a native browser build played instead of the emulator (a site path)

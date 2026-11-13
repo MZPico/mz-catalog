@@ -218,6 +218,7 @@ export const cs: Ui = {
       `⚠ Emulace běží na ${pct} % rychlosti — počítač nebo prohlížeč ji brzdí. Zavřete ostatní okna a aplikace, připojte nabíječku, nebo pro tento web vypněte úsporný režim prohlížeče.`,
     downloading: 'stahuji páskový obraz…',
     loadingEmulator: 'načítám emulátor…',
+    warping: 'nahrávám plnou rychlostí (zvuk až bude program připraven)…',
     fetchFailed: (file: string, status: number) => `nepodařilo se stáhnout ${file} (${status})`,
     scriptFailed: 'nepodařilo se načíst skript emulátoru',
     aborted: (what: string) => `emulátor skončil chybou: ${what}`,

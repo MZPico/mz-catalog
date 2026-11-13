@@ -160,6 +160,26 @@ a title: no Save/Load buttons, no saves panel (automatic saving, .mzs
 export/import), no `?resume=1` and no Continue button on the title page. The
 program's own saving to its disk or tape is not affected.
 
+A title with a long loader can ask the play page to warp past it with a
+`warp:` block: the emulator runs at full speed with the sound off until the
+program reaches a point named in machine terms, then goes back to normal speed
+by itself, at that instruction or frame. Emulated time is unchanged (the
+program sees the same clocks, interrupts and drive timings), only less wall
+time passes:
+
+```yaml
+warp:
+  until:                                   # steps reached in order (1-4)
+    - "pc == 0x2000 && [0x02a2] == 0x10"   # tests joined by &&: pc == A, [A] == V, [A] != V, [A] & M == V
+    - "[0x0800] != 0"                      # a step without pc is checked at the end of every frame
+  max_seconds: 60                          # back to normal speed after this long whatever happens
+```
+
+`[A]` is the RAM byte the CPU sees at A when RAM is mapped there. Without the
+block the page runs at normal speed from the start. `?warp=0` switches the
+warp off, `?warp=watch` keeps normal speed and only logs when the point is
+reached (to measure a loader); `?debug` shows the warp's time and frames.
+
 ### Rebuilding the emulator
 
 Done offline (not in CI): Emscripten SDK ≥ 6.0, meson + ninja, and a
