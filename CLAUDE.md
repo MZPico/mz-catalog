@@ -25,7 +25,15 @@ the converter), original {title, publisher, year} (the release it was
 converted from), genre[], machine (mz-700|mz-800|mz-1500),
 mode (for MZ-800: native|mz-700), language, files[] {path, kind:
 standard|turbo|alt-dump, note}, description, controls, source,
-touch (optional: pad/buttons/extra for the phone overlay, see schema),
+touch (optional: pad/buttons/extra for the phone overlay, see schema; keys may be
+Ctrl+X / Shift+X combinations; the overlay always has a ⌨ keyboard too),
+saves (optional: false = no saved positions on the play page),
+hardware (optional: the play page's machine — ramdisk size, mzpico card,
+joy1/joy2; written as an ini by site/src/lib/mz/machine.ts; not in the
+manifest),
+warp (optional: until[] steps + max_seconds — the play page runs the
+loader at full speed, silent, until the program reaches that point; see
+README; not in the manifest),
 web (optional: true = shown on the site; absent = API-only).
 
 ## Rules

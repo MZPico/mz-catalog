@@ -79,7 +79,7 @@ The structure is flat: machine type is metadata, not a directory level.
    | `description` | no | free text, paragraphs separated by blank lines. Either a string (English) or a per-language map (`en` required, the fallback; `cs`, `de`, `ja` optional). Keep Japanese paragraphs on one line — a hard wrap renders as a stray space. |
    | `controls` | no | key / joystick reference, shown verbatim |
    | `web` | no | `true` publishes the title on the web site; absent/false keeps it API-only (manifest.json + device API still serve every title) |
-   | `touch` | no | touch-control layout for the browser emulator on phones: `pad` (`cursor` default, `wasd`, `none`, or `{up,down,left,right}`), `buttons` (right side, first = primary), `extra` (small buttons, left side); keys are MZ key names (`A`-`Z`, `0`-`9`, `Space`, `Enter`, `Up`…, `F1`…, see schema). Preview a layout without editing: `/play/<slug>/?touchspec={"pad":"wasd","buttons":[{"label":"JUMP","key":"Space"}],"extra":[{"label":"1","key":"1"}]}` |
+   | `touch` | no | touch-control layout for the browser emulator on phones: `pad` (`cursor` default, `wasd`, `none`, or `{up,down,left,right}`), `buttons` (right side, first = primary), `extra` (small buttons, left side); keys are MZ key names (`A`-`Z`, `0`-`9`, `Space`, `Enter`, `Up`…, `F1`…, see schema), optionally with one modifier pressed first (`Ctrl+D`, `Shift+L`). Every title also gets the overlay's ⌨ on-screen keyboard (digits, letters, DEL, CR, SPACE, BRK, and CTRL/SHIFT that latch onto the next key), for typing names or codes and keys the layout leaves out. Preview a layout without editing: `/play/<slug>/?touchspec={"pad":"wasd","buttons":[{"label":"JUMP","key":"Space"}],"extra":[{"label":"1","key":"1"}]}` |
    | `source` | no | where the dump came from — URL or free text. Not shown on the site; the legacy device-API folder is derived from a `folder <name>` mention here |
 
 5. Run `npm run validate`. It checks the schema, that every listed file
@@ -139,6 +139,46 @@ emulator's in-memory filesystem and starts it with `--run-mzf --kiosk`
 auto-starts when reached from a catalog page (browsers allow audio after
 an interaction with the origin) and otherwise shows a start button; a
 fullscreen button and a `?buf=` audio-buffer override are available.
+
+A floppy image (`kind: disk`) goes into drive 0 through a minimal ini and
+the ROM boots it. A title that needs more of the machine says so in a
+`hardware:` block of its meta.yaml, and the play page then writes a full ini
+with the studio's writer (`titleMachine` + `toIni` in `site/src/lib/mz/machine.ts`):
+
+```yaml
+hardware:
+  ramdisk: 1M        # MR1R18 RAM disk: none | 64K | 256K | 512K | 1M | 16M (plain RAM, empty at start)
+  mzpico: true       # the MZPico card with the NET service (the default); false = no card
+  joy1: NONE         # NONE | NUM_KEYPAD | JOYSTICK (also joy2)
+```
+
+Anything left out stays as the emulator starts without an ini. The block is
+for the play page only: manifest.json does not carry it.
+
+`saves: false` in meta.yaml switches off the play page's saved positions for
+a title: no Save/Load buttons, no saves panel (automatic saving, .mzs
+export/import), no `?resume=1` and no Continue button on the title page. The
+program's own saving to its disk or tape is not affected.
+
+A title with a long loader can ask the play page to warp past it with a
+`warp:` block: the emulator runs at full speed with the sound off until the
+program reaches a point named in machine terms, then goes back to normal speed
+by itself, at that instruction or frame. Emulated time is unchanged (the
+program sees the same clocks, interrupts and drive timings), only less wall
+time passes:
+
+```yaml
+warp:
+  until:                                   # steps reached in order (1-4)
+    - "pc == 0x2000 && [0x02a2] == 0x10"   # tests joined by &&: pc == A, [A] == V, [A] != V, [A] & M == V
+    - "[0x0800] != 0"                      # a step without pc is checked at the end of every frame
+  max_seconds: 60                          # back to normal speed after this long whatever happens
+```
+
+`[A]` is the RAM byte the CPU sees at A when RAM is mapped there. Without the
+block the page runs at normal speed from the start. `?warp=0` switches the
+warp off, `?warp=watch` keeps normal speed and only logs when the point is
+reached (to measure a loader); `?debug` shows the warp's time and frames.
 
 ### Rebuilding the emulator
 

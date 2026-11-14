@@ -47,6 +47,19 @@ async function checkTitle(slug) {
     return; // file checks below depend on a well-formed files[]
   }
 
+  // --- warp: what the schema's pattern cannot say (ranges, counts); the emulator refuses the rest
+  (meta.warp?.until ?? []).forEach((step, i) => {
+    const pcs = [...step.matchAll(/pc\s*==\s*(\w+)/g)].map((m) => Number(m[1]));
+    const mems = [...step.matchAll(/\[\s*(\w+)\s*\](?:\s*&\s*(\w+))?\s*[!=]=\s*(\w+)/g)];
+    if (pcs.length > 1) fail(slug, `warp.until[${i}]: more than one pc test`);
+    if (mems.length > 4) fail(slug, `warp.until[${i}]: more than four memory tests`);
+    if (pcs.some((a) => a > 0xffff)) fail(slug, `warp.until[${i}]: pc beyond 0xFFFF`);
+    for (const [, a, m, v] of mems) {
+      if (Number(a) > 0xffff) fail(slug, `warp.until[${i}]: address ${a} beyond 0xFFFF`);
+      if ((m !== undefined && Number(m) > 0xff) || Number(v) > 0xff) fail(slug, `warp.until[${i}]: a byte value beyond 0xFF`);
+    }
+  });
+
   // --- referenced files
   const listed = new Set();
   for (const f of meta.files) {

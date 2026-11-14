@@ -218,6 +218,7 @@ export const ja: Ui = {
       `⚠ エミュレーションが ${pct} % の速度で動作しています。端末かブラウザーが処理を抑えています。ほかのウィンドウやアプリを閉じる、電源につなぐ、またはこのサイトでブラウザーの省電力モードを無効にしてみてください。`,
     downloading: 'テープイメージを取得中…',
     loadingEmulator: 'エミュレーターを読み込み中…',
+    warping: '全速で読み込み中（準備ができるまで音は出ません）…',
     fetchFailed: (file: string, status: number) => `${file} を取得できませんでした（${status}）`,
     scriptFailed: 'エミュレーターのスクリプトを読み込めませんでした',
     aborted: (what: string) => `エミュレーターが停止しました: ${what}`,

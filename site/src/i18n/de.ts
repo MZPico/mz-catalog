@@ -219,6 +219,7 @@ export const de: Ui = {
       `⚠ Die Emulation läuft mit ${pct} % Geschwindigkeit — Ihr Rechner oder Browser bremst sie aus. Schließen Sie andere Fenster und Apps, schließen Sie das Netzteil an, oder deaktivieren Sie den Energiesparmodus des Browsers für diese Seite.`,
     downloading: 'Kassettenabbild wird geladen…',
     loadingEmulator: 'Emulator wird geladen…',
+    warping: 'Laden mit voller Geschwindigkeit (Ton erst, wenn das Programm bereit ist)…',
     fetchFailed: (file: string, status: number) => `${file} konnte nicht geladen werden (${status})`,
     scriptFailed: 'Das Emulator-Skript konnte nicht geladen werden',
     aborted: (what: string) => `Emulator abgebrochen: ${what}`,

@@ -219,6 +219,7 @@ export const en = {
       `⚠ Emulation is running at ${pct}% speed — your machine or browser is throttling it. Close other windows/apps, plug in the charger, or disable the browser's efficiency mode for this site.`,
     downloading: 'downloading tape image…',
     loadingEmulator: 'loading emulator…',
+    warping: 'loading at full speed (sound off until the program is ready)…',
     fetchFailed: (file: string, status: number) => `could not fetch ${file} (${status})`,
     scriptFailed: 'failed to load the emulator script',
     aborted: (what: string) => `emulator aborted: ${what}`,

@@ -114,7 +114,7 @@ const breadcrumbLd = {
       )}
     </div>
 
-    {d.machine !== 'mz-1500' && !d.web && (
+    {d.machine !== 'mz-1500' && !d.web && d.saves !== false && (
       <div class="continue" id="continue" hidden data-pagefind-ignore data-slug={d.slug} data-lang={lang}
         data-play={playHref(d, p)} data-multi={d.files.length > 1 ? '1' : ''}
         data-ui={JSON.stringify({ label: t.title.continue, saved: t.title.continueSaved })}></div>

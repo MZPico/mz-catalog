@@ -237,6 +237,49 @@
       "type": "boolean",
       "description": "Plays over the internet (MZPico NET relay): shown as a badge on the site."
     },
+    "saves": {
+      "type": "boolean",
+      "description": "The play page's saved positions (machine snapshots in the browser: Save/Load, automatic saving, .mzs export/import, the title page's Continue). false = none for this title; absent = offered. The program's own saving (to its disk or tape) is not affected."
+    },
+    "hardware": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "description": "The machine the browser emulator's play page sets up for this title (an mz800emu ini written by site/src/lib/mz/machine.ts). Absent = the stock machine. Only the play page reads it; manifest.json does not carry it.",
+      "properties": {
+        "ramdisk": {
+          "enum": ["none", "64K", "256K", "512K", "1M", "16M"],
+          "description": "The MR1R18 RAM disk card and its size (in memory, empty at every start); none = unplugged."
+        },
+        "mzpico": {
+          "type": "boolean",
+          "description": "The MZPico card (the Unicard in MZPico mode, with the NET service the page links to the relay); false = no card."
+        },
+        "joy1": { "$ref": "#/$defs/joystick" },
+        "joy2": { "$ref": "#/$defs/joystick" }
+      }
+    },
+    "warp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["until", "max_seconds"],
+      "description": "The play page's warp past a long loader: the machine runs at full speed with the sound off until the program reaches the point named by until, then at normal speed with sound. Emulated time is unchanged (the program sees the same clocks and drive timings), only less wall time passes. Absent = normal speed from the start. On the page, ?warp=0 switches it off and ?warp=watch only reports when the point is reached.",
+      "properties": {
+        "until": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "description": "Steps reached in order; the warp ends at the last one. A step is tests joined by &&, all true at once: pc == A (the CPU is about to execute the instruction at A), [A] == V, [A] != V, [A] & M == V, [A] & M != V (main RAM byte A, the physical RAM whatever is mapped). Numbers hex (0x..) or decimal; A up to 0xFFFF, M and V up to 0xFF; at most one pc test and four memory tests a step. A step with a pc test is checked at that instruction, one without at the end of every frame.",
+          "items": { "type": "string", "pattern": "^\\s*(?:pc\\s*==\\s*(?:0[xX][0-9a-fA-F]+|0|[1-9][0-9]*)|\\[\\s*(?:0[xX][0-9a-fA-F]+|0|[1-9][0-9]*)\\s*\\](?:\\s*&\\s*(?:0[xX][0-9a-fA-F]+|0|[1-9][0-9]*))?\\s*[!=]=\\s*(?:0[xX][0-9a-fA-F]+|0|[1-9][0-9]*))(?:\\s*&&\\s*(?:pc\\s*==\\s*(?:0[xX][0-9a-fA-F]+|0|[1-9][0-9]*)|\\[\\s*(?:0[xX][0-9a-fA-F]+|0|[1-9][0-9]*)\\s*\\](?:\\s*&\\s*(?:0[xX][0-9a-fA-F]+|0|[1-9][0-9]*))?\\s*[!=]=\\s*(?:0[xX][0-9a-fA-F]+|0|[1-9][0-9]*))){0,4}\\s*$" }
+        },
+        "max_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 600,
+          "description": "The wall-clock cap: the page goes back to normal speed after this many seconds even if the point was never reached."
+        }
+      }
+    },
     "spotlight": {
       "description": "Front-page spotlight: a short pitch per language (en required). Independent of web; the title is shown above the featured grid.",
       "type": "object",
@@ -274,6 +317,10 @@
     }
   ],
   "$defs": {
+    "joystick": {
+      "enum": ["NONE", "NUM_KEYPAD", "JOYSTICK"],
+      "description": "mz800emu's joystick port setting: NONE, NUM_KEYPAD (the numeric keypad is the joystick) or JOYSTICK (a host game controller)."
+    },
     "localized": {
       "description": "English, or a per-language map (en required).",
       "oneOf": [
@@ -349,8 +396,8 @@
     },
     "touchKey": {
       "type": "string",
-      "pattern": "^([A-Z]|[0-9]|Space|Enter|Up|Down|Left|Right|Shift|Ctrl|Tab|Backspace|Delete|Insert|Home|Escape|Graph|Alpha|Minus|Equal|Comma|Period|Slash|Semicolon|Quote|BracketLeft|BracketRight|F([1-9]|10))$",
-      "description": "MZ key name: A-Z, 0-9, Space, Enter, Up/Down/Left/Right, Shift, Ctrl, Tab, Backspace, Delete, Insert, Home, Escape, Graph, Alpha, F1-F10, Minus, Equal, Comma, Period, Slash, Semicolon, Quote, BracketLeft, BracketRight."
+      "pattern": "^((Ctrl|Shift)\\+)?([A-Z]|[0-9]|Space|Enter|Up|Down|Left|Right|Shift|Ctrl|Tab|Backspace|Delete|Insert|Home|Escape|Graph|Alpha|Minus|Equal|Comma|Period|Slash|Semicolon|Quote|BracketLeft|BracketRight|F([1-9]|10))$",
+      "description": "MZ key name, optionally with a modifier pressed first (Ctrl+D, Shift+L): A-Z, 0-9, Space, Enter, Up/Down/Left/Right, Shift, Ctrl, Tab, Backspace, Delete, Insert, Home, Escape, Graph, Alpha, F1-F10, Minus, Equal, Comma, Period, Slash, Semicolon, Quote, BracketLeft, BracketRight."
     },
     "touchButton": {
       "type": "object",

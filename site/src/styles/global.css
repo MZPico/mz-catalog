@@ -272,9 +272,20 @@ ol.steps li { margin: 0.4rem 0; }
 .btn.active { outline:2px solid var(--accent, #3b82f6); }
 .touch-pad[hidden] { display:none; }
 .touch-extra { position:absolute; left:4%; top:6%; display:flex; flex-wrap:wrap; gap:min(2vw, 12px); max-width:45%; pointer-events:auto; }
-.touch-btn.extra { width:min(12vmin, 56px); height:min(12vmin, 56px); font-size:clamp(10px, 2.2vw, 14px); background:rgba(80,160,255,0.22); border-color:rgba(120,180,255,0.6); }
+.touch-btn.extra { width:auto; min-width:min(12vmin, 56px); padding:0 0.5em; border-radius:999px; height:min(12vmin, 56px); font-size:clamp(10px, 2.2vw, 14px); background:rgba(80,160,255,0.22); border-color:rgba(120,180,255,0.6); }
 .touch-btn.extra.down { background:rgba(80,160,255,0.55); }
 .touch-btn:disabled { opacity:0.35; }
+/* On-screen keyboard (⌨ in the touch overlay): at the top, so a game's bottom line (where a typed
+   name or code usually shows) stays in view */
+.touch-kbd-toggle { position:absolute; top:3%; left:50%; transform:translateX(-50%); pointer-events:auto; touch-action:none; min-width:min(11vmin, 52px); height:min(8vmin, 38px); border-radius:8px; border:2px solid rgba(255,255,255,0.35); background:rgba(255,255,255,0.12); color:rgba(255,255,255,0.85); font:600 clamp(14px, 3.2vmin, 22px) system-ui, sans-serif; padding:0 6px; }
+.touch-kbd-toggle.active { background:rgba(80,160,255,0.55); }
+.touch-kbd { position:absolute; left:50%; top:calc(3% + min(8vmin, 38px) + 4px); transform:translateX(-50%); width:min(96%, 680px); display:flex; flex-direction:column; gap:3px; padding:4px; background:rgba(0,0,0,0.75); border-radius:8px; pointer-events:auto; touch-action:none; z-index:2; }
+.touch-kbd[hidden] { display:none; }
+.kbd-row { display:flex; gap:3px; }
+.kbd-key { flex:1 1 0; min-width:0; height:min(8vmin, 42px); border-radius:5px; border:1px solid rgba(255,255,255,0.35); background:rgba(255,255,255,0.14); color:#fff; font:600 clamp(10px, 2.6vmin, 15px) system-ui, sans-serif; padding:0; touch-action:none; }
+.kbd-key.wide { flex-grow:3; }
+.kbd-key.mod, .kbd-key.close { flex-grow:1.4; }
+.kbd-key.down, .kbd-key.latched { background:rgba(80,160,255,0.6); }
 /* Fullscreen: hug the physical screen edges and stay translucent over the picture */
 .play-frame:fullscreen .touch-pad { left: max(env(safe-area-inset-left, 0px), 10px); bottom: 12px; opacity: 0.75; }
 .play-frame:fullscreen .touch-buttons { right: max(env(safe-area-inset-right, 0px), 10px); bottom: 12px; opacity: 0.75; }
