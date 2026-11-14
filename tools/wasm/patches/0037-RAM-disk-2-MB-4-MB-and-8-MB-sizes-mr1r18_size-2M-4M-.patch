@@ -1,0 +1,75 @@
+From ca2b709099139abeb9531f2b71f48084bd7160ce Mon Sep 17 00:00:00 2001
+From: Martin Matyas <martin.matyas@gmail.com>
+Date: Fri, 13 Nov 2026 12:32:14 +0100
+Subject: [PATCH] RAM disk: 2 MB, 4 MB and 8 MB sizes (mr1r18_size 2M, 4M, 8M)
+
+The STD RAM disk's size is a page mask (en_RAMDISK_BANKMASK): 0x1f, 0x3f and
+0x7f join 64K, 256K, 512K, 1M and 16M, as INI keywords and in the ImGui
+Devices > RAM disk > Size menu. Pages above the mask alias as on a real card
+that ignores the high page bits; the regions list, snapshots and the SRAM
+file follow the size as before.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ src/emulator/hw-generic/ramdisk/ramdisk.c     |  3 +++
+ src/emulator/hw-generic/ramdisk/ramdisk.h     |  3 +++
+ src/ui-imgui/topmenu/devices/menu_ramdisk.cpp | 15 +++++++++++++++
+ 3 files changed, 21 insertions(+)
+
+diff --git a/src/emulator/hw-generic/ramdisk/ramdisk.c b/src/emulator/hw-generic/ramdisk/ramdisk.c
+index 4197f13..917005b 100644
+--- a/src/emulator/hw-generic/ramdisk/ramdisk.c
++++ b/src/emulator/hw-generic/ramdisk/ramdisk.c
+@@ -383,6 +383,9 @@ void ramdisk_init ( void ) {
+                                            RAMDISK_SIZE_256, "256K",
+                                            RAMDISK_SIZE_512, "512K",
+                                            RAMDISK_SIZE_1M, "1M",
++                                           RAMDISK_SIZE_2M, "2M",
++                                           RAMDISK_SIZE_4M, "4M",
++                                           RAMDISK_SIZE_8M, "8M",
+                                            RAMDISK_SIZE_16M, "16M",
+                                            -1 );
+     cfgelement_set_handlers ( elm, NULL, (void*) &g_ramdisk.std.size );
+diff --git a/src/emulator/hw-generic/ramdisk/ramdisk.h b/src/emulator/hw-generic/ramdisk/ramdisk.h
+index ea49ee4..5e703f6 100644
+--- a/src/emulator/hw-generic/ramdisk/ramdisk.h
++++ b/src/emulator/hw-generic/ramdisk/ramdisk.h
+@@ -64,6 +64,9 @@ extern "C" {
+         RAMDISK_SIZE_256 = 0x03,
+         RAMDISK_SIZE_512 = 0x07,
+         RAMDISK_SIZE_1M = 0x0f,
++        RAMDISK_SIZE_2M = 0x1f,
++        RAMDISK_SIZE_4M = 0x3f,
++        RAMDISK_SIZE_8M = 0x7f,
+         RAMDISK_SIZE_16M = 0xff
+     } en_RAMDISK_BANKMASK;
+ 
+diff --git a/src/ui-imgui/topmenu/devices/menu_ramdisk.cpp b/src/ui-imgui/topmenu/devices/menu_ramdisk.cpp
+index f7f0e78..3741a11 100644
+--- a/src/ui-imgui/topmenu/devices/menu_ramdisk.cpp
++++ b/src/ui-imgui/topmenu/devices/menu_ramdisk.cpp
+@@ -142,6 +142,21 @@ void imgui_menu_ramdisk(void)
+                 ramdisk_std_init(RAMDISK_CONNECTED, g_ramdisk.std.type, RAMDISK_SIZE_1M, g_ramdisk.std.filepath);
+             };
+ 
++            if (MenuRadioItem(_("2 MB"), RAMDISK_TEST_STD_SIZE(RAMDISK_SIZE_2M)))
++            {
++                ramdisk_std_init(RAMDISK_CONNECTED, g_ramdisk.std.type, RAMDISK_SIZE_2M, g_ramdisk.std.filepath);
++            };
++
++            if (MenuRadioItem(_("4 MB"), RAMDISK_TEST_STD_SIZE(RAMDISK_SIZE_4M)))
++            {
++                ramdisk_std_init(RAMDISK_CONNECTED, g_ramdisk.std.type, RAMDISK_SIZE_4M, g_ramdisk.std.filepath);
++            };
++
++            if (MenuRadioItem(_("8 MB"), RAMDISK_TEST_STD_SIZE(RAMDISK_SIZE_8M)))
++            {
++                ramdisk_std_init(RAMDISK_CONNECTED, g_ramdisk.std.type, RAMDISK_SIZE_8M, g_ramdisk.std.filepath);
++            };
++
+             if (MenuRadioItem(_("16 MB"), RAMDISK_TEST_STD_SIZE(RAMDISK_SIZE_16M)))
+             {
+                 ramdisk_std_init(RAMDISK_CONNECTED, g_ramdisk.std.type, RAMDISK_SIZE_16M, g_ramdisk.std.filepath);
+-- 
+2.43.0
+
