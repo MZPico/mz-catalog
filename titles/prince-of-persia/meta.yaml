@@ -11,8 +11,8 @@ machine: mz-800
 mode: native
 genre: [game, arcade, adventure]
 language: en
-version: "0.1.0-pre e38eb15 (preview)"
-release: "https://github.com/MZPico/mz800pop/commit/e38eb15"
+version: "0.1.0-pre 54fce8b (preview)"
+release: "https://github.com/MZPico/mz800pop/pull/84"
 files:
   - path: pop800.dsk
     kind: disk
@@ -127,4 +127,4 @@ touch:
     - { label: "3", key: "3" }
     - { label: "BRK", key: "Escape" }
     - { label: "TIME", key: "Space" }
-source: "Built from https://github.com/MZPico/mz800pop at commit e38eb15 (main: the duel with the sword by hand, potions and spikes; the loading screen with the version, the network line and the RAM disk in wait states). Logic: SDLPoP ported to Z80; art: the DOS version's EGA graphics. Published on staging with the author's permission, 2026-11-11."
+source: "Built from https://github.com/MZPico/mz800pop at commit 54fce8b (main with PR #84: in the duel the white kid starts on the right and the blue kid on the left, each one's hit points and score on its side). Logic: SDLPoP ported to Z80; art: the DOS version's EGA graphics. Published on staging with the author's permission, 2026-11-11."
