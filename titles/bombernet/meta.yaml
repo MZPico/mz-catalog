@@ -4,11 +4,6 @@ network: true
 version: "0.3.0"
 release: https://github.com/MZPico/BomberNet/releases/tag/v0.3.0
 play: /bombernet/                       # the game compiled to WebAssembly (BomberNet c/platform/web), not the emulated MZ-800
-spotlight:
-  en: "Bomberman for the classic home computers, with network play. Ten machines, from the Sharp MZ-800 and the ZX Spectrum to the Amiga, the PC and your browser, meet in one room: co-op or deathmatch, up to four players, local and remote in any mix. Based on the 1983 Bomber Man for the MZ-700."
-  cs: "Bomberman pro klasické domácí počítače, s hrou po síti. Deset strojů, od Sharpu MZ-800 a ZX Spectra po Amigu, PC a váš prohlížeč, se sejde v jedné místnosti: kooperace nebo deathmatch, až čtyři hráči, místní i vzdálení v libovolné kombinaci. Podle Bomber Mana pro MZ-700 z roku 1983."
-  de: "Bomberman für die klassischen Heimcomputer, mit Netzwerkspiel. Zehn Rechner, vom Sharp MZ-800 und ZX Spectrum bis zum Amiga, PC und deinem Browser, treffen sich in einem Raum: Koop oder Deathmatch, bis zu vier Spieler, lokal und übers Netz gemischt. Nach dem Bomber Man für den MZ-700 von 1983."
-  ja: "クラシックなホームコンピューター向けのボンバーマン、ネットワーク対戦つき。Sharp MZ-800 や ZX Spectrum から Amiga、PC、そしてブラウザーまで、10 機種が同じルームに集まります。協力プレイでもデスマッチでも、最大 4 人、ローカルとリモートの組み合わせは自由。1983 年の MZ-700 版ボンバーマンがもとになっています。"
 year: 2026
 publisher: "MZPico"
 original:

@@ -1,6 +1,11 @@
 title: "Prince of Persia"
 web: true
 network: true
+spotlight:
+  en: "Jordan Mechner's 1989 classic, new on the Sharp MZ-800: sixty minutes to climb out of Jaffar's dungeons, in 16 colours, with the game logic translated tick for tick from SDLPoP. Press Ctrl+D on the title for a hidden sword duel, two players on one keyboard or over the internet through MZPico NET."
+  cs: "Klasika Jordana Mechnera z roku 1989 nově na Sharpu MZ-800: šedesát minut na útěk z Džafarových žalářů, v 16 barvách, s herní logikou přeloženou ze SDLPoP tik po tiku. Ctrl+D na titulní obrazovce otevře skrytý souboj na meče pro dva hráče na jedné klávesnici nebo přes internet službou MZPico NET."
+  de: "Jordan Mechners Klassiker von 1989, neu auf dem Sharp MZ-800: sechzig Minuten, um aus Jaffars Verliesen zu entkommen, in 16 Farben, die Spiellogik Tick für Tick aus SDLPoP übersetzt. Ctrl+D auf dem Titelbild öffnet ein verstecktes Schwertduell, zu zweit an einer Tastatur oder über das Internet mit MZPico NET."
+  ja: "ジョーダン・メックナーによる 1989 年の名作が Sharp MZ-800 に新登場。ジャファーの地下牢から 60 分で脱出せよ。16 色表示、ゲームロジックは SDLPoP から 1 ティックずつ翻訳。タイトル画面で Ctrl+D を押すと隠しモードの剣の決闘。1 台のキーボードで 2 人対戦、または MZPico NET でインターネット対戦。"
 year: 2026
 publisher: "MZPico / mz800pop port"
 original:
