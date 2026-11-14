@@ -85,7 +85,7 @@ const titles = defineCollection({
     // the browser emulator's machine for this title (play page only; site/src/lib/mz/machine.ts titleMachine)
     hardware: z
       .object({
-        ramdisk: z.enum(['none', '64K', '256K', '512K', '1M', '16M']).optional(),
+        ramdisk: z.enum(['none', '64K', '256K', '512K', '1M', '4M', '16M']).optional(),
         mzpico: z.boolean().optional(),
         joy1: z.enum(['NONE', 'NUM_KEYPAD', 'JOYSTICK']).optional(),
         joy2: z.enum(['NONE', 'NUM_KEYPAD', 'JOYSTICK']).optional(),

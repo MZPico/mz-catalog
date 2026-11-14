@@ -38,7 +38,7 @@ export interface Machine {
 }
 
 export type JoyType = 'NONE' | 'NUM_KEYPAD' | 'JOYSTICK';
-export type RamdiskSize = '64K' | '256K' | '512K' | '1M' | '16M';
+export type RamdiskSize = '64K' | '256K' | '512K' | '1M' | '4M' | '16M';
 
 const emptyDrive = (): Drive => ({ file: '', readonly: false, storage: 'cached' });
 

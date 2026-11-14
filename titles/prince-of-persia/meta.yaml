@@ -24,7 +24,7 @@ files:
     note: 3.5" floppy image; boots from drive 0 on reset. Needs an MR1R18 RAM disk of 512 KB or more (best 1 MB to 16 MB).
 saves: false
 hardware:
-  ramdisk: 1M
+  ramdisk: 4M
   mzpico: true
 # The boot fills the RAM disk from the floppy and the frame store (28 s of emulated time from
 # the power-on): the play page runs it at full speed, silent, until the title is about to fade in.
@@ -46,7 +46,7 @@ description:
     tick against it; the graphics come from the DOS version's EGA art, the music
     and effects play on the PSG. The game streams its pictures from a RAM disk:
     it needs an MR1R18 card (or an MZPico) of 512 KB or more and runs best with
-    1 MB to 16 MB. Here in the browser the machine has a 1 MB RAM disk.
+    1 MB to 16 MB. Here in the browser the machine has a 4 MB RAM disk.
 
     Press Ctrl+D on the title for a hidden extra: a sword duel between the
     prince and his blue-suited double, two players on one keyboard, or over the
@@ -67,7 +67,7 @@ description:
     tiku; grafika pochází z EGA verze pro DOS, hudba a zvuky hrají na PSG. Hra
     čte obrázky z RAM disku: potřebuje kartu MR1R18 (nebo MZPico) s 512 KB a
     více, nejlépe běží s 1 MB až 16 MB. Zde v prohlížeči má počítač RAM disk
-    1 MB.
+    4 MB.
 
     Na titulní obrazovce stiskněte Ctrl+D: skrytý souboj na meče mezi princem a
     jeho dvojníkem v modrém, pro dva hráče na jedné klávesnici nebo přes
@@ -88,7 +88,7 @@ description:
     Musik und Effekte spielt der PSG. Das Spiel lädt seine Bilder aus einer
     RAM-Disk: Es braucht eine MR1R18-Karte (oder ein MZPico) mit 512 KB oder
     mehr und läuft am besten mit 1 MB bis 16 MB. Hier im Browser hat die
-    Maschine eine RAM-Disk von 1 MB.
+    Maschine eine RAM-Disk von 4 MB.
 
     Ctrl+D auf dem Titelbild öffnet ein verstecktes Extra: ein Schwertduell
     zwischen dem Prinzen und seinem Doppelgänger im blauen Anzug, zu zweit an
@@ -100,7 +100,7 @@ description:
   ja: |
     ジョーダン・メックナーによる 1989 年の名作を Sharp MZ-800 で。大臣ジャファーが王女を捕らえ、あなたに残された時間は 60 分。地下牢から王女のもとへ向かうため、走り、跳び、岩棚にぶら下がり、仕掛け刃やトゲをかわし、ジャファーの衛兵と剣を交えながら、レベルを重ねてジャファー本人のもとへ。
 
-    この移植は 2026 年に新しく書かれたもので、MZ-800 のネイティブ 320×200・16 色モードで動く。ゲームロジックは SDLPoP を Z80 に翻訳したもので、1 ティックずつ照合して検証している。グラフィックは DOS 版の EGA アートから、音楽と効果音は PSG で鳴る。画像は RAM ディスクから読み込むため、512 KB 以上の MR1R18 カード（または MZPico）が必要で、1 MB から 16 MB で最もよく動く。このブラウザー版の RAM ディスクは 1 MB。
+    この移植は 2026 年に新しく書かれたもので、MZ-800 のネイティブ 320×200・16 色モードで動く。ゲームロジックは SDLPoP を Z80 に翻訳したもので、1 ティックずつ照合して検証している。グラフィックは DOS 版の EGA アートから、音楽と効果音は PSG で鳴る。画像は RAM ディスクから読み込むため、512 KB 以上の MR1R18 カード（または MZPico）が必要で、1 MB から 16 MB で最もよく動く。このブラウザー版の RAM ディスクは 4 MB。
 
     タイトル画面で Ctrl+D を押すと隠しモードが現れる。王子と青い服の分身による剣の決闘で、1 台のキーボードで 2 人対戦するか、MZPico NET サービスでインターネット対戦ができる。一方がホストになって 4 文字のルームコードを受け取り、もう一方がそのコードで参加する。舞台は毎回変わり、試合ごとに別のレベル、ラウンドごとに別の部屋で戦う。スマートフォンでは DUEL ボタンと ⌨ キーボード（数字とルームコード）がキーの代わりになる。
 controls: |

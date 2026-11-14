@@ -248,7 +248,7 @@
       "description": "The machine the browser emulator's play page sets up for this title (an mz800emu ini written by site/src/lib/mz/machine.ts). Absent = the stock machine. Only the play page reads it; manifest.json does not carry it.",
       "properties": {
         "ramdisk": {
-          "enum": ["none", "64K", "256K", "512K", "1M", "16M"],
+          "enum": ["none", "64K", "256K", "512K", "1M", "4M", "16M"],
           "description": "The MR1R18 RAM disk card and its size (in memory, empty at every start); none = unplugged."
         },
         "mzpico": {

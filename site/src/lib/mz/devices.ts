@@ -255,7 +255,7 @@ export function devices(hooks: DeviceHooks): () => void {
 
   const menus: Record<string, () => Item[]> = {
     ram: () => [
-      ...(['64K', '256K', '512K', '1M', '16M'] as const).map((v) => radio('ramdisk.mr1r18.size', v, v)),
+      ...(['64K', '256K', '512K', '1M', '4M', '16M'] as const).map((v) => radio('ramdisk.mr1r18.size', v, v)),
       'sep', radio('ramdisk.mr1r18.type', 'SRAM', 'SRAM'), radio('ramdisk.mr1r18.type', 'ROM', 'ROM'),
     ],
     memext: () => [radio('memext.type', 'PEHU', 'PEHU'), radio('memext.type', 'LUFTNER', 'Luftner')],
