@@ -105,7 +105,7 @@ const breadcrumbLd = {
           {d.files.map((f) => (
             <div class="tape-row">
               <span class="file-label">{f.path}</span>
-              {d.machine !== 'mz-1500' && <a class="btn primary" href={playHref(d, p, `?file=${f.path}`)}>{t.title.playShort}</a>}
+              {d.machine !== 'mz-1500' && f.play !== false && <a class="btn primary" href={playHref(d, p, `?file=${f.path}`)}>{t.title.playShort}</a>}
               <a class="btn" href={`/files/${d.slug}/${f.path}`} download>{isDisk(f) ? t.title.downloadShortDisk : t.title.downloadShort}</a>
             </div>
           ))}

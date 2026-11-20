@@ -391,6 +391,10 @@
           "type": "string",
           "maxLength": 300,
           "description": "Optional note, e.g. what differs in an alt-dump."
+        },
+        "play": {
+          "type": "boolean",
+          "description": "false = download only: no Play button and not on the play page (the browser emulator cannot run it, e.g. a disk for hardware it lacks)."
         }
       }
     },

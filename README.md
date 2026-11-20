@@ -75,7 +75,7 @@ The structure is flat: machine type is metadata, not a directory level.
    | `machine` | yes | `mz-700`, `mz-800` or `mz-1500` |
    | `mode` | MZ-800 only | `native` or `mz-700` (compatibility mode); forbidden for other machines |
    | `language` | no | ISO 639 code of the software's UI language (`en`, `cs`, `de`, `ja`, …); omit if unknown |
-   | `files[]` | yes | `path` (file name in the folder: `.mzf` tape image or `.dsk` floppy image), `kind` (`standard`/`turbo`/`alt-dump` for tapes, `disk` for a floppy), optional `note` |
+   | `files[]` | yes | `path` (file name in the folder: `.mzf` tape image or `.dsk` floppy image), `kind` (`standard`/`turbo`/`alt-dump` for tapes, `disk` for a floppy), optional `note`, optional `play: false` (download only: no Play button, not on the play page, for a file the browser emulator cannot run) |
    | `description` | no | free text, paragraphs separated by blank lines. Either a string (English) or a per-language map (`en` required, the fallback; `cs`, `de`, `ja` optional). Keep Japanese paragraphs on one line — a hard wrap renders as a stray space. |
    | `controls` | no | key / joystick reference, shown verbatim |
    | `web` | no | `true` publishes the title on the web site; absent/false keeps it API-only (manifest.json + device API still serve every title) |

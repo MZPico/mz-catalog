@@ -17,14 +17,14 @@ interface Props { lang: Lang; entry: CollectionEntry<'titles'> }
 const { lang, entry } = Astro.props;
 const t = useTranslations(lang);
 const d = entry.data;
-const files = d.files.map((f) => f.path);
+const files = d.files.filter((f) => f.play !== false).map((f) => f.path);   // play: false = download only
 // saves: false in meta.yaml = no saved positions for this title (no buttons, panel, resume)
 const saves = d.saves !== false;
 // A title whose meta.yaml asks for hardware (RAM disk, MZPico card, joysticks) gets a
 // full ini per file, written by the same code as the studio's machines; the others keep
 // the stock machine (a floppy through a minimal ini, a tape through --run-mzf).
 const machines = d.hardware
-  ? Object.fromEntries(d.files.map((f) => {
+  ? Object.fromEntries(d.files.filter((f) => f.play !== false).map((f) => {
       const m = titleMachine(f.path, f.kind === 'disk', d.hardware!);
       return [f.path, { ini: toIni(m), args: argsOf(m), path: mediaPath(f.path) }];
     }))

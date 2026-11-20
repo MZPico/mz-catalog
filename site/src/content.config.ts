@@ -29,6 +29,7 @@ const file = z.object({
   path: z.string(),
   kind: z.enum(['standard', 'turbo', 'alt-dump', 'disk']),
   note: z.string().optional(),
+  play: z.boolean().optional(),   // false = download only (no Play button, not on the play page)
   size: z.number().int(),
   crc32: z.string(),
   header: mzfHeader.nullable(),
