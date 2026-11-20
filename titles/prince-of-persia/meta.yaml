@@ -21,7 +21,7 @@ release: "https://github.com/MZPico/mz800pop/releases/tag/v0.2.0"
 files:
   - path: pop800.dsk
     kind: disk
-    note: 3.5" floppy image; boots from drive 0 on reset. Needs an MR1R18-style RAM disk of 512 KB or more (a chip card, an MZPico with firmware v0.6.0 in copy-on-write mode, or a Unicard mk3b with firmware 0.35); runs well with 1 MB and even better with 4 MB. For the MZPico's own pico_rd RAM disk (every MZPico board) take pop800-picord from the release page.
+    note: 3.5" floppy image; boots from drive 0 on reset. Needs an MR1R18-style RAM disk of 512 KB or more (a chip card, an MZPico with firmware v0.6.0, a Unicard mk3b); 1 MB recommended. For the MZPico pico_rd RAM disk take pop800-picord from the release page.
 saves: false
 hardware:
   ramdisk: 4M
